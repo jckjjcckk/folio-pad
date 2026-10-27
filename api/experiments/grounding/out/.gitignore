@@ -1,6 +1,8 @@
 # Bulky intermediate renders stay local; the JSON, HTML, final overlays, key SAM renders and screenshots are committed.
 *.png
-!final-*.png
+!final-goldberg-bga-p01.png
+!final-rach1-2pf-gutheil-p03.png
+!thumb-*.jpg
 !spark-goldberg-bga-p01.png
 !spark-rach1-2pf-gutheil-p03.png
 !sam-goldberg-bga-p01-musical_staff.png

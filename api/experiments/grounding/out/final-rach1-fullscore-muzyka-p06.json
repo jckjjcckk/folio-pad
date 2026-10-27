@@ -1,0 +1,136 @@
+{
+  "page": "rach1-fullscore-muzyka-p06",
+  "engine": "opencv-geometry + muse-spark-1.3 labels",
+  "effort": "low",
+  "latency_s": 12.5,
+  "usage": {
+    "input_tokens": 3790,
+    "input_tokens_details": {
+      "cached_tokens": 0
+    },
+    "output_tokens": 1750,
+    "output_tokens_details": {
+      "reasoning_tokens": 1576
+    },
+    "total_tokens": 5540
+  },
+  "cost_usd": 0.0122,
+  "cv_skew_deg": 1.3322676295501878e-15,
+  "labels": {
+    "first_measure_number": 1,
+    "is_pickup": false,
+    "confidence": "low",
+    "systems": [
+      {
+        "index": 1,
+        "parts": [
+          "Fl.",
+          "Ob.",
+          "Cl.",
+          "Fag.",
+          "Cor.",
+          "Tr-be",
+          "Tr-ni",
+          "Timp.",
+          "P-no",
+          "Archi"
+        ],
+        "staves_per_part": [
+          1,
+          1,
+          1,
+          2,
+          2,
+          1,
+          2,
+          1,
+          2,
+          5
+        ]
+      }
+    ],
+    "rehearsal_marks": [],
+    "doubtful_measures": [
+      {
+        "provisional_measure": 1,
+        "reason": "box spans the whole system width containing 4 barlines / 4 real bars, not a single measure"
+      }
+    ],
+    "title": "",
+    "composer": ""
+  },
+  "raw_text": "{\"first_measure_number\": 1, \"is_pickup\": false, \"confidence\": \"low\", \"systems\": [{\"index\": 1, \"parts\": [\"Fl.\", \"Ob.\", \"Cl.\", \"Fag.\", \"Cor.\", \"Tr-be\", \"Tr-ni\", \"Timp.\", \"P-no\", \"Archi\"], \"staves_per_part\": [1, 1, 1, 2, 2, 1, 2, 1, 2, 5]}], \"rehearsal_marks\": [], \"doubtful_measures\": [{\"provisional_measure\": 1, \"reason\": \"box spans the whole system width containing 4 barlines / 4 real bars, not a single measure\"}], \"title\": \"\", \"composer\": \"\"}",
+  "systems": [
+    {
+      "index": 1,
+      "box": {
+        "x0": 125,
+        "y0": 147,
+        "x1": 1306,
+        "y1": 1787
+      },
+      "staves": 17,
+      "barlines": [],
+      "n_measures": 1,
+      "parts": [
+        "Fl.",
+        "Ob.",
+        "Cl.",
+        "Fag.",
+        "Cor.",
+        "Tr-be",
+        "Tr-ni",
+        "Timp.",
+        "P-no",
+        "Archi"
+      ]
+    }
+  ],
+  "measures": [
+    {
+      "number": 1,
+      "system": 1,
+      "box": {
+        "x0": 125,
+        "y0": 147,
+        "x1": 1306,
+        "y1": 1787
+      },
+      "uncertain": true
+    }
+  ],
+  "records": [
+    {
+      "measure_number": 1,
+      "page": 1,
+      "system": 1,
+      "part": [
+        "Fl.",
+        "Ob.",
+        "Cl.",
+        "Fag.",
+        "Cor.",
+        "Tr-be",
+        "Tr-ni",
+        "Timp.",
+        "P-no",
+        "Archi"
+      ],
+      "box": {
+        "x0": 125,
+        "y0": 147,
+        "x1": 1306,
+        "y1": 1787
+      },
+      "box_norm": {
+        "x0": 0.0896,
+        "y0": 0.0778,
+        "x1": 0.9362,
+        "y1": 0.9455
+      },
+      "confidence": "low",
+      "flag": "box spans the whole system width containing 4 barlines / 4 real bars, not a single measure",
+      "rehearsal_mark": null
+    }
+  ]
+}
