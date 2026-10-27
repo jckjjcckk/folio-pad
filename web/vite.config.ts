@@ -11,9 +11,9 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       manifest: {
-        name: 'Muse',
-        short_name: 'Muse',
-        description: 'AI librarian for ensembles',
+        name: 'Folio',
+        short_name: 'Folio',
+        description: 'One score for the whole ensemble',
         theme_color: '#111111',
         background_color: '#111111',
         display: 'standalone',
@@ -29,5 +29,7 @@ export default defineConfig({
     // Expose on the LAN so iPads on the same wifi can open the dev server.
     host: true,
     port: 5173,
+    // Let Cloudflare tunnels (random *.trycloudflare.com hosts or your own hostname) reach the dev server.
+    allowedHosts: ['.trycloudflare.com'],
   },
 })

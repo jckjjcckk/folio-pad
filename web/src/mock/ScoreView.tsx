@@ -22,6 +22,8 @@ export interface ScoreViewProps {
 export function ScoreView({ src, zoom = 1, pageFormat = 'Endless', onReady, className, options }: ScoreViewProps) {
   const ref = useRef<HTMLDivElement>(null)
   const osmdRef = useRef<OpenSheetMusicDisplay | null>(null)
+  // Whether the current instance has loaded. State alone lags one render behind when src/pageFormat and zoom change together.
+  const loadedRef = useRef(false)
   const [state, setState] = useState<'loading' | 'ready' | 'error'>('loading')
   const [error, setError] = useState<string>()
 
@@ -40,11 +42,13 @@ export function ScoreView({ src, zoom = 1, pageFormat = 'Endless', onReady, clas
       ...options,
     })
     osmdRef.current = osmd
+    loadedRef.current = false
     let cancelled = false
     setState('loading')
     osmd.load(src)
       .then(() => {
         if (cancelled) return
+        loadedRef.current = true
         osmd.zoom = zoom
         osmd.render()
         setState('ready')
@@ -55,13 +59,18 @@ export function ScoreView({ src, zoom = 1, pageFormat = 'Endless', onReady, clas
         setError(e instanceof Error ? e.message : String(e))
         setState('error')
       })
-    return () => { cancelled = true; osmd.clear() }
+    return () => {
+      cancelled = true
+      // OSMD never removes its window resize listener; disabling autoResize makes the stale listener inert.
+      osmd.AutoResizeEnabled = false
+      osmd.clear()
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [src, pageFormat])
 
   useEffect(() => {
     const osmd = osmdRef.current
-    if (!osmd || state !== 'ready') return
+    if (!osmd || state !== 'ready' || !loadedRef.current) return
     osmd.zoom = zoom
     osmd.render()
   }, [zoom, state])
