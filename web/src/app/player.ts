@@ -9,11 +9,17 @@
  *  printed tempo times the pace, so a pace change lands within a beat and tempo changes in the score still apply. A loop
  *  jumps back to the range start, after the count-in, so the count-in sounds once. A part that is off skips its notes;
  *  each part has its own gain. Tone and the samples (web/public/sounds, ~4.4 MB, two instruments) load on the first play,
- *  fetched and decoded here rather than by Tone's loader (see `sampleArrived`), and kept for the session. */
+ *  fetched and decoded here rather than by Tone's loader (see `sampleArrived`), and kept for the session.
+ *
+ *  Every Play checks that the audio clock moves (`audioClock.ts`): WebKit can leave the context 'running' with a clock that
+ *  stands still, and then the count-in drew its first beat and waited for ever, on every book until the app was quit.
+ *  A still clock is restarted, then the context replaced (nodes and samples made again on the new one); if neither
+ *  works, or the clock stops while playing, the panel says so instead of waiting. */
 import type * as ToneNS from 'tone'
 import { supabase } from '../lib/supabase'
 import type { Playback } from '../mock'
 import { SAMPLES, SampleError, fetchFault, sampleArrived, samplePath, sampleUrl, voiceFor, type Voice } from './sounds'
+import { AudioStalled, ClockWatch, START_WITHIN_MS, STALL_MS, STOPPED_WHILE_PLAYING, clockMoves, sessionForPlay, settled, startWithRevival } from './audioClock'
 
 type Tone = typeof ToneNS
 
@@ -98,7 +104,7 @@ async function fetchSample(T: Tone, voice: Voice, stem: string): Promise<AudioBu
   let res: Response
   let bytes: ArrayBuffer
   try {
-    res = await fetch(sampleUrl(voice, stem, import.meta.env.BASE_URL, location.href))
+    res = await fetch(sampleUrl(voice, stem, import.meta.env?.BASE_URL ?? '/', location.href))
     bytes = await res.arrayBuffer()
   } catch (e) {
     throw new SampleError(voice, path, `not reachable (${errText(e)})`)
@@ -111,7 +117,8 @@ async function fetchSample(T: Tone, voice: Voice, stem: string): Promise<AudioBu
   }
 }
 
-/** A voice's samples by note, decoded once per session. A failed load is forgotten, so the next Play fetches again. */
+/** A voice's samples by note, decoded once per audio context. A failed load is forgotten, so the next Play fetches
+ *  again; a replaced context forgets them all. */
 const voices = new Map<Voice, Promise<Record<string, AudioBuffer>>>()
 function loadVoice(T: Tone, voice: Voice) {
   let p = voices.get(voice)
@@ -140,8 +147,12 @@ export function preloadTone(): Promise<Tone> {
 
 interface Lane { name: string; voice: Voice; gain: ToneNS.Gain; sampler: ToneNS.Sampler | null; on: boolean; level: number }
 
+/** For the tests: Tone (or a stand-in) and the clock limits. The app uses the defaults. */
+export interface PlayerOptions { tone?: () => Promise<Tone>; startWithin?: number; stallAfter?: number }
+
 export class PartsPlayer {
   private T: Tone | null = null
+  private opts: PlayerOptions
   private book: PlayBook
   private sorted: BarMap['bars']
   private lanes: Lane[] = []
@@ -151,7 +162,11 @@ export class PartsPlayer {
   private gen = 0
   private pace = 0.8
   private marked = 120
-  private pass: { startQ: number; endQ: number; ciTicks: number; ci: ReturnType<typeof countIn>; loop: boolean } | null = null
+  private pass: { startQ: number; endQ: number; ciTicks: number; ci: ReturnType<typeof countIn>; loop: boolean; startAt: number } | null = null
+  /** Set once the clock has moved after a start; from then on a still clock is a stop, not a slow start. */
+  private moving = false
+  private clock: ClockWatch
+  private faults = new Set<(e: Error) => void>()
   private raf = 0
   private pos: PlayPosition = { status: 'idle', bar: null, beat: 0, beats: 0, countBeat: 0 }
   private listeners = new Set<(p: PlayPosition) => void>()
@@ -161,10 +176,16 @@ export class PartsPlayer {
    *  as `window.__folioPlayer`). */
   readonly stats: { played: Record<string, number>; skipped: Record<string, number> } = { played: {}, skipped: {} }
 
-  constructor(book: PlayBook) {
+  constructor(book: PlayBook, opts: PlayerOptions = {}) {
     this.book = book
+    this.opts = opts
     this.sorted = sortedBars(book.map)
-    if (import.meta.env.DEV) (window as unknown as { __folioPlayer?: PartsPlayer }).__folioPlayer = this
+    this.clock = new ClockWatch(opts.stallAfter ?? STALL_MS)
+    if (import.meta.env?.DEV) (window as unknown as { __folioPlayer?: PartsPlayer }).__folioPlayer = this
+  }
+
+  private tone(): Promise<Tone> {
+    return this.opts.tone ? this.opts.tone() : preloadTone()
   }
 
   /** The audio clock and the transport, for checking timing in the dev build. */
@@ -173,7 +194,7 @@ export class PartsPlayer {
     if (!T) return null
     const tr = T.getTransport()
     return {
-      context: T.getContext().state, bpm: tr.bpm.value, loop: tr.loop, ticks: tr.ticks, state: tr.state,
+      context: T.getContext().state, now: T.immediate(), bpm: tr.bpm.value, loop: tr.loop, ticks: tr.ticks, state: tr.state,
       lanes: this.lanes.map(l => ({ name: l.name, voice: l.voice, on: l.on, gain: l.gain.gain.value, loaded: l.sampler?.loaded ?? false })),
     }
   }
@@ -184,6 +205,12 @@ export class PartsPlayer {
     this.listeners.add(fn)
     fn(this.pos)
     return () => { this.listeners.delete(fn) }
+  }
+
+  /** A problem found while playing, after Play's promise settled (the sound stopped). */
+  onFault(fn: (e: Error) => void) {
+    this.faults.add(fn)
+    return () => { this.faults.delete(fn) }
   }
 
   private emit(p: Partial<PlayPosition>) {
@@ -219,9 +246,9 @@ export class PartsPlayer {
 
   /** Audio must start inside the tap (iOS); everything else may wait. */
   private async ensure(): Promise<Tone> {
-    const T = await preloadTone()
-    if (!this.T) {
-      this.T = T
+    const T = await this.tone()
+    this.T = T
+    if (!this.master) {
       this.master = new T.Gain(0.9).toDestination()
       this.click = new T.Synth({ oscillator: { type: 'triangle' }, envelope: { attack: 0.001, decay: 0.06, sustain: 0, release: 0.03 }, volume: -6 }).connect(this.master)
       for (const t of this.book.tracks) {
@@ -260,15 +287,78 @@ export class PartsPlayer {
     return n ?? 'C4'
   }
 
-  /** Call from the tap: resumes audio at once, then loads what the first play needs and starts. */
+  /** Call from the tap: resumes audio at once, then loads what the first play needs and starts. Resolves once the audio
+   *  clock is seen moving; rejects with AudioStalled when it stands still and neither way back moves it. */
   play(req: PlayRequest): Promise<void> {
-    const started = this.T ? this.T.start() : preloadTone().then(T => T.start())
+    const started = this.T ? this.T.start() : this.tone().then(T => T.start())
     try {
-      const nav = navigator as Navigator & { audioSession?: { type: string } }
-      if (nav.audioSession) nav.audioSession.type = 'playback'   // iOS: sound with the silent switch on
+      // iOS: sound with the silent switch on, unless a voice take holds the session for the microphone.
+      const session = (navigator as Navigator & { audioSession?: { type: string } }).audioSession
+      const type = sessionForPlay(session?.type)
+      if (session && type) session.type = type
     } catch { /* not there */ }
     const gen = ++this.gen
-    return started.then(() => this.ensure()).then(T => { if (gen === this.gen) this.schedule(T, req) })
+    const live = () => gen === this.gen
+    const within = this.opts.startWithin ?? START_WITHIN_MS
+    // A resume that never answers (a wedged output) is not waited on: the clock check below finds it.
+    return settled(started, within).then(async () => {
+      if (!live()) return
+      const took = await startWithRevival({
+        start: async () => { const T = await this.ensure(); if (live()) this.schedule(T, req) },
+        moves: () => clockMoves(() => this.T?.immediate() ?? 0, within, () => !live()),
+        revive: [() => this.restartContext(), () => this.replaceContext()],
+        limit: within,
+        cancelled: () => !live(),
+      })
+      if (!live()) return
+      if (took < 0) { this.stop(); throw new AudioStalled() }
+      this.moving = true
+    })
+  }
+
+  /** The first way back: suspend and resume the same context, which starts its output again. */
+  private async restartContext() {
+    const T = this.T
+    if (!T) return
+    this.halt()
+    const raw = T.getContext().rawContext as unknown as { suspend?: () => Promise<void>; resume: () => Promise<void> }
+    await raw.suspend?.()
+    await raw.resume()
+  }
+
+  /** The second: a new context in place of the old one, its nodes and samples made again on it (`ensure`). */
+  private async replaceContext() {
+    const T = this.T
+    if (!T) return
+    this.halt()
+    this.teardown()
+    voices.clear()
+    const old = T.getContext()
+    T.setContext(new T.Context())
+    try { old.dispose() } catch { /* already closed */ }
+    await T.start()
+  }
+
+  /** The transport stopped and emptied, the lanes quiet; the play generation is kept (unlike `stop`). */
+  private halt() {
+    cancelAnimationFrame(this.raf)
+    const T = this.T
+    if (!T) return
+    const tr = T.getTransport()
+    tr.stop()
+    tr.cancel(0)
+    tr.loop = false
+    for (const l of this.lanes) l.sampler?.releaseAll()
+  }
+
+  /** The nodes on the current context, gone; `ensure` makes them again. */
+  private teardown() {
+    for (const l of this.lanes) { l.sampler?.dispose(); l.gain.dispose() }
+    this.lanes = []
+    this.click?.dispose()
+    this.click = null
+    this.master?.dispose()
+    this.master = null
   }
 
   private schedule(T: Tone, req: PlayRequest) {
@@ -292,7 +382,10 @@ export class PartsPlayer {
     const t0 = tempoAt(map, startQ)
     this.marked = t0.qpm
     tr.bpm.value = t0.qpm * this.pace
-    this.pass = { startQ, endQ, ciTicks, ci, loop: req.loop }
+    // Tone's '+0.05' counts from now(), which is the lookahead past the audio clock; the watch reads the clock itself.
+    const startAt = T.now() + 0.05
+    this.pass = { startQ, endQ, ciTicks, ci, loop: req.loop, startAt }
+    this.moving = false
 
     // The count-in: one bar of clicks in the start bar's meter, the first one higher.
     if (req.countIn) {
@@ -333,7 +426,7 @@ export class PartsPlayer {
       if (tr.loop) return
       window.setTimeout(() => { if (this.pass && !tr.loop) this.stop() }, Math.max(0, (time - T.immediate()) * 1000))
     }, `${endTick}i`)
-    tr.start('+0.05')
+    tr.start(startAt)
     this.emit({ status: req.countIn ? 'counting' : 'playing', bar: first.bar, beat: 1, beats: ci.beats, countBeat: req.countIn ? 1 : 0 })
     this.watch()
   }
@@ -345,10 +438,15 @@ export class PartsPlayer {
     if (!T || !this.pass) return
     const tr = T.getTransport()
     const PPQ = tr.PPQ
+    this.clock.reset()
     const frame = () => {
       const p = this.pass
-      if (!p || tr.state !== 'started') { this.raf = requestAnimationFrame(frame); return }
-      const ticks = tr.getTicksAtTime(T.immediate())
+      const now = T.immediate()
+      // Once the clock has moved, a clock that stands still again means the sound stopped: say so, do not wait.
+      if (this.clock.stalled(now, performance.now()) && this.moving) { this.stalled(); return }
+      // Before the start time the transport still holds the last pass's ticks (its position is set at the lookahead).
+      if (!p || tr.state !== 'started' || now < p.startAt) { this.raf = requestAnimationFrame(frame); return }
+      const ticks = tr.getTicksAtTime(now)
       if (ticks < p.ciTicks) {
         const b = Math.min(p.ci.beats, Math.floor(ticks / (p.ci.beatQ * PPQ)) + 1)
         const firstBar = barAtQ(this.sorted, p.startQ)
@@ -365,27 +463,24 @@ export class PartsPlayer {
     this.raf = requestAnimationFrame(frame)
   }
 
+  private stalled() {
+    this.stop()
+    const e = new AudioStalled(STOPPED_WHILE_PLAYING)
+    for (const fn of this.faults) fn(e)
+  }
+
   stop() {
     this.gen++
-    cancelAnimationFrame(this.raf)
-    const T = this.T
-    if (T) {
-      const tr = T.getTransport()
-      tr.stop()
-      tr.cancel(0)
-      tr.loop = false
-      for (const l of this.lanes) l.sampler?.releaseAll()
-    }
+    this.halt()
     this.pass = null
+    this.moving = false
     this.emit({ status: 'idle', bar: null, beat: 0, countBeat: 0 })
   }
 
   dispose() {
     this.stop()
-    for (const l of this.lanes) { l.sampler?.dispose(); l.gain.dispose() }
-    this.lanes = []
-    this.click?.dispose()
-    this.master?.dispose()
+    this.teardown()
     this.listeners.clear()
+    this.faults.clear()
   }
 }

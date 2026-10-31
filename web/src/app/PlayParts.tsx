@@ -11,6 +11,7 @@ import { IClose, IMinus, IPlay, IPlus, IRepeat, IStop } from './icons'
 import './play.css'
 import { PartsPlayer, countIn, loadBook, preloadTone, tempoAt, type PlayBook, type PlayPosition } from './player'
 import { SampleError } from './sounds'
+import { AudioStalled } from './audioClock'
 
 // ---------------------------------------------------------------- this device's practice state
 
@@ -113,6 +114,7 @@ export function PlayParts({ score, state, setState, ownPart, fromBar, onHead, on
       const p = new PartsPlayer(b)
       player.current = p
       p.subscribe(setPos)
+      p.onFault(e => setError(e.message))
     }).catch(() => { if (live) setError('Could not load this book’s playback. Check the connection and open the player again.') })
     return () => {
       live = false
@@ -152,9 +154,9 @@ export function PlayParts({ score, state, setState, ownPart, fromBar, onHead, on
     const p = player.current
     if (!p || !map) return
     setPick(null)
+    setError(null)   // a new try: the last problem's line goes while this one starts (or brings the sound back)
     p.play({ from: start, to: range?.to ?? null, loop: state.loop && !!range, countIn: state.countIn })
-      .then(() => setError(null))
-      .catch((e: unknown) => setError(e instanceof SampleError ? e.message
+      .catch((e: unknown) => setError(e instanceof SampleError || e instanceof AudioStalled ? e.message
         : `The sound could not start on this device (${e instanceof Error ? e.message || e.name : String(e)}). Tap Play again.`))
   }
   const stop = () => player.current?.stop()

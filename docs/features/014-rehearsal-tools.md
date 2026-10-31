@@ -97,6 +97,36 @@ not reachable (Load failed). Tap Play to try again."). Simulator after the fix: 
 2.5–17.9 s, 16 of 16 notes triggered through them, no errors; one sample removed from the bundle gives that message
 and no clicks. `tests/sounds.test.ts` covers the URL and the arrival rule.
 
+## Fixed (2026-10-31): every book stuck on the count-in's first beat
+
+CK on the iPad Pro (build b56597f): Op. 18 played, then PC3, then every book showed the count-in's first beat and never
+moved on, until the app was quit. The same state turned up in the simulator's long-running app (the acceptance run's
+process): Tone's context and its native context both said `running`, `currentTime` stood at 1063.57 s, and a brand-new
+`AudioContext` in the same page also stayed at 0 after `resume()`. The simulator log has the cause at that second: a
+CoreAudio device change in the GPU process ("AudioDeviceStop: no device with given ID", then "IO started 1 (err
+-66665)", stream format change pending), after which the output never pulled again. Nothing throws and no
+`statechange` fires, so `schedule()` drew count-in beat 1, `tr.start('+0.05')` waited for a time the clock never
+reached, and the panel's frame loop waited for the transport to say `started`. Tone keeps one global context for the
+session, so every later book met the same clock. What stopped the iPad's output is not known (a route or Bluetooth
+change, an interruption, a lock); PC3's load is not it (60 lanes, peak 28 sounding notes, against 7 for Op. 18).
+
+Fix (`audioClock.ts`, `player.ts`): every Play checks that the clock moves within 1.2 s of the start; a still clock is
+restarted (`suspend()` + `resume()` on the same context), then replaced (`Tone.setContext(new Tone.Context())`, the old
+one disposed, nodes and samples made again on the new one), each step given 1.2 s since a wedged output may never
+answer. If neither moves it, Play rejects with "The sound stopped on this device and did not come back. Close Folio,
+open it again and tap Play." A clock that stops while playing (1.5 s still) stops the player with "The sound stopped on
+this device. Tap Play to start it again." The frame loop reads the transport only from its start time (it used to show
+the last pass's bar for a frame, "Bar 21" before a Lied's count-in). Play now asks for the `playback` session only when
+the type is neither `playback` nor `play-and-record`, so it never takes the session from a voice take (54cfbe9).
+
+Evidence: `tests/player.test.ts` drives the real `PartsPlayer` on a stand-in Tone across two books; with the old start
+path the frozen-clock case holds count-in beat 1 and fails, with the fix book B plays on a new context. Simulator
+(fixed build, `currentTime` frozen on the live context through the inspector): Op. 18, then the Lied, then Op. 18 with
+the clock frozen: count-in on the old context for 2.4 s, then a new context, bars 243 → 247 rolling; frozen while
+playing: stopped with the message; every context frozen: the "did not come back" message after 3.9 s, Play works again
+once the clock runs. Not verified: the real device's trigger, and whether a restart or a new context brings its
+output back (in the simulator's real failure a new context did not move either, so there the message is the outcome).
+
 ## Not verified
 
 - Real iPad Safari: the audio unlock in the tap, the silent switch (`audioSession`), sample decoding memory, touch on
