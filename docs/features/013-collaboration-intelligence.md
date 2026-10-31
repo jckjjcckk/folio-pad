@@ -86,6 +86,15 @@ Done means: "Second violins, start at 34, skip 42 to 48" becomes a confirmed cut
   ghost at bar 42; Accept → one live row for Violin II. v21 on a string quartet → "sfz at 65" for everyone plus
   "Left out: Alto is not a part in this book"; Dismiss deletes. Not yet checked: a real microphone on the iPad
   (WKWebView's prompt, AudioWorklet from a blob URL), a player's stand receiving the accepted mark live.
+- Fixed 2026-10-31 (CK's iPad, build b56597f: "The microphone could not be opened.", no system prompt): WebKit
+  rejects getUserMedia with an InvalidStateError, before any permission request, while `navigator.audioSession.type`
+  is not 'auto' or 'play-and-record' (WebCore `MediaDevices.cpp`: "AudioSession category is not compatible with audio
+  capture."). Play the parts (014, `player.ts`) sets 'playback' so the instruments sound with the silent switch on,
+  and the type lasts for the page, so one Play anywhere closed the microphone until the app was quit. A take now sets
+  'play-and-record' synchronously before getUserMedia and puts the old type back when it lets go
+  (`holdAudioSessionForCapture` in `recorder.ts`, `web/tests/recorder.test.ts`). Every microphone failure shows the
+  exception's name in small print under the line and logs it as `[voice] microphone:`. Still open: Play pressed
+  during a take sets 'playback' again, which should cut the capture (not checked).
 
 ## Prompt v4d (2026-10-30)
 

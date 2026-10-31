@@ -12,9 +12,68 @@ export const MAX_SECONDS = 120
 export type MicProblem = 'denied' | 'unavailable' | 'failed'
 export class MicError extends Error {
   problem: MicProblem
-  constructor(problem: MicProblem, message: string) {
+  /** What the engine said, for the small print under the line and the console: the exception's name and message
+   *  ("InvalidStateError: AudioSession category is not compatible with audio capture."), so a report from the iPad
+   *  says which failure it was. Empty when there was no exception. */
+  code: string
+  constructor(problem: MicProblem, message: string, code = '') {
     super(message)
     this.problem = problem
+    this.code = code
+  }
+}
+
+/** An exception as one short line: its name, then its message when it has one, at most 120 characters. */
+export function describeError(e: unknown, where?: string): string {
+  const err = e as { name?: unknown; message?: unknown } | null
+  const name = typeof err?.name === 'string' && err.name ? err.name : typeof e === 'string' ? e : 'Error'
+  const msg = typeof err?.message === 'string' ? err.message.trim() : ''
+  const line = (where ? `${where} ` : '') + (msg && msg !== name ? `${name}: ${msg}` : name)
+  return line.length > 120 ? `${line.slice(0, 119)}…` : line
+}
+
+/** The part of `navigator` the audio session lives on (WebKit, Safari 16.4 and the iPad's WKWebView). */
+export interface AudioSessionHost { audioSession?: { type: string } }
+
+const CAPTURE_TYPES = new Set(['auto', 'play-and-record'])
+let holds = 0
+let restoreTo: string | null = null
+
+/**
+ * Make the page's audio session one that may record, for as long as a take holds it; the returned function lets go.
+ *
+ * WebKit refuses getUserMedia outright while `navigator.audioSession.type` is anything but 'auto' or 'play-and-record':
+ * an InvalidStateError ("AudioSession category is not compatible with audio capture.", WebCore MediaDevices.cpp), raised
+ * before the permission request, so the system's microphone prompt never shows. Play the parts sets 'playback' (sound
+ * with the silent switch on) and the type stays for the life of the page, so one Play anywhere in the app used to
+ * close the microphone until the app was quit. The type is set synchronously, before the first await, so it holds
+ * when getUserMedia checks it. The last take to let go puts back the type it found, unless something else (the
+ * player) has set its own type meanwhile.
+ */
+export function holdAudioSessionForCapture(host: AudioSessionHost | undefined = typeof navigator === 'undefined' ? undefined : navigator as AudioSessionHost): () => void {
+  const session = host?.audioSession
+  if (!session) return () => undefined
+  try {
+    // Checked on every take, not only the first: the player may have set its type while an earlier take was open.
+    const type = session.type
+    if (holds === 0) restoreTo = null
+    if (!CAPTURE_TYPES.has(type)) {
+      restoreTo = type
+      session.type = 'play-and-record'
+    }
+  } catch {
+    return () => undefined
+  }
+  holds++
+  let held = true
+  return () => {
+    if (!held) return
+    held = false
+    holds = Math.max(0, holds - 1)
+    if (holds > 0 || restoreTo == null) return
+    const back = restoreTo
+    restoreTo = null
+    try { if (session.type === 'play-and-record') session.type = back } catch { /* gone with the page */ }
   }
 }
 
@@ -57,12 +116,23 @@ const AudioCtx: Ctx | undefined = typeof window === 'undefined' ? undefined
   : window.AudioContext ?? (window as unknown as { webkitAudioContext?: Ctx }).webkitAudioContext
 
 /**
- * Open the microphone and start capturing. Call it straight from the pointer-down handler: the audio context is made
- * before the first await, inside the touch, which is what lets the iPad start it.
+ * Open the microphone and start capturing. Call it straight from the pointer-down handler: the audio session is set
+ * for capture and the audio context made before the first await, inside the touch, which is what lets the iPad start
+ * them; getUserMedia is called in the same turn. A failure is a MicError whose `code` names the exception.
  */
 export async function startRecording(opts: Options = {}): Promise<Recorder> {
-  if (!AudioCtx || !navigator.mediaDevices?.getUserMedia) throw new MicError('unavailable', 'This device has no microphone Folio can use.')
-  const ctx = new AudioCtx()
+  if (!AudioCtx || !navigator.mediaDevices?.getUserMedia) {
+    throw note(new MicError('unavailable', 'This device has no microphone Folio can use.', !AudioCtx ? 'no AudioContext' : 'no mediaDevices.getUserMedia'))
+  }
+  // Before anything else and before any await: getUserMedia below checks the session type synchronously.
+  const letGo = holdAudioSessionForCapture()
+  let ctx: AudioContext
+  try {
+    ctx = new AudioCtx()
+  } catch (e) {
+    letGo()
+    throw fail('audio context', e)
+  }
   void ctx.resume().catch(() => undefined)
 
   let stream: MediaStream
@@ -72,10 +142,12 @@ export async function startRecording(opts: Options = {}): Promise<Recorder> {
     })
   } catch (e) {
     void ctx.close().catch(() => undefined)
+    letGo()
     const name = (e as DOMException)?.name
-    if (name === 'NotAllowedError' || name === 'SecurityError') throw new MicError('denied', 'Folio is not allowed to use the microphone.')
-    if (name === 'NotFoundError' || name === 'OverconstrainedError') throw new MicError('unavailable', 'No microphone was found.')
-    throw new MicError('failed', 'The microphone could not be opened.')
+    const code = describeError(e)
+    if (name === 'NotAllowedError' || name === 'SecurityError') throw note(new MicError('denied', 'Folio is not allowed to use the microphone.', code))
+    if (name === 'NotFoundError' || name === 'OverconstrainedError') throw note(new MicError('unavailable', 'No microphone was found.', code))
+    throw note(new MicError('failed', 'The microphone could not be opened.', code))
   }
 
   const rate = ctx.sampleRate
@@ -108,6 +180,7 @@ export async function startRecording(opts: Options = {}): Promise<Recorder> {
     try { source?.disconnect(); node?.disconnect() } catch { /* already gone */ }
     stream.getTracks().forEach(t => t.stop())
     void ctx.close().catch(() => undefined)
+    letGo()
   }
 
   // From here on the microphone is open: anything that goes wrong lets it go before saying so.
@@ -137,14 +210,14 @@ export async function startRecording(opts: Options = {}): Promise<Recorder> {
     node.connect(mute)
     // The context was made inside the touch; once the stream is live, ask again in case the engine held it suspended.
     if (ctx.state !== 'running') await ctx.resume().catch(() => undefined)
-  } catch {
+  } catch (e) {
     release()
-    throw new MicError('failed', 'The microphone could not be opened.')
+    throw fail('audio graph', e)
   }
   // A context that will not run records silence: say so now rather than send an empty take.
   if ((ctx.state as string) !== 'running') {
     release()
-    throw new MicError('failed', 'The microphone did not start.')
+    throw note(new MicError('failed', 'The microphone did not start.', `audio context ${ctx.state}`))
   }
 
   return {
@@ -160,6 +233,13 @@ export async function startRecording(opts: Options = {}): Promise<Recorder> {
     },
   }
 }
+
+/** The failure in the console as well (Safari's Web Inspector on the iPad), where the whole exception can be read. */
+function note(err: MicError): MicError {
+  console.warn('[voice] microphone:', err.problem, err.code || '(no exception)')
+  return err
+}
+const fail = (where: string, e: unknown) => note(new MicError('failed', 'The microphone could not be opened.', describeError(e, `${where}:`)))
 
 /** Band-limited resampling (a Hann-windowed sinc, eight zero crossings of the low-pass each side), so a 48 kHz voice
  *  comes down to 16 kHz without folding its hiss into the speech band. The kernel is tabulated once per call at

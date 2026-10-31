@@ -94,6 +94,8 @@
 }
 .fo p.v-say { padding-right: 14px; }
 .fo .v-say.is-problem > span { flex: 1; min-width: 0; color: var(--fail); }
+/* What the engine said (the exception's name), under the musician's line: small print, so a report says which failure. */
+.fo .v-say-code { display: block; margin-top: 2px; font: 500 11px/1.3 var(--font-ui); color: var(--text-3); overflow-wrap: anywhere; }
 .fo .v-say-btn { flex: none; height: 36px; padding: 0 12px; border: 0; border-radius: 9px; background: var(--seg); font: 600 13px/1 var(--font-ui); color: var(--text); position: relative; }
 .fo .v-say-btn::after { content: ''; position: absolute; inset: -4px 0; }
 .fo .v-say-x { flex: none; display: inline-grid; place-items: center; width: 44px; height: 44px; border: 0; border-radius: 9px; background: transparent; color: var(--text-3); }

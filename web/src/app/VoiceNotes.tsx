@@ -4,7 +4,7 @@
  *  docs/design liquid_glass M5_GlassSurface (frost, rim, the lit-from-inside glow). The button's inside is PillStrands. */
 import { useEffect, useRef, useState, type KeyboardEvent as ReactKeyboardEvent, type PointerEvent as ReactPointerEvent } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
-import { startRecording, MicError, type Recorder } from '../lib/recorder'
+import { describeError, startRecording, MicError, type Recorder } from '../lib/recorder'
 import { tap } from '../lib/native'
 import { spanRects, type Geo } from './geometry'
 import { KindIcon } from './marks'
@@ -42,11 +42,14 @@ function GlassLayers() {
 
 type Mode = 'idle' | 'listening' | 'hint' | 'mic'
 
-const micWords = (e: unknown) => {
+/** The line a musician reads, and under it in small print what the engine said (the exception's name), so the next
+ *  report from a real iPad says which failure it was. */
+const micWords = (e: unknown): { say: string; code: string } => {
   const p = e instanceof MicError ? e.problem : 'failed'
-  return p === 'denied' ? 'The microphone is off for Folio. Turn it on in Settings.'
+  const say = p === 'denied' ? 'The microphone is off for Folio. Turn it on in Settings.'
     : p === 'unavailable' ? 'This device has no microphone Folio can use.'
       : 'The microphone could not be opened.'
+  return { say, code: e instanceof MicError ? e.code : describeError(e) }
 }
 
 /**
@@ -63,7 +66,7 @@ export function VoiceButton({ voice, reduced, lifted, under, onListening, onOpen
 }) {
   const [mode, setMode] = useState<Mode>('idle')
   const [sec, setSec] = useState(0)
-  const [micMsg, setMicMsg] = useState<string | null>(null)
+  const [micMsg, setMicMsg] = useState<{ say: string; code: string } | null>(null)
   /** The finished take whose words have left the button. */
   const [spent, setSpent] = useState<string | null>(null)
   const level = useRef(0)
@@ -151,7 +154,8 @@ export function VoiceButton({ voice, reduced, lifted, under, onListening, onOpen
   const onKeyDown = (e: ReactKeyboardEvent) => { if ((e.key === ' ' || e.key === 'Enter') && !e.repeat) { e.preventDefault(); begin() } }
   const onKeyUp = (e: ReactKeyboardEvent) => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); void end() } }
 
-  const line = mode === 'mic' ? micMsg : failed?.problem?.message ?? null
+  const line = mode === 'mic' ? micMsg?.say ?? null : failed?.problem?.message ?? null
+  const code = mode === 'mic' ? micMsg?.code || null : null
 
   return (
     <div className={`v-dock ${lifted ? 'is-lifted' : ''} ${under ? 'is-under' : ''}`} aria-hidden={under || undefined}>
@@ -165,7 +169,7 @@ export function VoiceButton({ voice, reduced, lifted, under, onListening, onOpen
         {line && mode !== 'hint' && (
           <motion.div key="err" className="v-say is-problem" role="alert"
             initial={{ opacity: 0, y: reduced ? 0 : 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.16 }}>
-            <span>{line}</span>
+            <span>{line}{code && <small className="v-say-code">{code}</small>}</span>
             {failed?.wav && <button type="button" className="v-say-btn" onClick={() => void voice.retry(failed.key)}>Send again</button>}
             {mode === 'mic' && <button type="button" className="v-say-btn" onClick={() => { setMicMsg(null); setMode('idle') }}>Try again</button>}
             {failed && <button type="button" className="v-say-x" aria-label="Put it away" onClick={() => voice.close(failed.key)}><IClose size={16} /></button>}
