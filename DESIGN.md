@@ -41,7 +41,7 @@ Only Muse's surfaces are glass (feature 013): the voice button, the proposal car
 
 ## Density
 
-Medium. Three horizontal bands at most: header (56 px), the work, the dock (ruler 60 to 72 px plus a row of 76 px, or 164 px tall in practice on wide landscape). No side rails. Panels (Markings, History, the library's information box) dock as a right column at 1100 px and wider and slide over the work below that. No modals anywhere; sheets close with ✕ or Escape or a tap outside.
+Medium. Three horizontal bands at most: header (56 px), the work, the dock (ruler 60 to 72 px plus a row of 76 px; Play the parts is about 240 px in two columns, the parts four lanes tall on the left, the ruler and transport on the right). No side rails. Panels (Markings, History, the library's information box) dock as a right column at 1100 px and wider and slide over the work below that. No modals anywhere; sheets close with ✕ or Escape or a tap outside.
 
 ## Signature move: one ruler, many jobs
 

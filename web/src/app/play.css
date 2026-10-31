@@ -1,8 +1,11 @@
 /* Play the parts (014, PlayParts.tsx): the instrument's panel at the foot of the Stand. The dark control surface of the
-   dock in both themes (DESIGN.md), the bar ruler on top, then the transport, the pace (the largest number), Loop and
-   Count-in, and a lane per part (on/off, volume). Touch targets 44 px and more; the play button 60 px tall. */
+   dock in both themes (DESIGN.md), in two columns (CK, 2026-10-31): the parts on the left, a list exactly four lanes
+   tall that scrolls inside (an orchestral book has 20 to 60 lanes; a quartet fills it), each lane one row (on/off,
+   volume); the deck on the right, the bar ruler on top and the transport, the pace (the largest number), Loop and
+   Count-in at its foot, level with the last lane. Below 720 px the deck stacks above the parts. Touch targets 44 px and
+   more; the play button 64 px tall, a lane 48. */
 
-.fo .stand-play { position: relative; z-index: 8; min-width: 0; }
+.fo .stand-play { position: relative; z-index: 8; min-width: 0; container: pp / inline-size; }
 
 .fo .pp {
   --pp-bg: var(--dk); --pp-raised: var(--dk-2); --pp-on: var(--dk-3);
@@ -13,7 +16,10 @@
   border-top: 1px solid var(--dk-rule);
   box-shadow: 0 -10px 30px rgba(28, 26, 22, 0.16);
   padding: 6px calc(16px + env(safe-area-inset-right)) calc(12px + env(safe-area-inset-bottom)) calc(16px + env(safe-area-inset-left));
+  display: grid; grid-template-columns: clamp(260px, 32%, 400px) minmax(0, 1fr); column-gap: 20px; row-gap: 12px;
 }
+.fo .pp-parts { grid-column: 1; grid-row: 1; min-width: 0; display: flex; flex-direction: column; }
+.fo .pp-deck { grid-column: 2; grid-row: 1; min-width: 0; display: flex; flex-direction: column; justify-content: space-between; gap: 6px; }
 @media (prefers-color-scheme: dark) {
   .fo:not([data-theme='light']) .pp { --pp-bg: var(--dk-2); --pp-raised: var(--dk-3); --pp-on: #4A463D; box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.45); }
 }
@@ -26,7 +32,7 @@
 .fo .pp-link { border: 0; background: none; padding: 12px 4px; margin: -12px -4px; font: inherit; font-weight: 600; color: var(--dk-ink); text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--dk-ink-3); }
 .fo .pp-close { flex: none; display: grid; place-items: center; width: 44px; height: 44px; margin-top: 8px; border: 0; border-radius: 12px; background: transparent; color: var(--dk-ink-2); }
 
-.fo .pp-body { display: flex; align-items: center; flex-wrap: wrap; gap: 12px 14px; margin-top: 6px; }
+.fo .pp-body { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
 
 /* the transport */
 .fo .pp-transport { flex: none; display: flex; align-items: center; gap: 12px; }
@@ -72,20 +78,57 @@
 .fo .pp-tog.is-on { background: var(--pp-on); color: var(--dk-ink); box-shadow: none; }
 .fo .pp-tog.is-on > small { color: var(--dk-ink-2); }
 
-/* a lane per part */
-.fo .pp-lanes { flex: 1 1 480px; min-width: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(124px, 1fr)); gap: 8px; }
-.fo .pp-lane { display: flex; flex-direction: column; border-radius: 12px; background: var(--pp-raised); padding: 2px 10px 4px; }
+/* the parts: a count, then a well of lanes four tall. The device's own lane is sticky at both edges, so it never scrolls
+   out of view; held at an edge (PlayParts measures when) it lifts onto the raised tone and shadows the lanes it covers.
+   A shade at an edge says there are more lanes that way (iOS shows no scrollbar until the list moves). */
+.fo .pp-parts-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; height: 22px; margin-top: 8px; padding: 0 2px 0 4px; }
+.fo .pp-count { font-size: 12px; color: var(--dk-ink-2); white-space: nowrap; }
+.fo .pp-count .num { color: var(--dk-ink); }
+.fo .pp-well { position: relative; margin-top: auto; border-radius: 12px; background: var(--pp-raised); overflow: hidden; }
+.fo .pp-well::before, .fo .pp-well::after {
+  content: ''; position: absolute; left: 0; right: 0; height: 18px; z-index: 2; pointer-events: none; opacity: 0;
+  transition: opacity 160ms var(--ease);
+}
+.fo .pp-well::before { top: 0; background: linear-gradient(to bottom, rgba(0, 0, 0, 0.42), transparent); }
+.fo .pp-well::after { bottom: 0; background: linear-gradient(to top, rgba(0, 0, 0, 0.42), transparent); }
+.fo .pp-well.is-more-up::before, .fo .pp-well.is-more-down::after { opacity: 1; }
+.fo .pp-lanes {
+  --lane-h: 48px;
+  position: relative; max-height: calc(4 * var(--lane-h)); overflow-y: auto; overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch; scrollbar-width: thin; scrollbar-color: var(--dk-ink-3) transparent;
+}
+.fo .pp-lane {
+  display: grid; grid-template-columns: minmax(0, 1fr) clamp(96px, 44%, 200px); align-items: center; column-gap: 10px;
+  height: var(--lane-h); padding: 0 12px; background: var(--pp-raised);
+}
+.fo .pp-lane + .pp-lane { border-top: 1px solid var(--dk-rule); }
+.fo .pp-lane.is-own { position: sticky; top: 0; bottom: 0; z-index: 1; transition: background-color 160ms var(--ease), box-shadow 160ms var(--ease); }
+.fo .pp-lane.is-held-top, .fo .pp-lane.is-held-bottom { background: var(--pp-on); border-color: transparent; }
+.fo .pp-lane.is-held-top { box-shadow: 0 10px 16px -8px rgba(0, 0, 0, 0.75); }
+.fo .pp-lane.is-held-bottom { box-shadow: 0 -10px 16px -8px rgba(0, 0, 0, 0.75); }
 .fo .pp-lane-name {
-  display: grid; grid-template-columns: 12px minmax(0, 1fr); column-gap: 8px; align-items: center; min-height: 44px; padding: 4px 0;
+  display: grid; grid-template-columns: 12px minmax(0, 1fr); column-gap: 10px; align-items: center; height: 100%; min-height: 44px; padding: 0;
   border: 0; background: transparent; color: var(--dk-ink-3); text-align: left;
 }
 .fo .pp-dot { grid-row: 1 / 3; width: 12px; height: 12px; border-radius: 50%; box-shadow: inset 0 0 0 1.5px var(--dk-ink-3); }
 .fo .pp-lane-t { font-size: 15px; font-weight: 600; line-height: 1.15; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-decoration: line-through; text-decoration-color: var(--dk-ink-3); }
-.fo .pp-lane-name small { font-size: 11px; line-height: 1.2; color: var(--dk-ink-3); }
+.fo .pp-lane-name small { font-size: 11px; line-height: 1.2; color: var(--dk-ink-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .fo .pp-lane.is-on .pp-lane-name { color: var(--dk-ink); }
 .fo .pp-lane.is-on .pp-lane-t { text-decoration: none; }
 .fo .pp-lane.is-on .pp-dot { background: var(--dk-ink); box-shadow: none; }
 .fo .pp-lane.is-on .pp-lane-name small { color: var(--dk-ink-2); }
+
+/* Narrower than a wide landscape panel: Loop and Count-in sit side by side on their own line under Play and the pace.
+   Narrower still (a phone, a split view, a half-width Mac window): one column, the deck above the parts. */
+@container pp (width < 920px) {
+  .fo .pp-opts { flex-direction: row; }
+}
+@container pp (width < 720px) {
+  .fo .pp { grid-template-columns: minmax(0, 1fr); }
+  .fo .pp-deck { grid-column: 1; grid-row: 1; }
+  .fo .pp-parts { grid-column: 1; grid-row: 2; }
+  .fo .pp-parts-head { margin-top: 0; }
+}
 
 /* the volume: a thin track and a 26 px thumb, 36 px tall to grab */
 .fo .pp-gain { -webkit-appearance: none; appearance: none; width: 100%; height: 36px; margin: 0; background: transparent; touch-action: pan-y; accent-color: var(--dk-ink); }

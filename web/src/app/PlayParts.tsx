@@ -1,9 +1,12 @@
 /** Play the parts (014): the Stand's player. CK's musician's workflow: choose which parts sound (your own part off),
  *  set a pace, play; one bar is counted in, in the score's meter; a passage loops. The panel is the instrument's dark
- *  surface at the foot of the Stand (DESIGN.md: the dock "grows into the instrument's panel"), with the bar ruler on top:
- *  tap two bars on it to choose a passage (or use Loop from here on a bar), drag the bracket ends to adjust. The pace is
- *  the largest number. Everything here is this device's own state (localStorage), never a mark. */
-import { useEffect, useMemo, useRef, useState, type ButtonHTMLAttributes, type ReactNode } from 'react'
+ *  surface at the foot of the Stand (DESIGN.md: the dock "grows into the instrument's panel"), in two columns (CK,
+ *  2026-10-31): on the left the parts, a list four lanes tall that scrolls inside (an orchestral book has 20 to 60
+ *  lanes), the device's own part held in view at either edge; on the right the deck, the bar ruler on top (tap two bars
+ *  on it to choose a passage, or use Loop from here on a bar; drag the bracket ends to adjust), then Play, the bar, the
+ *  pace (the largest number), Loop and Count-in. Narrow, the deck stacks above the parts. Everything here is this
+ *  device's own state (localStorage), never a mark. */
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ButtonHTMLAttributes, type ReactNode } from 'react'
 import type { Score } from '../mock'
 import { Ruler } from './Ruler'
 import { barRange, type Span } from './store'
@@ -194,6 +197,21 @@ export function PlayParts({ score, state, setState, ownPart, fromBar, onHead, on
     setPick(null)
   }
 
+  // The lane list is four lanes tall and scrolls inside (play.css). The device's own lane is sticky at both edges, so
+  // it stays in view in its score order; this measures when it is held at an edge (it lifts and shadows the lanes it
+  // covers) and when there are more lanes above or below (a shade at that edge).
+  const [list, setList] = useState<HTMLUListElement | null>(null)
+  const [edge, setEdge] = useState<ListEdge>(NO_EDGE)
+  useLayoutEffect(() => {
+    if (!list) return
+    const measure = () => setEdge(e => { const n = listEdge(list); return e.up === n.up && e.down === n.down && e.held === n.held ? e : n })
+    measure()
+    const ro = new ResizeObserver(measure)
+    ro.observe(list)
+    list.addEventListener('scroll', measure, { passive: true })
+    return () => { ro.disconnect(); list.removeEventListener('scroll', measure) }
+  }, [list, parts.length, ownPart])
+
   const tempo = map ? tempoAt(map, barOfStart(map, start)) : null
   const glyph = tempo ? BEAT_GLYPH[tempo.beat] ?? '♩' : '♩'
   const nowBpm = tempo ? Math.round(tempo.bpm * state.pace) : null
@@ -215,102 +233,133 @@ export function PlayParts({ score, state, setState, ownPart, fromBar, onHead, on
   const hint = pick != null ? `From bar ${pick}. Tap the last bar.`
     : range ? null : 'Tap two bars on the ruler to choose a passage.'
 
+  const sounding = parts.filter(n => !off.has(n)).length
+
+  // The deck comes first in the DOM (Play is reached before sixty lanes); the grid draws it on the right.
   return (
     <section className="pp" aria-label="Play the parts">
-      <div className="pp-head">
-        <div className="pp-ruler">
-        {map && (
-          <Ruler
-            total={order.length} span={rulerSpan} mode={pick != null || !range ? 'none' : 'range'} spanLabel="Passage"
-            onSpan={s => setRange({ from: order[s.from - 1], to: order[s.to - 1] })}
-            onSeek={onRulerTap} playhead={head} compact labelOf={k => order[k - 1] ?? k}
-            label={`Bar ruler, bars ${order[0]} to ${order[order.length - 1]}. Tap two bars to choose a passage; drag its ends to change it.`}
-          />
-        )}
-        <p className={`pp-hint ${error ? 'is-error' : ''}`} role={error ? 'alert' : undefined}>
-          {error ?? hint ?? (range && <>Bars <span className="num">{barRange(range.from, range.to)}</span>{state.loop ? ', looping' : ', once'} · <button type="button" className="pp-link" onClick={() => setRange(null)}>Whole piece</button></>)}
-        </p>
+      <div className="pp-deck">
+        <div className="pp-head">
+          <div className="pp-ruler">
+          {map && (
+            <Ruler
+              total={order.length} span={rulerSpan} mode={pick != null || !range ? 'none' : 'range'} spanLabel="Passage"
+              onSpan={s => setRange({ from: order[s.from - 1], to: order[s.to - 1] })}
+              onSeek={onRulerTap} playhead={head} labelOf={k => order[k - 1] ?? k}
+              label={`Bar ruler, bars ${order[0]} to ${order[order.length - 1]}. Tap two bars to choose a passage; drag its ends to change it.`}
+            />
+          )}
+          <p className={`pp-hint ${error ? 'is-error' : ''}`} role={error ? 'alert' : undefined}>
+            {error ?? hint ?? (range && <>Bars <span className="num">{barRange(range.from, range.to)}</span>{state.loop ? ', looping' : ', once'} · <button type="button" className="pp-link" onClick={() => setRange(null)}>Whole piece</button></>)}
+          </p>
+          </div>
+          <button type="button" className="pp-close" onClick={() => { stop(); onClose() }} aria-label="Close the player"><IClose size={20} /></button>
         </div>
-        <button type="button" className="pp-close" onClick={() => { stop(); onClose() }} aria-label="Close the player"><IClose size={20} /></button>
+
+        <div className="pp-body">
+          <div className="pp-transport">
+            <button type="button" className={`pp-play ${playing ? 'is-on' : ''}`} onClick={toggle} disabled={!book}
+              aria-label={playing ? 'Stop' : pos.status === 'loading' ? 'Loading the sounds' : 'Play'} aria-keyshortcuts="Space">
+              {playing ? <IStop size={28} /> : <IPlay size={28} />}
+              <span>{playing ? 'Stop' : pos.status === 'loading' ? 'Loading' : 'Play'}</span>
+            </button>
+            <div className="pp-pos" aria-live="off">
+              {pos.status === 'counting' ? (
+                <>
+                  <span className="pp-k">Count-in</span>
+                  <span className="pp-beats" aria-label={`Count-in, beat ${pos.countBeat} of ${pos.beats}`}>
+                    {Array.from({ length: pos.beats }, (_, i) => <span key={i} className={`pp-beat ${i < pos.countBeat ? 'is-on' : ''}`} />)}
+                  </span>
+                </>
+              ) : (
+                <>
+                  <span className="pp-k">{playing ? 'Bar' : range ? 'Passage' : 'From bar'}</span>
+                  <span className="pp-bar num">{playing && pos.bar != null ? pos.bar : range ? barRange(range.from, range.to) : start}</span>
+                </>
+              )}
+            </div>
+          </div>
+
+          <div className="pp-pace" role="group" aria-label="Pace">
+            <Repeat className="pp-step" onStep={() => setState(s => ({ ...s, pace: clampPace(s.pace - 0.05) }))} aria-label="Slower, 5 percent" disabled={state.pace <= PACE_MIN}>
+              <IMinus size={22} />
+            </Repeat>
+            <div className="pp-pace-read">
+              <output className="pp-pct num" aria-label={`Pace ${pct} percent`}>{pct}<small>%</small></output>
+              <span className="pp-tempo">
+                <span className="pp-glyph" aria-hidden="true">{glyph}</span> = <span className="num">{nowBpm ?? '–'}</span>
+                <span className="pp-of"> of <span className="num">{tempo ? Math.round(tempo.bpm) : '–'}</span>{tempo && !tempo.marked ? ', none printed' : ''}</span>
+              </span>
+            </div>
+            <Repeat className="pp-step" onStep={() => setState(s => ({ ...s, pace: clampPace(s.pace + 0.05) }))} aria-label="Faster, 5 percent" disabled={state.pace >= PACE_MAX}>
+              <IPlus size={22} />
+            </Repeat>
+          </div>
+
+          <div className="pp-opts">
+            <button type="button" className={`pp-tog ${state.loop ? 'is-on' : ''}`} aria-pressed={state.loop} onClick={() => setState(s => ({ ...s, loop: !s.loop }))}
+              title={range ? undefined : 'Choose a passage to loop it'}>
+              <IRepeat size={20} /><span>Loop</span><small>{!range ? 'a passage' : state.loop ? 'On' : 'Off'}</small>
+            </button>
+            <button type="button" className={`pp-tog ${state.countIn ? 'is-on' : ''}`} aria-pressed={state.countIn} onClick={() => setState(s => ({ ...s, countIn: !s.countIn }))}>
+              <span className="pp-tog-n num" aria-hidden="true">{ci ? ci.meter : '1'}</span><span>Count-in</span><small>{state.countIn ? 'One bar' : 'Off'}</small>
+            </button>
+          </div>
+        </div>
       </div>
 
-      <div className="pp-body">
-        <div className="pp-transport">
-          <button type="button" className={`pp-play ${playing ? 'is-on' : ''}`} onClick={toggle} disabled={!book}
-            aria-label={playing ? 'Stop' : pos.status === 'loading' ? 'Loading the sounds' : 'Play'} aria-keyshortcuts="Space">
-            {playing ? <IStop size={28} /> : <IPlay size={28} />}
-            <span>{playing ? 'Stop' : pos.status === 'loading' ? 'Loading' : 'Play'}</span>
-          </button>
-          <div className="pp-pos" aria-live="off">
-            {pos.status === 'counting' ? (
-              <>
-                <span className="pp-k">Count-in</span>
-                <span className="pp-beats" aria-label={`Count-in, beat ${pos.countBeat} of ${pos.beats}`}>
-                  {Array.from({ length: pos.beats }, (_, i) => <span key={i} className={`pp-beat ${i < pos.countBeat ? 'is-on' : ''}`} />)}
-                </span>
-              </>
-            ) : (
-              <>
-                <span className="pp-k">{playing ? 'Bar' : range ? 'Passage' : 'From bar'}</span>
-                <span className="pp-bar num">{playing && pos.bar != null ? pos.bar : range ? barRange(range.from, range.to) : start}</span>
-              </>
-            )}
-          </div>
+      <div className="pp-parts">
+        <p className="pp-parts-head">
+          <span className="pp-k">Parts</span>
+          <span className="pp-count"><span className="num">{sounding}</span> of <span className="num">{parts.length}</span> sounding</span>
+        </p>
+        <div className={`pp-well ${edge.up && edge.held !== 'top' ? 'is-more-up' : ''} ${edge.down && edge.held !== 'bottom' ? 'is-more-down' : ''}`}>
+          <ul className="pp-lanes" aria-label="Parts" ref={setList}>
+            {parts.map(name => {
+              const on = !off.has(name)
+              const g = gainOf(name)
+              const own = name === ownPart
+              return (
+                <li key={name} className={`pp-lane ${on ? 'is-on' : ''} ${own ? 'is-own' : ''} ${own && edge.held ? `is-held-${edge.held}` : ''}`}>
+                  <button type="button" className="pp-lane-name" aria-pressed={on}
+                    onClick={() => setState(s => {
+                      const was = new Set(s.off ?? [...off])
+                      if (was.has(name)) was.delete(name); else was.add(name)
+                      return { ...s, off: [...was] }
+                    })}>
+                    <span className="pp-dot" aria-hidden="true" />
+                    <span className="pp-lane-t">{name}</span>
+                    <small>{on ? (own ? 'Yours, sounding' : 'Sounding') : own ? 'Yours, silent' : 'Silent'}</small>
+                  </button>
+                  <input type="range" className="pp-gain" min={0} max={100} step={1} value={Math.round(g * 100)} disabled={!on}
+                    aria-label={`${name} volume`} aria-valuetext={`${Math.round(g * 100)} percent`}
+                    onChange={e => { const v = Number(e.target.value) / 100; setState(s => ({ ...s, gain: { ...s.gain, [name]: v } })) }} />
+                </li>
+              )
+            })}
+          </ul>
         </div>
-
-        <div className="pp-pace" role="group" aria-label="Pace">
-          <Repeat className="pp-step" onStep={() => setState(s => ({ ...s, pace: clampPace(s.pace - 0.05) }))} aria-label="Slower, 5 percent" disabled={state.pace <= PACE_MIN}>
-            <IMinus size={22} />
-          </Repeat>
-          <div className="pp-pace-read">
-            <output className="pp-pct num" aria-label={`Pace ${pct} percent`}>{pct}<small>%</small></output>
-            <span className="pp-tempo">
-              <span className="pp-glyph" aria-hidden="true">{glyph}</span> = <span className="num">{nowBpm ?? '–'}</span>
-              <span className="pp-of"> of <span className="num">{tempo ? Math.round(tempo.bpm) : '–'}</span>{tempo && !tempo.marked ? ', none printed' : ''}</span>
-            </span>
-          </div>
-          <Repeat className="pp-step" onStep={() => setState(s => ({ ...s, pace: clampPace(s.pace + 0.05) }))} aria-label="Faster, 5 percent" disabled={state.pace >= PACE_MAX}>
-            <IPlus size={22} />
-          </Repeat>
-        </div>
-
-        <div className="pp-opts">
-          <button type="button" className={`pp-tog ${state.loop ? 'is-on' : ''}`} aria-pressed={state.loop} onClick={() => setState(s => ({ ...s, loop: !s.loop }))}
-            title={range ? undefined : 'Choose a passage to loop it'}>
-            <IRepeat size={20} /><span>Loop</span><small>{!range ? 'a passage' : state.loop ? 'On' : 'Off'}</small>
-          </button>
-          <button type="button" className={`pp-tog ${state.countIn ? 'is-on' : ''}`} aria-pressed={state.countIn} onClick={() => setState(s => ({ ...s, countIn: !s.countIn }))}>
-            <span className="pp-tog-n num" aria-hidden="true">{ci ? ci.meter : '1'}</span><span>Count-in</span><small>{state.countIn ? 'One bar' : 'Off'}</small>
-          </button>
-        </div>
-
-        <ul className="pp-lanes" aria-label="Parts">
-          {parts.map(name => {
-            const on = !off.has(name)
-            const g = gainOf(name)
-            return (
-              <li key={name} className={`pp-lane ${on ? 'is-on' : ''}`}>
-                <button type="button" className="pp-lane-name" aria-pressed={on}
-                  onClick={() => setState(s => {
-                    const was = new Set(s.off ?? [...off])
-                    if (was.has(name)) was.delete(name); else was.add(name)
-                    return { ...s, off: [...was] }
-                  })}>
-                  <span className="pp-dot" aria-hidden="true" />
-                  <span className="pp-lane-t">{name}</span>
-                  <small>{on ? (name === ownPart ? 'Yours, sounding' : 'Sounding') : name === ownPart ? 'Yours, silent' : 'Silent'}</small>
-                </button>
-                <input type="range" className="pp-gain" min={0} max={100} step={1} value={Math.round(g * 100)} disabled={!on}
-                  aria-label={`${name} volume`} aria-valuetext={`${Math.round(g * 100)} percent`}
-                  onChange={e => { const v = Number(e.target.value) / 100; setState(s => ({ ...s, gain: { ...s.gain, [name]: v } })) }} />
-              </li>
-            )
-          })}
-        </ul>
-
       </div>
     </section>
   )
+}
+
+interface ListEdge { up: boolean; down: boolean; held: 'top' | 'bottom' | null }
+const NO_EDGE: ListEdge = { up: false, down: false, held: null }
+
+/** Where the lane list stands: more lanes above or below, and whether the own lane (sticky at both edges) is held at
+ *  one of them rather than sitting in its score order. Its neighbour above is not sticky, so it says where it belongs. */
+function listEdge(ul: HTMLElement): ListEdge {
+  const t = ul.scrollTop, view = ul.clientHeight
+  const edge: ListEdge = { up: t > 1, down: t + view < ul.scrollHeight - 1, held: null }
+  const own = ul.querySelector<HTMLElement>('.pp-lane.is-own')
+  if (own) {
+    const prev = own.previousElementSibling as HTMLElement | null
+    const natural = prev ? prev.offsetTop + prev.offsetHeight : 0
+    if (natural < t - 0.5) edge.held = 'top'
+    else if (natural + own.offsetHeight > t + view + 0.5) edge.held = 'bottom'
+  }
+  return edge
 }
 
 const barOfStart = (map: PlayBook['map'], bar: number) => map.bars.find(b => b.bar === bar)?.at ?? 0

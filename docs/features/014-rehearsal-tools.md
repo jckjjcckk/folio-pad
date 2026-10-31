@@ -62,10 +62,11 @@ Web:
 - `web/src/app/PlayParts.tsx` + `play.css`: the panel at the foot of the Stand, opened from the "…" menu ("Play the
   parts", a checkbox item) or by **Loop from here** on a bar (which now opens the player on that passage, the
   passage's length kept, else 4 bars, looping, instead of going to the practice mock). Graphite instrument surface in
-  both themes: the bar ruler on top (tap two bars to choose a passage, drag the bracket ends to change it, "Whole
-  piece" to clear; the playhead rides it), Play/Stop (64 px), the bar and count-in beats, the pace −/+ in 5 % steps
-  (30–150 %, default 80 %, the largest number) with "♩ = 106 of 132", Loop and Count-in toggles, and a lane per part
-  (on/off, volume). The device's own part (the reader's seat in the group) starts off. On the pages: the passage as a
+  both themes, in two columns (see "Layout" below): on the left the parts, a lane per part (on/off, volume) in a list
+  four lanes tall; on the right the deck, the bar ruler on top (tap two bars to choose a passage, drag the bracket ends
+  to change it, "Whole piece" to clear; the playhead rides it), then Play/Stop (64 px), the bar and count-in beats, the
+  pace −/+ in 5 % steps (30–150 %, default 80 %, the largest number) with "♩ = 106 of 132", Loop and Count-in
+  toggles. The device's own part (the reader's seat in the group) starts off. On the pages: the passage as a
   wash, the playing bar outlined in the page's own ink (light, dimmed and inverted pages), and the spread follows the
   playing bar. Pace, mix, loop and passage are this device's (`localStorage` `folio.play:{score_id}`), never a mark.
   A scanned book's panel says "Convert to Digital to play it"; a digital book imported before today says to import
@@ -126,6 +127,41 @@ the clock frozen: count-in on the old context for 2.4 s, then a new context, bar
 playing: stopped with the message; every context frozen: the "did not come back" message after 3.9 s, Play works again
 once the clock runs. Not verified: the real device's trigger, and whether a restart or a new context brings its
 output back (in the simulator's real failure a new context did not move either, so there the message is the outcome).
+
+## Layout (2026-10-31): the parts in a list four lanes tall, the transport beside it
+
+CK: "a scrollable list on the left for different parts, with only 4 instruments' height, and put the bar / speed /
+controls on the right." The panel stacked a lane card per part under the transport, which is fine for a quartet and
+unusable for an orchestral book (PC3 came out with 60 lanes, about 1,100 px of cards). Now (`PlayParts.tsx`,
+`play.css`):
+
+- Two columns, one grid: the parts on the left (`clamp(260px, 32%, 400px)`), the deck on the right. The deck comes
+  first in the DOM, so Play is reached before sixty lanes by keyboard and VoiceOver; the grid draws it on the right.
+- The parts: a count ("3 of 4 sounding", "59 of 60 sounding") over a well of lanes, each lane one 48 px row (the
+  Sounding/Silent toggle with its dot and name, the volume fader beside it). The well is exactly four lanes tall
+  (`max-height: 4 × 48 px`) and scrolls inside (`overscroll-behavior: contain`, the fader keeps `touch-action:
+  pan-y` so a vertical drag on it scrolls the list). A quartet fills it; a duo or a solo book hugs its rows.
+- The device's own lane is `position: sticky` at both edges of the list, so it never scrolls out of view and keeps
+  its place in score order. When it is held at an edge instead of sitting in its place, it lifts onto the raised tone
+  and shadows the lanes it covers (`is-held-top`/`is-held-bottom`, measured from its neighbour above, which is not
+  sticky). A shade at the top or bottom edge says there are more lanes that way, since iOS draws no scrollbar until the
+  list moves (`is-more-up`/`is-more-down`; the shade is left off an edge where the own lane is held).
+- The deck: the ruler (now the full 72 px height, a larger target for choosing a passage) and its hint or error line
+  on top, the close button beside it; Play and the bar, the pace, Loop and Count-in at its foot, level with the last
+  lane (`justify-content: space-between`). The error line and the "sound stopped" messages are the same line as before.
+- Container queries on `.stand-play` (`container: pp`): below 920 px Loop and Count-in sit side by side on their own
+  line (iPad portrait); below 720 px the deck stacks above the parts (a split view, a half-width Mac window).
+- Height: about 240 px plus the safe area in every book. Before, a quartet's panel was a little shorter on a wide
+  landscape iPad (its four lane cards sat beside the transport) and PC3's ran past 1,000 px.
+
+Verified in the iPad Air 11" simulator (build at this commit against the stable API, signed in as admin1): Op. 18 (4
+lanes, fills the well exactly) and PC3 (60 lanes: "60 of 60 sounding", four lanes, the bottom shade; scrolled, both
+shades) in portrait (820 pt) and landscape (1180 pt); a lane toggled off and on (count 59 then 60); Play on PC3 counted
+in and ran to bar 4 with the playhead on the ruler, then Stop. The own lane's sticky edges were checked on the site's
+replay of this panel (the same CSS and measuring code) with a temporary 14-lane list: held at the bottom at scroll 0,
+in place at 100, held at the top at 240 and 480, shades as expected; admin1 has no seat in the group's books, so the
+app showed no own lane. Not checked at 1024 or 1366 px on a device (by the numbers: one row of controls at 920 px
+container and wider, the opts beside it).
 
 ## Not verified
 
