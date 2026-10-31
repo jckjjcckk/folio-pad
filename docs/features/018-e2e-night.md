@@ -18,8 +18,9 @@ Harness: `api/experiments/e2e_night/` (`book.py` import, wait, answer, cut, conv
 `live_index.py`; `realtime_listen.mjs`; `setup_group.py`; `local_job.py`). Results per book in `results/*.json`,
 every model call in `spend.jsonl` (copied from `usage_events`, by event id, under the book its job worked on).
 
-**Fixes on main, verified before yoga moves.** Reading, cutting, converting and importing run on yoga, which stays at
-0fca589. `local_job.py` runs one such job on main's code in this process against the same hosted project: the row
+**Fixes on main, verified before yoga moves.** Reading, cutting, converting and importing run on yoga, which stayed at
+0fca589 for the night (moved to b56597f on 2026-10-31 morning; on it the Goldberg split asked one question and
+finished in about a minute). `local_job.py` runs one such job on main's code in this process against the same hosted project: the row
 goes in `running` (claim_job takes only `queued`) with the payload the API would give it, and `worker.run_one` runs
 it here, the box reached over ssh. The first three local runs went to Claude by mistake (the Mac's `api/.env` says
 `LLM_PROVIDER=anthropic`; yoga says `meta`): $4.00 of Claude, two Goldberg cuts and one Moscheles convert. The runner

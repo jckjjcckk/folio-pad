@@ -1,6 +1,6 @@
 # 017 Demo plan and hackathon submission
 
-Status: designed (script written; nothing recorded; not deployed) | Meta models: all three on screen: SAM 3.1 (named; optional system crops), Muse Spark 1.3 (librarian labels, part cut, voice proposals), Muse Voice Transcribe (spoken notes).
+Status: designed (script written; nothing recorded; not deployed) | Meta models: Muse Spark 1.3 (librarian labels, part cut, voice proposals) and Muse Voice Transcribe (spoken notes) on screen; SAM 3.1 named only as tried first (it lost the tap test to OpenCV geometry, 003) and is not in the product.
 
 ## What the judges see
 
@@ -18,7 +18,7 @@ same accuracy at a tenth of the cost; both numbers published, Claude through the
 | Time | Scene | Proves |
 |---|---|---|
 | 0:00 to 0:20 | A rehearsal goes wrong because parts disagree | Real problem |
-| 0:20 to 0:55 | Folio imports and prepares the score (Path B photos → pages, parts, difficulty) | Intelligent automation (SAM 3.1 + Spark) |
+| 0:20 to 0:55 | Folio imports and prepares the score (Path B photos → pages, parts, difficulty) | Intelligent automation (OpenCV geometry + Spark) |
 | 0:55 to 1:25 | The agent detects an ambiguous staff, asks the admin, resolves it, continues | Distinctive Meta AI use, honest |
 | 1:25 to 2:15 | Admin makes a cut and speaks an instruction; confirms the proposal; players' stands update | The wow moment (Realtime + Voice Transcribe + Spark) |
 | 2:15 to 2:40 | Pianist practises the corrected passage: loop, tempo, other parts | Continuing usefulness |
