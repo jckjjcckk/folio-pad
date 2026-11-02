@@ -6,6 +6,7 @@ may touch and what it must write. Handlers for the intelligence thread live besi
 from __future__ import annotations
 
 import base64
+import logging
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
@@ -15,6 +16,9 @@ from ..db import db as _db
 from ..llm import Completion, complete as _complete
 from ..auth import User, load_user
 from ..spend import Charge, charge as _charge
+from ..tiers import DEFAULT_TIER, model_name, tier_of
+
+log = logging.getLogger("folio.librarian")
 
 
 @dataclass(frozen=True)
@@ -36,6 +40,7 @@ class Job:
 class JobContext:
     job: Job
     result: dict[str, Any] = field(default_factory=dict)
+    _model_tier: str | None = field(default=None, repr=False, compare=False)
 
     @property
     def db(self):
@@ -44,6 +49,26 @@ class JobContext:
     @property
     def user(self) -> User | None:
         return load_user(self.job.created_by) if self.job.created_by else None
+
+    @property
+    def model_tier(self) -> str:
+        """The job's user's `profiles.model_tier`, read once per job. Standard (non-training) when the job has no
+        user, the column is not there yet (migration not applied) or the read fails."""
+        if self._model_tier is None:
+            tier = DEFAULT_TIER
+            if self.job.created_by:
+                try:
+                    rows = self.db.table("profiles").select("*").eq("id", self.job.created_by).limit(1).execute().data or []
+                    tier = tier_of(rows[0].get("model_tier")) if rows else DEFAULT_TIER
+                except Exception as e:  # noqa: BLE001  (the privacy-preserving tier is the fallback)
+                    log.warning("job %s: model tier not read, standard: %s", self.job.id, e)
+            self._model_tier = tier
+        return self._model_tier
+
+    @property
+    def model(self) -> str:
+        """The Spark model every call of this job uses: the user's tier (`tiers.model_name`)."""
+        return model_name(self.model_tier)
 
     async def progress(self, fraction: float, note: str | None = None) -> None:
         if note:
@@ -57,6 +82,7 @@ class JobContext:
         return _charge(u, c, job_id=self.job.id) if u else {}
 
     async def complete(self, user_text: str, **kw) -> Completion:
+        kw.setdefault("model", self.model)
         c = await _complete(user_text, **kw)
         self.charge(c.charge)
         return c

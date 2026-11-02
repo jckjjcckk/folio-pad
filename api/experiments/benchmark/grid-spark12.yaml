@@ -1,0 +1,11 @@
+# Spark 1.2 vs 1.3 on the routes Folio uses Spark for (2026-11-01, Discord: "1.3 not fully supported for audio").
+# Product efforts: labels (part cut) and text (convert reread) minimal on chat completions; header and closed low.
+# Run one slice per task with --only so each task gets only the product's effort.
+name: spark12-vs-13-2026-11-01
+corpus: corpus/manifest.yaml
+tasks: [header, labels, text, closed]
+models: [muse-spark-1.2, muse-spark-1.3]
+efforts: [minimal, low]
+resolutions: [150dpi]
+max_tokens: 16000
+concurrency: {meta: 4}

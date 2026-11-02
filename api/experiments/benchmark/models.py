@@ -1,7 +1,7 @@
 """One image + text call to Muse Spark (Meta) or Claude (Anthropic) through the Anthropic SDK, the way
 app/llm.py and app/librarian/part_cut.py call them: the same request shape for both providers (system,
 one user turn with the image first, output_config.effort), Spark pointed at Meta's base URL without its /v1.
-Prices come from app.llm.PRICES. The answer is parsed with app.librarian.header.parse_json (the stray-token
+Prices come from app.llm.PRICES, plus the Claude rates kept here. The answer is parsed with app.librarian.header.parse_json (the stray-token
 repair); a reply cut off at max_tokens or one that does not parse is asked once more (every attempt charged),
 like the product's ask_model. Claude refusals (stop_reason "refusal") are recorded, never retried.
 """
@@ -16,7 +16,21 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from app.librarian.header import parse_json
-from app.llm import price
+from decimal import Decimal
+
+from app.llm import PRICES, price as _price
+
+# The product prices only Meta models now (app.llm.PRICES). The benchmark keeps the Claude rates it was run with
+# (USD per 1M tokens, input/output, 2026-10-27) so a comparison run is still priced right.
+BENCH_PRICES = {**PRICES, "claude-opus-5-5": (Decimal("4"), Decimal("20")), "claude-sonnet-5-5": (Decimal("2"), Decimal("10")),
+                "claude-haiku-5-5": (Decimal("0.10"), Decimal("0.50"))}
+
+
+def price(model: str, input_tokens: int, output_tokens: int) -> Decimal:
+    if model in BENCH_PRICES and model not in PRICES:
+        p_in, p_out = BENCH_PRICES[model]
+        return (p_in * input_tokens + p_out * output_tokens) / Decimal(1_000_000)
+    return _price(model, input_tokens, output_tokens)
 
 SPARK = "muse-spark-1.3"
 CLAUDE_MODELS = ("claude-haiku-5-5", "claude-sonnet-5-5")

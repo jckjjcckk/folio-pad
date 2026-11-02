@@ -27,21 +27,30 @@ Roles live on the membership: an account can be admin of one group and a player 
 
 ## Meta models, and exactly where each is used
 
-All model calls go through the API (`api/`); the iPad never calls a model. Every call is charged to a spend ledger
-with a per-user and a global cap (feature 007).
+Every model Folio runs is a Meta model: **Muse Spark 1.3** (`muse-spark-1.3`) and **Muse Voice Transcribe 1.0**
+(`muse-voice-transcribe-1.0`). All calls go through the API (`api/`); the iPad never calls a model. Every call is
+charged to a spend ledger with a per-user and a global cap (feature 007).
 
-| Model | Where | Effort |
-|---|---|---|
-| **Muse Spark 1.3** (`muse-spark-1.3`) | Page reading on import (004): labels what the geometry found (first bar number, parts per system, rehearsal marks, title, composer, difficulty, brief) | minimal, falls back to low on a doubted page |
-| | Score header (instruments, staves per system), key and meter (closed question), page kinds, front-matter form (003, 004, 005) | low |
-| | Part cut agent (008): reads the margin labels per system, then a closed recheck of each cut block | labels minimal (fallback low); recheck and agent turns low |
-| | Convert to Digital (005): text, dynamics and tempo words per system, written only where an Audiveris glyph or a fixed vocabulary confirms them; a closed render check against MuseScore's engraving | minimal |
-| | Voice instructions (013): one call per take turns the transcript into marks (kind, bars, audience, stand text, confidence) | minimal |
-| **Muse Voice Transcribe 1.0** (`muse-voice-transcribe-1.0`) | Voice notes (013): the take, in DIARIZATION mode, with keywords from the book (part names, members' first names, a short music glossary) | n/a |
-| **SAM 3.1** (`sam-3.1`) | Evaluated in the first experiment (003, item 0): SAM system boxes plus Spark per system against OpenCV geometry on a tap test. SAM found systems but never barlines and failed the test (10/28); geometry plus Spark labels passed (28/28). SAM is not in the shipping pipeline. | n/a |
+The rule in every row: the model proposes, and a check the model cannot skip decides whether the proposal lands.
+Geometry measures; Spark reads text and answers closed questions; Spark never places a staff or a bar and never
+judges or re-transcribes a note.
 
-Spark never places staves or bars and never judges or re-transcribes notes: geometry measures, Spark reads text
-and answers closed questions, and checks the model cannot skip decide what is written.
+| Feature | Model | What it proposes | What decides |
+|---|---|---|---|
+| Page reading on import (004) | Muse Spark, effort minimal, low on a doubted page | Per page: the first bar number, the parts on each system, rehearsal marks and printed landmarks, title, composer, difficulty, a brief | OpenCV geometry finds every staff, system and barline and counts the bars. Spark's labels attach to boxes it never moves; a label pointing at no box is dropped |
+| Key and meter (004) | Muse Spark, one closed question, low | Sharps or flats counted, the mode, the time signature, each with a confidence | Only a high-confidence read whose key name agrees with its own count fills the book's key and meter; anything less is shown as a best guess for the owner to confirm |
+| Score header (003, 008) | Muse Spark, low | The instruments in score order and the staff boxes each occupies | The answer is reconciled against the geometry's staff boxes: only when it uses every box once, in order, does its box count become the staff count, which then drives the staff recovery on every later page |
+| Split by instrument, scanned book (008) | Muse Spark as an agent (006): labels minimal (fallback low), recheck and agent turns low | Which staves on each system are the wanted part's; then a yes-or-no recheck of each cut block | A commit tool: the staves exist in the system, the count matches the header, the crop verifies, the recheck says yes. Three refusals park the run with a typed question for the admin. The book's label memory keeps every answer; a human answer outranks a model read and is not asked again |
+| Convert to Digital (005) | Muse Spark, minimal | Text, dynamics and tempo words per system; then a yes-or-no render check | Audiveris reads the notes. Spark's text is written only where an Audiveris glyph or a fixed vocabulary confirms it, never a pitch, duration or barline. MuseScore engraves the touched bars; on a "no" from the render check, Audiveris's reading comes back and the bar is flagged |
+| Voice notes (013) | Muse Voice Transcribe (DIARIZATION, keywords from the book), then one Muse Spark call, minimal | The transcript; then marks: kind, bars, audience, stand text, and the quote they come from | `checked_marks`: the quote must be a verbatim span of the transcript, the bars inside the score, the audience a known part or member; a place named by a landmark resolves through the book's landmark list. A mark that passes is a proposal, and it reaches a stand only when the admin taps Accept |
+| Split a Digital book, Play the parts, landmarks (008, 014, 013) | None | n/a | music21 splits the parts and writes each part's MIDI, the bar map and the printed landmarks at import and convert |
+
+Transcripts of the same take differ between runs (other entrants report about 11 % word drift between identical runs), which is why no spoken mark lands on a
+stand on the model's word alone. Spark's confidence on voice was measured (at 0.95 or above, every proposal was right,
+013) and is held for always-on listening; it is not used in push-to-talk.
+
+SAM 3.1 (`sam-3.1`) was tried first for page layout (003, item 0). It found systems but never a barline: SAM boxes plus
+Spark scored 10/28 on the tap test, OpenCV geometry plus Spark labels 28/28. SAM is not in the product.
 
 ## Architecture
 
@@ -63,6 +72,23 @@ The iPad calls the API only to start work. Results arrive as row changes. The da
 is the notification: clients refetch on reconnect. Three data layers: source (PDF, images, MusicXML),
 interpretation (bars, staves, parts, versioned), collaboration (marks, cuts, scribbles, presence). Marks point at
 stable measure ids, so re-reading a page keeps everyone's marks.
+
+## For the judges
+
+- **What existed before.** Nothing: the repo started on 2026-10-26. The eight commits of that day are setup (repo
+  layout, scaffold, install script, design-exploration scaffold and mock data); everything after is hackathon work.
+- **The commit history is the build log.** Read it in order: most commits name the feature they belong to (`013`,
+  `014`, ...), and each feature's file in `docs/features/` holds its numbers and decisions.
+- **Run it with your own Meta key.** Follow "Run it locally" below and put your key in `api/.env` as `META_API_KEY`.
+  `META_MODEL` is optional (default `muse-spark-1.3`). Every call is charged to the local spend ledger, capped per user
+  by `PER_USER_BUDGET_USD`.
+- **The model tier.** Each account chooses its tier in the app's account settings, and the choice applies to that
+  account's own requests:
+  - **Standard** (the default): `muse-spark-1.3`. Meta does not train on the content.
+  - **Contributor**: `muse-spark-1.3-contributor`, about a twelfth of the input price and a twentieth of the output
+    price ($0.10 and $0.20 per million tokens against $1.25 and $4.25), and Meta may use the content to train future
+    models. It was about 3.5 times slower on the voice call when measured (013-always-on). Voice Transcribe has no
+    contributor mode, so the tier changes only the Spark calls.
 
 ## Run it locally
 
@@ -88,10 +114,9 @@ cd api && uv run uvicorn app.main:app --reload --port 8000
 
 Environment, by name only:
 
-- `api/.env` (server secrets, never shipped): `SUPABASE_URL`, `SUPABASE_SECRET_KEY`, `LLM_PROVIDER` (`meta` or
-  `anthropic`), `META_API_KEY`, `META_API_BASE_URL`, `ANTHROPIC_API_KEY` (experiments only), `PER_USER_BUDGET_USD`,
-  `CORS_ORIGINS`; optional `META_MODEL`, `ANTHROPIC_MODEL`, `WORKER` (0 turns the job loop off),
-  `OMR_HOST`, `OMR_ROOT`, `OMR_PARALLEL_PAGES`.
+- `api/.env` (server secrets, never shipped): `SUPABASE_URL`, `SUPABASE_SECRET_KEY`, `META_API_KEY`,
+  `PER_USER_BUDGET_USD`, `CORS_ORIGINS`; optional `META_MODEL` (default `muse-spark-1.3`), `WORKER` (0 turns the job
+  loop off), `OMR_HOST`, `OMR_ROOT`, `OMR_PARALLEL_PAGES`.
 - `web/.env` (public values only): `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`, `VITE_API_URL`. The same
   three names in `web/.env.local` point the dev server at the local stack; hosted and iPad builds never read it.
 
@@ -146,7 +171,8 @@ Each number is from the feature doc named, with its sample size and date. Most a
 
 ## Licence and credits
 
-No licence file has been added to this repository yet.
+Copyright 2026 CK Jiang. All rights reserved. The source is published for judging in the Meta Global AI Developer
+Hackathon and may be read and run for evaluation; no other rights are granted (`LICENSE`).
 
 Folio runs alongside these tools, each under its own licence:
 
@@ -161,4 +187,4 @@ Test material is public domain or openly licensed: the MusicXML fixtures in `web
 music21 corpus; the OMR ground truth is Open Goldberg (CC0); the scanned scores are public-domain editions from
 [IMSLP](https://imslp.org), kept out of the repo.
 
-Built by CK Jiang with Claude Code.
+Built by CK Jiang.

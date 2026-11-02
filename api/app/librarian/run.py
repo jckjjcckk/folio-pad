@@ -11,8 +11,7 @@ runs the handler like the worker would, writes the outcome to the job row and pr
 score, its current interpretation summary, parts and placements.
 
 Supabase URL and key come from `supabase status` so this can never touch the hosted project; other settings
-(META_API_KEY ...) still come from `api/.env`. LLM_PROVIDER defaults to `meta` here, since the handlers name
-Muse Spark; pass `--provider anthropic` to use the experimenting provider.
+(META_API_KEY ...) still come from `api/.env`. Every model call is Muse Spark, on the job's user's tier.
 """
 from __future__ import annotations
 
@@ -27,7 +26,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[3]
 
 
-def point_at_local_stack(provider: str, allow_remote: bool) -> None:
+def point_at_local_stack(allow_remote: bool) -> None:
     """Overwrite the already-built settings object: `app.settings` reads api/.env when the package is imported
     (the `-m` import of app.librarian happens before main runs), so environment variables set here would be
     too late. The hosted project's URL in .env must never win."""
@@ -36,16 +35,15 @@ def point_at_local_stack(provider: str, allow_remote: bool) -> None:
     status = json.loads(subprocess.check_output(["supabase", "status", "-o", "json"], cwd=ROOT, stderr=subprocess.DEVNULL))
     os.environ["SUPABASE_URL"] = status["API_URL"]
     os.environ["SUPABASE_SECRET_KEY"] = status["SECRET_KEY"]
-    os.environ["LLM_PROVIDER"] = provider
     fresh = Settings()
     for name in Settings.model_fields:
         setattr(settings_module.settings, name, getattr(fresh, name))
     s = settings_module.settings
     if not allow_remote and not any(h in s.supabase_url for h in ("127.0.0.1", "localhost")):
         sys.exit(f"refusing to run against {s.supabase_url}: this runner is for the local stack")
-    if s.llm_provider == "meta" and not s.meta_api_key:
+    if not s.meta_api_key:
         sys.exit("META_API_KEY is empty in api/.env")
-    print(f"supabase {s.supabase_url}  provider {s.llm_provider} ({s.meta_model if s.llm_provider == 'meta' else s.anthropic_model})", file=sys.stderr)
+    print(f"supabase {s.supabase_url}  model {s.meta_model} (standard tier)", file=sys.stderr)
 
 
 def admin_user(db) -> dict:
@@ -127,7 +125,6 @@ def cmd_show(a) -> None:
 
 def main() -> None:
     ap = argparse.ArgumentParser(prog="app.librarian.run", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--provider", default="meta", choices=["meta", "anthropic"])
     ap.add_argument("--allow-remote", action="store_true", help=argparse.SUPPRESS)
     sub = ap.add_subparsers(dest="cmd", required=True)
     s = sub.add_parser("seed", help="create a score with these page PNGs in admin@muse.test's library")
@@ -145,7 +142,7 @@ def main() -> None:
         r.add_argument("--payload", help="extra payload as JSON, e.g. part_cut: '{\"instrument\": \"Piano\", \"pages\": [1, 2]}'")
         r.set_defaults(fn=cmd_run, kind=kind)
     a = ap.parse_args()
-    point_at_local_stack(a.provider, a.allow_remote)
+    point_at_local_stack(a.allow_remote)
     out = a.fn(a)
     if asyncio.iscoroutine(out):
         asyncio.run(out)

@@ -44,11 +44,11 @@ import time
 from decimal import Decimal
 from typing import Any
 
-from anthropic import AsyncAnthropic
+from anthropic import AsyncAnthropic   # the SDK client for Meta's Messages-compatible API (llm._client)
 from PIL import Image
 
 from ..agent import AgentState, Refusal, Stop, ToolBox, run_agent
-from ..llm import _client as default_client, model_name as default_model
+from ..llm import _client as default_client
 from . import Job, JobContext, handler
 from . import header as hdr
 from . import label_memory
@@ -297,7 +297,7 @@ async def part_cut(job: Job, ctx: JobContext, *, client: AsyncAnthropic | None =
         raise RuntimeError("the payload names no instrument (instruments: [...])")
     label = " + ".join(instruments)                       # the export's name in logs, questions and the parts row
     part_slug = "+".join(slug(i) for i in instruments)
-    c, m = client or default_client(), model or default_model()
+    c, m = client or default_client(), model or ctx.model       # ctx.model: the Spark model for the user's tier
     src = ctx.db.table("sources").select("*").eq("score_id", score_id).in_("kind", ["pdf", "images"]).order("created_at", desc=True).limit(1).execute().data
     if not src:
         raise RuntimeError("the score has no page source to cut from")
@@ -1037,7 +1037,7 @@ async def part_cut(job: Job, ctx: JobContext, *, client: AsyncAnthropic | None =
         if given is None:
             raise Refusal('give staves (a list of staff numbers) or blocks (a list of lists), or the string "absent"')
         if isinstance(given, str) and given.strip().startswith("["):
-            # Claude sometimes serialises an array argument as its JSON text ("[8, 9]") when the schema allows a string.
+            # A model sometimes serialises an array argument as its JSON text ("[8, 9]") when the schema allows a string.
             try:
                 given = json.loads(given)
             except ValueError:

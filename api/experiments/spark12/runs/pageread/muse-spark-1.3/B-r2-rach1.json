@@ -1,0 +1,589 @@
+[
+ {
+  "page": "rach1-gutheil-p01",
+  "kind": "orchestral",
+  "variant": "B",
+  "run": 2,
+  "trimmed": false,
+  "first_page": true,
+  "fallback": null,
+  "known_in": [],
+  "attempts": [
+   {
+    "seconds": 10.780287625006167,
+    "usd": 0.012857,
+    "input_tokens": 3795,
+    "output_tokens": 1909,
+    "reasoning_tokens": 1227,
+    "cached_tokens": 3683,
+    "api": "chat",
+    "finish": "stop",
+    "text": "{\"first_measure_number\": 1, \"is_pickup\": false, \"confidence\": \"high\", \"systems\": [{\"index\": 1, \"parts\": [\"Flauti I. II.\", \"Oboi I. II.\", \"Clarini I. II. in A.\", \"Fagotti I. II.\", \"Corni in F. I. II.\", \"Corni in F. III. IV.\", \"Trombe I. II. in B.\", \"Tromboni ten. I. II.\", \"Trombone basso\", \"Timpani\", \"Piano.\", \"Violini I.\", \"Violini II.\", \"Viole.\", \"Violoncelli.\", \"Contrabassi.\"], \"staves_per_part\": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1]}], \"rehearsal_marks\": [], \"doubtful_measures\": [], \"title\": \"PIANO CONCERTO No. 1\", \"composer\": \"SERGE RACHMANINOFF\", \"key_signature\": \"A major\", \"time_signature\": \"4/4\", \"parts_difficulty\": [{\"part\": \"Flauti I. II.\", \"difficulty\": 1}, {\"part\": \"Oboi I. II.\", \"difficulty\": 1}, {\"part\": \"Clarini I. II. in A.\", \"difficulty\": 2}, {\"part\": \"Fagotti I. II.\", \"difficulty\": 2}, {\"part\": \"Corni in F. I. II.\", \"difficulty\": 2}, {\"part\": \"Corni in F. III. IV.\", \"difficulty\": 2}, {\"part\": \"Trombe I. II. in B.\", \"difficulty\": 1}, {\"part\": \"Tromboni ten. I. II.\", \"difficulty\": 1}, {\"part\": \"Trombone basso\", \"difficulty\": 1}, {\"part\": \"Timpani\", \"difficulty\": 1}, {\"part\": \"Piano.\", \"difficulty\": 5}, {\"part\": \"Violini I.\", \"difficulty\": 1}, {\"part\": \"Violini II.\", \"difficulty\": 1}, {\"part\": \"Viole.\", \"difficulty\": 1}, {\"part\": \"Violoncelli.\", \"difficulty\": 1}, {\"part\": \"Contrabassi.\", \"difficulty\": 1}], \"brief\": \"This is the opening of the first movement of Rachmaninoff's Piano Concerto No. 1, Op. 1 in the 1917 revised version, for solo piano and full orchestra. The orchestra holds introductory chords while the soloist will need virtuoso octave and chord technique for the opening cadenza-like flourishes.\", \"landmarks\": [{\"kind\": \"tempo\", \"text\": \"Vivace.\", \"provisional_measure\": 1}, {\"kind\": \"tempo\", \"text\": \"Vivace.\", \"provisional_measure\": 1}, {\"kind\": \"tempo\", \"text\": \"Vivace.\", \"provisional_measure\": 1}]}"
+   }
+  ],
+  "parse_error": null,
+  "seconds": 10.780287625006167,
+  "usd": 0.012857,
+  "output_tokens": 1909,
+  "input_tokens": 3795,
+  "reasoning_tokens": 1227,
+  "n_boxes": 4,
+  "labels": {
+   "first_measure_number": 1,
+   "is_pickup": false,
+   "confidence": "high",
+   "systems": [
+    {
+     "index": 1,
+     "parts": [
+      "Flauti I. II.",
+      "Oboi I. II.",
+      "Clarini I. II. in A.",
+      "Fagotti I. II.",
+      "Corni in F. I. II.",
+      "Corni in F. III. IV.",
+      "Trombe I. II. in B.",
+      "Tromboni ten. I. II.",
+      "Trombone basso",
+      "Timpani",
+      "Piano.",
+      "Violini I.",
+      "Violini II.",
+      "Viole.",
+      "Violoncelli.",
+      "Contrabassi."
+     ],
+     "staves_per_part": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      2,
+      1,
+      1,
+      1,
+      1,
+      1
+     ]
+    }
+   ],
+   "rehearsal_marks": {},
+   "doubtful": {},
+   "title": "PIANO CONCERTO No. 1",
+   "composer": "SERGE RACHMANINOFF",
+   "key_signature": "A major",
+   "time_signature": "4/4",
+   "parts_difficulty": {
+    "Flauti I. II": 1,
+    "Oboi I. II": 1,
+    "Clarini I. II. in A": 2,
+    "Fagotti I. II": 2,
+    "Corni in F. I. II": 2,
+    "Corni in F. III. IV": 2,
+    "Trombe I. II. in B": 1,
+    "Tromboni ten. I. II": 1,
+    "Trombone basso": 1,
+    "Timpani": 1,
+    "Piano": 5,
+    "Violini I": 1,
+    "Violini II": 1,
+    "Viole": 1,
+    "Violoncelli": 1,
+    "Contrabassi": 1
+   },
+   "brief": "This is the opening of the first movement of Rachmaninoff's Piano Concerto No. 1, Op. 1 in the 1917 revised version, for solo piano and full orchestra. The orchestra holds introductory chords while the soloist will need virtuoso octave and chord technique for the opening cadenza-like flourishes.",
+   "cost_usd": 0.0,
+   "model": "",
+   "landmarks": [
+    {
+     "kind": "tempo",
+     "text": "Vivace.",
+     "provisional": 1
+    }
+   ],
+   "landmarks_dropped": []
+  },
+  "assigned": [
+   {
+    "index": 1,
+    "parts": [
+     "Flauti I. II",
+     "Oboi I. II",
+     "Clarini I. II. in A",
+     "Fagotti I. II",
+     "Corni in F. I. II",
+     "Corni in F. III. IV",
+     "Trombe I. II. in B",
+     "Tromboni ten. I. II",
+     "Trombone basso",
+     "Timpani",
+     "Piano",
+     "Violini I",
+     "Violini II",
+     "Viole",
+     "Violoncelli",
+     "Contrabassi"
+    ],
+    "staves_per_part": [
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     2,
+     1,
+     1,
+     1,
+     1,
+     1
+    ]
+   }
+  ],
+  "question": null
+ },
+ {
+  "page": "rach1-gutheil-p02",
+  "kind": "orchestral",
+  "variant": "B",
+  "run": 2,
+  "trimmed": false,
+  "first_page": false,
+  "fallback": null,
+  "known_in": [
+   "Flauti I. II",
+   "Oboi I. II",
+   "Clarini I. II. in A",
+   "Fagotti I. II",
+   "Corni in F. I. II",
+   "Corni in F. III. IV",
+   "Trombe I. II. in B",
+   "Tromboni ten. I. II",
+   "Trombone basso",
+   "Timpani",
+   "Piano",
+   "Violini I",
+   "Violini II",
+   "Viole",
+   "Violoncelli",
+   "Contrabassi"
+  ],
+  "attempts": [
+   {
+    "seconds": 10.244899417011766,
+    "usd": 0.01434775,
+    "input_tokens": 3971,
+    "output_tokens": 2208,
+    "reasoning_tokens": 1468,
+    "cached_tokens": 0,
+    "api": "chat",
+    "finish": "stop",
+    "text": "{\"first_measure_number\": 1, \"is_pickup\": false, \"confidence\": \"low\", \"systems\": [{\"index\": 1, \"parts\": [\"Piano\", \"Violini I\", \"Violini II\", \"Viole\", \"Violoncelli\", \"Contrabassi\"], \"staves_per_part\": [2, 1, 1, 1, 1, 1]}, {\"index\": 2, \"parts\": [\"Flauti I. II\", \"Oboi I. II\", \"Clarini I. II. in A\", \"Fagotti I. II\", \"Corni in F. I. II\", \"Corni in F. III. IV\", \"Trombe I. II. in B\", \"Tromboni ten. I. II\", \"Trombone basso\", \"Timpani\", \"Piano\", \"Violini I\", \"Violini II\", \"Viole\", \"Violoncelli\", \"Contrabassi\"], \"staves_per_part\": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1]}], \"rehearsal_marks\": [{\"mark\": \"1\", \"provisional_measure\": 5}], \"doubtful_measures\": [], \"title\": null, \"composer\": null, \"key_signature\": \"A major\", \"time_signature\": null, \"parts_difficulty\": [{\"part\": \"Flauti I. II\", \"difficulty\": 1}, {\"part\": \"Oboi I. II\", \"difficulty\": 1}, {\"part\": \"Clarini I. II. in A\", \"difficulty\": 1}, {\"part\": \"Fagotti I. II\", \"difficulty\": 1}, {\"part\": \"Corni in F. I. II\", \"difficulty\": 3}, {\"part\": \"Corni in F. III. IV\", \"difficulty\": 3}, {\"part\": \"Trombe I. II. in B\", \"difficulty\": 3}, {\"part\": \"Tromboni ten. I. II\", \"difficulty\": 2}, {\"part\": \"Trombone basso\", \"difficulty\": 1}, {\"part\": \"Timpani\", \"difficulty\": 1}, {\"part\": \"Piano\", \"difficulty\": 5}, {\"part\": \"Violini I\", \"difficulty\": 2}, {\"part\": \"Violini II\", \"difficulty\": 2}, {\"part\": \"Viole\", \"difficulty\": 2}, {\"part\": \"Violoncelli\", \"difficulty\": 2}, {\"part\": \"Contrabassi\", \"difficulty\": 2}], \"brief\": \"This is a piano concerto page with a piano cadenza closing with a rit. into a pesante brass and string tutti at rehearsal 1, followed by a piano flourish over a general fermata. The piano's rapid octaves, runs and leaps will take the most work, with tight ensemble for the short marcato brass interjections.\", \"landmarks\": [{\"kind\": \"tempo\", \"text\": \"rit.\", \"provisional_measure\": 4}, {\"kind\": \"tempo\", \"text\": \"a tempo\", \"provisional_measure\": 5}, {\"kind\": \"double_bar\", \"text\": \"double bar\", \"provisional_measure\": 4}]}"
+   }
+  ],
+  "parse_error": null,
+  "seconds": 10.244899417011766,
+  "usd": 0.01434775,
+  "output_tokens": 2208,
+  "input_tokens": 3971,
+  "reasoning_tokens": 1468,
+  "n_boxes": 9,
+  "labels": {
+   "first_measure_number": 1,
+   "is_pickup": false,
+   "confidence": "low",
+   "systems": [
+    {
+     "index": 1,
+     "parts": [
+      "Piano",
+      "Violini I",
+      "Violini II",
+      "Viole",
+      "Violoncelli",
+      "Contrabassi"
+     ],
+     "staves_per_part": [
+      2,
+      1,
+      1,
+      1,
+      1,
+      1
+     ]
+    },
+    {
+     "index": 2,
+     "parts": [
+      "Flauti I. II",
+      "Oboi I. II",
+      "Clarini I. II. in A",
+      "Fagotti I. II",
+      "Corni in F. I. II",
+      "Corni in F. III. IV",
+      "Trombe I. II. in B",
+      "Tromboni ten. I. II",
+      "Trombone basso",
+      "Timpani",
+      "Piano",
+      "Violini I",
+      "Violini II",
+      "Viole",
+      "Violoncelli",
+      "Contrabassi"
+     ],
+     "staves_per_part": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      2,
+      1,
+      1,
+      1,
+      1,
+      1
+     ]
+    }
+   ],
+   "rehearsal_marks": {
+    "5": "1"
+   },
+   "doubtful": {},
+   "title": "",
+   "composer": "",
+   "key_signature": "A major",
+   "time_signature": null,
+   "parts_difficulty": {
+    "Flauti I. II": 1,
+    "Oboi I. II": 1,
+    "Clarini I. II. in A": 1,
+    "Fagotti I. II": 1,
+    "Corni in F. I. II": 3,
+    "Corni in F. III. IV": 3,
+    "Trombe I. II. in B": 3,
+    "Tromboni ten. I. II": 2,
+    "Trombone basso": 1,
+    "Timpani": 1,
+    "Piano": 5,
+    "Violini I": 2,
+    "Violini II": 2,
+    "Viole": 2,
+    "Violoncelli": 2,
+    "Contrabassi": 2
+   },
+   "brief": "This is a piano concerto page with a piano cadenza closing with a rit. into a pesante brass and string tutti at rehearsal 1, followed by a piano flourish over a general fermata. The piano's rapid octaves, runs and leaps will take the most work, with tight ensemble for the short marcato brass interjections.",
+   "cost_usd": 0.0,
+   "model": "",
+   "landmarks": [
+    {
+     "kind": "tempo",
+     "text": "rit.",
+     "provisional": 4
+    },
+    {
+     "kind": "tempo",
+     "text": "a tempo",
+     "provisional": 5
+    },
+    {
+     "kind": "double_bar",
+     "text": "double bar",
+     "provisional": 4
+    }
+   ],
+   "landmarks_dropped": []
+  },
+  "assigned": [
+   {
+    "index": 1,
+    "parts": [
+     "Piano",
+     "Violini I",
+     "Violini II",
+     "Viole",
+     "Violoncelli",
+     "Contrabassi"
+    ],
+    "staves_per_part": [
+     2,
+     1,
+     1,
+     1,
+     1,
+     1
+    ]
+   },
+   {
+    "index": 2,
+    "parts": [
+     "Flauti I. II",
+     "Oboi I. II",
+     "Clarini I. II. in A",
+     "Fagotti I. II",
+     "Corni in F. I. II",
+     "Corni in F. III. IV",
+     "Trombe I. II. in B",
+     "Tromboni ten. I. II",
+     "Trombone basso",
+     "Timpani",
+     "Piano",
+     "Violini I",
+     "Violini II",
+     "Viole",
+     "Violoncelli",
+     "Contrabassi"
+    ],
+    "staves_per_part": [
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     2,
+     1,
+     1,
+     1,
+     1,
+     1
+    ]
+   }
+  ],
+  "question": null
+ },
+ {
+  "page": "rach1-gutheil-p03",
+  "kind": "orchestral",
+  "variant": "B",
+  "run": 2,
+  "trimmed": false,
+  "first_page": false,
+  "fallback": null,
+  "known_in": [
+   "Flauti I. II",
+   "Oboi I. II",
+   "Clarini I. II. in A",
+   "Fagotti I. II",
+   "Corni in F. I. II",
+   "Corni in F. III. IV",
+   "Trombe I. II. in B",
+   "Tromboni ten. I. II",
+   "Trombone basso",
+   "Timpani",
+   "Piano",
+   "Violini I",
+   "Violini II",
+   "Viole",
+   "Violoncelli",
+   "Contrabassi"
+  ],
+  "attempts": [
+   {
+    "seconds": 10.877634875010699,
+    "usd": 0.015423,
+    "input_tokens": 3971,
+    "output_tokens": 2461,
+    "reasoning_tokens": 1780,
+    "cached_tokens": 0,
+    "api": "chat",
+    "finish": "stop",
+    "text": "{\"first_measure_number\": 1, \"is_pickup\": false, \"confidence\": \"low\", \"systems\": [{\"index\": 1, \"parts\": [\"Oboi I. II\", \"Clarini I. II. in A\", \"Fagotti I. II\", \"Corni in F. I. II\", \"Corni in F. III. IV\", \"Piano\", \"Violini I\", \"Violini II\", \"Viole\", \"Violoncelli\", \"Contrabassi\"], \"staves_per_part\": [1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1]}, {\"index\": 2, \"parts\": [\"Flauti I. II\", \"Oboi I. II\", \"Clarini I. II. in A\", \"Fagotti I. II\", \"Corni in F. I. II\", \"Corni in F. III. IV\", \"Violini I\", \"Violini II\", \"Viole\", \"Violoncelli\", \"Contrabassi\"], \"staves_per_part\": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]}], \"rehearsal_marks\": [{\"mark\": \"2\", \"provisional_measure\": 3}, {\"mark\": \"2\", \"provisional_measure\": 7}], \"doubtful_measures\": [{\"provisional_measure\": 2, \"reason\": \"box is an extremely narrow sliver covering only a piano chord / barline region, not a full bar\"}], \"title\": null, \"composer\": null, \"key_signature\": \"A major\", \"time_signature\": null, \"parts_difficulty\": [{\"part\": \"Flauti I. II\", \"difficulty\": 3}, {\"part\": \"Oboi I. II\", \"difficulty\": 3}, {\"part\": \"Clarini I. II. in A\", \"difficulty\": 3}, {\"part\": \"Fagotti I. II\", \"difficulty\": 2}, {\"part\": \"Corni in F. I. II\", \"difficulty\": 2}, {\"part\": \"Corni in F. III. IV\", \"difficulty\": 2}, {\"part\": \"Piano\", \"difficulty\": 4}, {\"part\": \"Violini I\", \"difficulty\": 3}, {\"part\": \"Violini II\", \"difficulty\": 3}, {\"part\": \"Viole\", \"difficulty\": 3}, {\"part\": \"Violoncelli\", \"difficulty\": 3}, {\"part\": \"Contrabassi\", \"difficulty\": 2}], \"brief\": \"This is a full orchestral score with piano concertante at rehearsal 2, marked Moderato. The most work will be the exposed piano writing and the divisi triplet string accompaniment with crescendo and diminuendo shaping.\", \"landmarks\": [{\"kind\": \"tempo\", \"text\": \"Moderato.\", \"provisional_measure\": 3}, {\"kind\": \"tempo\", \"text\": \"Moderato.\", \"provisional_measure\": 7}]}"
+   }
+  ],
+  "parse_error": null,
+  "seconds": 10.877634875010699,
+  "usd": 0.015423,
+  "output_tokens": 2461,
+  "input_tokens": 3971,
+  "reasoning_tokens": 1780,
+  "n_boxes": 9,
+  "labels": {
+   "first_measure_number": 1,
+   "is_pickup": false,
+   "confidence": "low",
+   "systems": [
+    {
+     "index": 1,
+     "parts": [
+      "Oboi I. II",
+      "Clarini I. II. in A",
+      "Fagotti I. II",
+      "Corni in F. I. II",
+      "Corni in F. III. IV",
+      "Piano",
+      "Violini I",
+      "Violini II",
+      "Viole",
+      "Violoncelli",
+      "Contrabassi"
+     ],
+     "staves_per_part": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      2,
+      1,
+      1,
+      1,
+      1,
+      1
+     ]
+    },
+    {
+     "index": 2,
+     "parts": [
+      "Flauti I. II",
+      "Oboi I. II",
+      "Clarini I. II. in A",
+      "Fagotti I. II",
+      "Corni in F. I. II",
+      "Corni in F. III. IV",
+      "Violini I",
+      "Violini II",
+      "Viole",
+      "Violoncelli",
+      "Contrabassi"
+     ],
+     "staves_per_part": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+     ]
+    }
+   ],
+   "rehearsal_marks": {
+    "3": "2",
+    "7": "2"
+   },
+   "doubtful": {
+    "2": "box is an extremely narrow sliver covering only a piano chord / barline region, not a full bar"
+   },
+   "title": "",
+   "composer": "",
+   "key_signature": "A major",
+   "time_signature": null,
+   "parts_difficulty": {
+    "Flauti I. II": 3,
+    "Oboi I. II": 3,
+    "Clarini I. II. in A": 3,
+    "Fagotti I. II": 2,
+    "Corni in F. I. II": 2,
+    "Corni in F. III. IV": 2,
+    "Piano": 4,
+    "Violini I": 3,
+    "Violini II": 3,
+    "Viole": 3,
+    "Violoncelli": 3,
+    "Contrabassi": 2
+   },
+   "brief": "This is a full orchestral score with piano concertante at rehearsal 2, marked Moderato. The most work will be the exposed piano writing and the divisi triplet string accompaniment with crescendo and diminuendo shaping.",
+   "cost_usd": 0.0,
+   "model": "",
+   "landmarks": [
+    {
+     "kind": "tempo",
+     "text": "Moderato.",
+     "provisional": 3
+    },
+    {
+     "kind": "tempo",
+     "text": "Moderato.",
+     "provisional": 7
+    }
+   ],
+   "landmarks_dropped": []
+  },
+  "assigned": [
+   {
+    "index": 1,
+    "parts": [
+     "Oboi I. II",
+     "Clarini I. II. in A",
+     "Fagotti I. II",
+     "Corni in F. I. II",
+     "Corni in F. III. IV",
+     "Piano",
+     "Violini I",
+     "Violini II",
+     "Viole",
+     "Violoncelli",
+     "Contrabassi"
+    ],
+    "staves_per_part": [
+     1,
+     1,
+     1,
+     1,
+     1,
+     2,
+     1,
+     1,
+     1,
+     1,
+     1
+    ]
+   },
+   {
+    "index": 2,
+    "parts": [
+     "Flauti I. II",
+     "Oboi I. II",
+     "Clarini I. II. in A",
+     "Fagotti I. II",
+     "Corni in F. I. II",
+     "Corni in F. III. IV",
+     "Violini I",
+     "Violini II",
+     "Viole",
+     "Violoncelli",
+     "Contrabassi"
+    ],
+    "staves_per_part": [
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1
+    ]
+   }
+  ],
+  "question": null
+ }
+]

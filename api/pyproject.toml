@@ -3,7 +3,7 @@ name = "api"
 version = "0.1.0"
 requires-python = ">=3.12"
 dependencies = [
-    "anthropic>=2.3.0",
+    "anthropic>=2.3.0",  # only as the SDK speaking Meta's Messages-compatible API (app/llm.py _client, Meta's base URL)
     "fastapi>=0.162.0",
     "httpx>=0.28.1",
     "music21>=10.5.1",

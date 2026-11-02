@@ -1,11 +1,13 @@
-"""Text and vision reasoning through one client. Provider is a setting: Anthropic while experimenting,
-Meta's Muse Spark for the submission. Meta's API speaks the Messages format, so the Anthropic SDK is the
-client for both, pointed at a different base URL. Every call returns its cost so the caller can charge it.
+"""Text and vision reasoning, Meta's Muse Spark only (hackathon rule: every model called at runtime is a Meta model).
+Every call returns its cost so the caller can charge it.
 
-Effort "minimal" is the one exception: Meta's Messages endpoint refuses it, only chat completions takes it, and it
-halves Spark's time on a page read (004-speed-eval) and a voice line (013-always-on). So `effort="minimal"` with Meta
-goes to /v1/chat/completions (`chat`); every other effort stays on Messages. With Anthropic, "minimal" is sent as
-"low" on Messages (Claude has no minimal).
+Two Meta endpoints. Effort "minimal" goes to /v1/chat/completions (`chat`): Meta's Messages endpoint refuses it, and it
+halves Spark's time on a page read (004-speed-eval) and a voice line (013-always-on). Every other effort goes to Meta's
+Messages-compatible /v1/messages, through the `anthropic` Python SDK pointed at Meta's base URL (`_client`).
+
+Two model tiers per profile (`profiles.model_tier`, `tiers.model_name`): "standard" (`META_MODEL`, e.g. muse-spark-1.3,
+non-training) and "contributor" (the same name + "-contributor": cheaper, Meta may use the content to train future
+models). The caller resolves the user's tier and passes the model; the charge records the model Meta reports.
 """
 import asyncio
 import json
@@ -14,24 +16,22 @@ from dataclasses import dataclass, field
 from decimal import Decimal
 
 import httpx
-from anthropic import AsyncAnthropic
+from anthropic import AsyncAnthropic   # the SDK speaking Meta's Messages-compatible API (base URL is Meta's, see _client)
 
 from .settings import settings
 from .spend import Charge
+from .tiers import TIERS, model_name, tier_of  # noqa: F401  (re-exported: callers say llm.model_name(tier))
 
-# USD per 1M tokens, (input, output). Anthropic rates from the Claude API reference (2026-10);
-# Meta rates from dev.meta.ai pricing, verified 2026-10-27.
+# USD per 1M tokens, (input, output). Meta rates from dev.meta.ai pricing, verified 2026-10-27.
 PRICES: dict[str, tuple[Decimal, Decimal]] = {
-    "claude-opus-5-5": (Decimal("4"), Decimal("20")),
-    "claude-sonnet-5-5": (Decimal("2"), Decimal("10")),
-    "claude-haiku-5-5": (Decimal("0.10"), Decimal("0.50")),
     "muse-spark-1.3": (Decimal("1.25"), Decimal("4.25")),
     "muse-spark-1.3-contributor": (Decimal("0.10"), Decimal("0.20")),
 }
+UNKNOWN_PRICE = (Decimal("5"), Decimal("25"))   # a model not listed is priced high, so spend is never undercounted
 
 
 def price(model: str, input_tokens: int, output_tokens: int) -> Decimal:
-    p_in, p_out = PRICES.get(model, (Decimal("5"), Decimal("25")))  # unknown model: priced like Opus 5
+    p_in, p_out = PRICES.get(model, UNKNOWN_PRICE)
     return (p_in * input_tokens + p_out * output_tokens) / Decimal(1_000_000)
 
 
@@ -46,7 +46,7 @@ class Completion:
 
 
 CHAT_EFFORT = "minimal"
-# One model call's ceiling, both APIs (the SDK's default is 600 s). The longest Spark call measured is a 45 s page read;
+# One model call's ceiling, both endpoints (the SDK's default is 600 s). The longest Spark call measured is a 45 s page read;
 # a Messages call that hung for 10 minutes stalled a convert in the speed pass (2026-10-30), so a stuck call is retried.
 CALL_TIMEOUT_S = 180.0
 CHAT_RETRY_S = 1.0
@@ -54,8 +54,8 @@ CHAT_RETRY_S = 1.0
 _chat_transport: httpx.AsyncBaseTransport | None = None
 
 
-def uses_chat(effort: str, provider: str | None = None) -> bool:
-    return effort == CHAT_EFFORT and (provider or settings.llm_provider) == "meta"
+def uses_chat(effort: str) -> bool:
+    return effort == CHAT_EFFORT
 
 
 @dataclass
@@ -151,57 +151,58 @@ def _reply(text: str, model: str, u: dict, finish: str | None, secs: float, firs
                      int((u.get("prompt_tokens_details") or {}).get("cached_tokens") or 0), finish, secs, first, u)
 
 
-def _client(provider: str | None = None) -> AsyncAnthropic:
-    if (provider or settings.llm_provider) == "meta":
-        # The SDK appends /v1/messages itself; META_API_BASE_URL is written with its /v1 (as Meta documents it).
-        base = settings.meta_api_base_url.rstrip("/")
-        base = base[:-3] if base.endswith("/v1") else base
-        return AsyncAnthropic(api_key=settings.meta_api_key, base_url=base, max_retries=1, timeout=CALL_TIMEOUT_S)
-    return AsyncAnthropic(api_key=settings.anthropic_api_key, max_retries=1, timeout=CALL_TIMEOUT_S)
+def _client() -> AsyncAnthropic:
+    """Meta's Messages-compatible endpoint through the `anthropic` SDK. The SDK appends /v1/messages itself;
+    META_API_BASE_URL is written with its /v1 (as Meta documents it), so the /v1 is stripped here."""
+    base = settings.meta_api_base_url.rstrip("/")
+    base = base[:-3] if base.endswith("/v1") else base
+    return AsyncAnthropic(api_key=settings.meta_api_key, base_url=base, max_retries=1, timeout=CALL_TIMEOUT_S)
 
 
-def model_name(provider: str | None = None) -> str:
-    return settings.meta_model if (provider or settings.llm_provider) == "meta" else settings.anthropic_model
+def on_meta(client: object) -> bool:
+    """True for a Messages client pointed at Meta's host (one `_client` made). `ask_model` sends effort "minimal" to
+    chat completions only for such a client; a stand-in the tests inject (another base URL) keeps answering on Messages."""
+    base = getattr(client, "base_url", None)
+    try:
+        return base is not None and httpx.URL(str(base)).host == httpx.URL(settings.meta_api_base_url).host
+    except Exception:  # noqa: BLE001
+        return False
 
 
 async def complete(
     user_text: str, *, system: str | None = None, effort: str = "low", max_tokens: int = 4096,
-    image_png_b64: str | None = None, provider: str | None = None, stream: bool = False,
+    image_png_b64: str | None = None, model: str | None = None, stream: bool = False,
 ) -> Completion:
-    """`provider` overrides LLM_PROVIDER for one call: voice notes always use Spark, the model their prompt was tuned on.
-    `effort="minimal"` with Meta goes to chat completions (`stream` applies there only); everything else is Messages."""
-    provider = provider or settings.llm_provider
-    if uses_chat(effort, provider):
+    """`model`: the Spark model for the user's tier (`model_name(tier)`); the standard model when not given.
+    `effort="minimal"` goes to chat completions (`stream` applies there only); everything else is Messages."""
+    model = model or model_name()
+    if uses_chat(effort):
         msgs: list[dict] = [{"role": "system", "content": system}] if system else []
         msgs.append({"role": "user", "content": chat_content(user_text, image_png_b64)})
-        r = await chat(msgs, effort=effort, max_tokens=max_tokens, model=model_name(provider), stream=stream)
+        r = await chat(msgs, effort=effort, max_tokens=max_tokens, model=model, stream=stream)
         cost = price(r.model, r.input_tokens, r.output_tokens)
-        return Completion(r.text, Charge(provider, r.model, "spark", cost, r.input_tokens, r.output_tokens), "chat",
+        return Completion(r.text, Charge("meta", r.model, "spark", cost, r.input_tokens, r.output_tokens), "chat",
                           r.finish_reason == "length", r.seconds, r.first_token_s)
-    if effort == CHAT_EFFORT:
-        effort = "low"           # Claude on Messages has no minimal
     t0 = time.monotonic()
     content: list[dict] = []
     if image_png_b64:
         content.append({"type": "image", "source": {"type": "base64", "media_type": "image/png", "data": image_png_b64}})
     content.append({"type": "text", "text": user_text})
     kwargs: dict = {
-        "model": model_name(provider), "max_tokens": max_tokens,
+        "model": model, "max_tokens": max_tokens,
         "messages": [{"role": "user", "content": content}],
     }
     if system:
         kwargs["system"] = system
-    # Both providers take output_config.effort on /v1/messages (Meta verified 2026-10-27: "low" cut Spark's
-    # reasoning from ~310 to ~70 output tokens). Spark's reasoning counts against max_tokens, so give it room:
-    # a 64-token cap returned an empty reply.
+    # Meta's /v1/messages takes output_config.effort (verified 2026-10-27: "low" cut Spark's reasoning from ~310 to
+    # ~70 output tokens). Spark's reasoning counts against max_tokens, so give it room: a 64-token cap returned an
+    # empty reply.
     kwargs["output_config"] = {"effort": effort}
-    if provider == "meta":
-        kwargs["max_tokens"] = max(max_tokens, 1024)
-    res = await _client(provider).messages.create(**kwargs)
+    kwargs["max_tokens"] = max(max_tokens, 1024)
+    res = await _client().messages.create(**kwargs)
     text = "".join(b.text for b in res.content if b.type == "text")
     usage = res.usage
-    model = res.model or model_name(provider)
-    cost = price(model, usage.input_tokens, usage.output_tokens)
-    kind = "spark" if provider == "meta" else "claude"
-    return Completion(text, Charge(provider, model, kind, cost, usage.input_tokens, usage.output_tokens), "messages",
+    got = res.model or model
+    cost = price(got, usage.input_tokens, usage.output_tokens)
+    return Completion(text, Charge("meta", got, "spark", cost, usage.input_tokens, usage.output_tokens), "messages",
                       getattr(res, "stop_reason", None) == "max_tokens", time.monotonic() - t0)

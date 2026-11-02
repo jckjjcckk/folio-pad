@@ -44,7 +44,7 @@ BudgetedUser = Annotated[User, Depends(require_budget)]
 class Charge:
     provider: str
     model: str
-    kind: str          # 'claude' | 'spark' | 'sam' | 'voice'
+    kind: str          # 'spark' | 'sam' | 'voice'
     cost_usd: Decimal
     input_tokens: int = 0
     output_tokens: int = 0

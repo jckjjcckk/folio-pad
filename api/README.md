@@ -14,8 +14,9 @@ Docs at http://localhost:8000/docs once running.
 
 - `app/auth.py`: `CurrentUser` dependency. Verifies the Supabase session token (JWKS for hosted projects, Supabase Auth for the local stack's HS256 tokens), then loads the `profiles` row. No row = not on the list = 403.
 - `app/spend.py`: `BudgetedUser` refuses with 402 when the user's budget or the shared cap is spent; `charge()` records a model call through the `charge_usage` function, which takes one row lock so concurrent calls cannot overspend.
-- `app/llm.py`: `complete()` for text and vision reasoning; provider is `LLM_PROVIDER` (anthropic or meta, same SDK, different base URL); returns the text and a `Charge` with the cost.
-- `app/routes/me.py`: `GET /me`, the account, its memberships and what it may still spend.
+- `app/llm.py`: `complete()` for text and vision reasoning, Meta's Muse Spark only: effort `minimal` on Meta's chat completions, every other effort on Meta's Messages-compatible endpoint (through the `anthropic` Python SDK pointed at Meta's base URL); returns the text and a `Charge` with the cost.
+- `app/tiers.py`: the per-profile model tier (`profiles.model_tier`): `standard` uses `META_MODEL` (non-training), `contributor` uses `META_MODEL` + `-contributor` (cheaper; Meta may use the content to train future models). Voice Transcribe has no contributor variant and keeps its one name.
+- `app/routes/me.py`: `GET /me`, the account (with its `model_tier`), its memberships and what it may still spend; `PATCH /me` sets the caller's own `model_tier`.
 - `app/routes/llm.py`: `POST /llm/probe`, the smallest model call, to prove the chain end to end.
 
 ## Database

@@ -52,7 +52,7 @@ async def run(effort: str) -> None:
         async with sem:
             ledger.guard(0.02)
             t0 = time.monotonic()
-            c = await llm.complete(user, system=system, effort=effort, max_tokens=8192, provider="meta", stream=effort == "minimal")
+            c = await llm.complete(user, system=system, effort=effort, max_tokens=8192, stream=effort == "minimal")
             secs = time.monotonic() - t0
         ledger.log(source="script", tag=f"step2 voice_regress {effort}", id=uid, api=c.api, effort=effort, model=c.charge.model,
                    input_tokens=c.charge.input_tokens, output_tokens=c.charge.output_tokens, usd=float(c.charge.cost_usd), secs=round(secs, 2))

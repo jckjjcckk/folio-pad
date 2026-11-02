@@ -8,7 +8,7 @@ a two-sentence brief, and (item 8, 013 v4e) the printed landmarks (tempo words, 
 repeats, segno, coda, Fine, section titles), each pointed at a box as rehearsal marks are. It never moves a box, never
 counts bars: the page's geometry count gives each box its bar number (`process_pages`), and a landmark whose box is
 missing or not on the page is dropped (`page_landmarks`). The call goes through `ctx.complete`, so it is charged to the
-job's user with the job id (model from settings: `muse-spark-1.3` when LLM_PROVIDER=meta).
+job's user with the job id, on the Spark model of the user's tier (`ctx.model`: `muse-spark-1.3` or its -contributor).
 
 Prompt lifted from `api/experiments/grounding/label_with_spark.py` (experiment README, "Exact prompts"), plus
 items 6 and 7.
@@ -27,7 +27,7 @@ from dataclasses import dataclass, field
 from decimal import Decimal
 from typing import Any
 
-from anthropic import AsyncAnthropic
+from anthropic import AsyncAnthropic   # the SDK client for Meta's Messages-compatible API (llm._client)
 from PIL import Image, ImageDraw, ImageFont
 
 from . import JobContext

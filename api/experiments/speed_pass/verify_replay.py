@@ -43,7 +43,7 @@ async def main() -> None:
     a = ap.parse_args()
     dump = Path(a.dump)
     items = sorted(dump.glob("*.json"))
-    client, model = _client("meta"), settings.meta_model
+    client, model = _client(), settings.meta_model
     sem = asyncio.Semaphore(12)
     out_path = dump.parent / f"{dump.name}_replay.json"
     done = json.loads(out_path.read_text()) if out_path.exists() else {}

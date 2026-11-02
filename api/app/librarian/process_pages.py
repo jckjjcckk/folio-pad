@@ -41,9 +41,9 @@ import time
 from decimal import Decimal
 from typing import Any
 
-from anthropic import AsyncAnthropic
+from anthropic import AsyncAnthropic   # the SDK client for Meta's Messages-compatible API (llm._client)
 
-from ..llm import _client as default_client, model_name as default_model
+from ..llm import _client as default_client
 from . import Job, JobContext, ScoreFailure, handler
 from . import label_memory, landmarks
 from .label_memory import LabelMemory
@@ -364,7 +364,7 @@ async def process_pages(job: Job, ctx: JobContext, *, client: AsyncAnthropic | N
     # its staff overlay. Neither depends on the other, so they are asked together (asyncio.gather); a page with no system costs neither a call.
     if "signature" not in state or "header" not in state:
         title = (ctx.db.table("scores").select("title").eq("id", score_id).single().execute().data or {}).get("title") or ""
-        c, m = client or default_client(), model or default_model()
+        c, m = client or default_client(), model or ctx.model   # ctx.model: the Spark model for the user's tier
     if "signature" not in state:
         await ctx.progress(0.03, "Reading the key, the time signature and the score header")
         want_header = "header" not in state

@@ -15,7 +15,7 @@ import uuid
 from typing import Any
 
 import httpx2 as httpx
-from anthropic import AsyncAnthropic
+from anthropic import AsyncAnthropic   # the SDK client the app points at Meta's Messages-compatible API
 
 
 def tool(name: str, args: dict[str, Any]) -> dict[str, Any]:

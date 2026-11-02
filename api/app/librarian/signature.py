@@ -20,7 +20,7 @@ from __future__ import annotations
 import re
 from typing import Any
 
-from anthropic import AsyncAnthropic
+from anthropic import AsyncAnthropic   # the SDK client for Meta's Messages-compatible API (llm._client)
 from music21 import key as m21key
 
 from . import JobContext

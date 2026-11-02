@@ -64,7 +64,7 @@ async def call_messages(prompt: str, png: bytes, *, effort: str, tag: str, uid: 
     """The app's path: `llm.complete` (Messages, output_config.effort), forced to Meta, 8000 budget, no system prompt."""
     guard()
     t0 = time.monotonic()
-    c = await complete(prompt, effort=effort, max_tokens=8000, image_png_b64=base64.b64encode(png).decode(), provider="meta")
+    c = await complete(prompt, effort=effort, max_tokens=8000, image_png_b64=base64.b64encode(png).decode())
     secs = time.monotonic() - t0
     usd = float(c.charge.cost_usd)
     log(tag=tag, uid=uid, api="messages", effort=effort, model=c.charge.model, usd=usd, input_tokens=c.charge.input_tokens,

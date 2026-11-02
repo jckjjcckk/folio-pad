@@ -40,7 +40,7 @@ r = rest(cl["voiceadmin"], "POST", "measures", json=[{"score_id": score, "number
 check(r.status_code == 201, f"60 bars ({r.status_code})")
 rest(svc, "POST", "parts", json=[{"score_id": score, "name": p, "position": i} for i, p in enumerate(["Violin I", "Violin II", "Viola", "Cello"])])
 
-env = {k: v for k, v in os.environ.items() if not k.startswith(("ANTHROPIC", "SUPABASE", "META"))}
+env = {k: v for k, v in os.environ.items() if not k.startswith(("SUPABASE", "META"))}
 for k in ("META_API_KEY", "META_API_BASE_URL"):     # from the environment, else this checkout's api/.env
     if os.environ.get(k):
         env[k] = os.environ[k]
@@ -49,7 +49,7 @@ if "META_API_KEY" not in env:
         if line.startswith(("META_API_KEY=", "META_API_BASE_URL=")):
             k, v = line.split("=", 1); env[k] = v.strip().strip('"')
 # WORKER=0: the route runs each take itself; no worker loop to pick up anything else queued on the stack.
-env.update(SUPABASE_URL=URL, SUPABASE_SECRET_KEY=SECRET, LLM_PROVIDER="meta", ANTHROPIC_API_KEY="", WORKER="0")
+env.update(SUPABASE_URL=URL, SUPABASE_SECRET_KEY=SECRET, WORKER="0")
 s = socket.socket(); s.bind(("127.0.0.1", 0)); port = s.getsockname()[1]; s.close()
 proc = subprocess.Popen([sys.executable, "-m", "uvicorn", "app.main:app", "--port", str(port)], cwd=WT / "api", env=env,
                         stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)

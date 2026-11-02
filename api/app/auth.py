@@ -15,6 +15,7 @@ from fastapi import Depends, HTTPException, Request
 from jwt import PyJWKClient
 
 from .db import db
+from .tiers import model_name, tier_of
 from .settings import settings
 
 
@@ -25,10 +26,16 @@ class User:
     display_name: str | None
     budget_usd: Decimal
     spent_usd: Decimal
+    model_tier: str = "standard"     # profiles.model_tier: "standard" (non-training) or "contributor"
 
     @property
     def over_budget(self) -> bool:
         return self.spent_usd >= self.budget_usd
+
+    @property
+    def model(self) -> str:
+        """The Spark model for this user's tier."""
+        return model_name(self.model_tier)
 
 
 _jwks: PyJWKClient | None = None
@@ -74,13 +81,16 @@ async def user_id_from_token(token: str) -> str:
 
 
 def load_user(user_id: str) -> User:
-    rows = db().table("profiles").select("id,email,display_name,budget_usd,spent_usd").eq("id", user_id).limit(1).execute().data
+    # select("*"), not a column list: a database without the model_tier migration still answers, and the tier
+    # falls back to standard (`tier_of`).
+    rows = db().table("profiles").select("*").eq("id", user_id).limit(1).execute().data
     if not rows:
         raise HTTPException(403, "This account is not on the list")
     p = rows[0]
     return User(
         id=p["id"], email=p.get("email"), display_name=p.get("display_name"),
         budget_usd=Decimal(str(p["budget_usd"])), spent_usd=Decimal(str(p["spent_usd"])),
+        model_tier=tier_of(p.get("model_tier")),
     )
 
 

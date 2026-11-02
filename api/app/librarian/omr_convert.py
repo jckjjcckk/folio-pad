@@ -69,11 +69,11 @@ import time
 from pathlib import Path
 from typing import Any
 
-from anthropic import AsyncAnthropic
+from anthropic import AsyncAnthropic   # the SDK client for Meta's Messages-compatible API (llm._client)
 from music21 import converter, stream
 from PIL import Image
 
-from ..llm import _client as default_client, model_name as default_model
+from ..llm import _client as default_client
 from . import Job, JobContext, handler, landmarks, playback
 from .engrave import SshEngraver, engrave_step
 from .import_musicxml import book_facts, part_groups, write_measures, write_parts
@@ -313,7 +313,7 @@ async def _convert(job: Job, ctx: JobContext, box: Any, client: AsyncAnthropic |
         await _fail(ctx, RuntimeError("This book's PDF source holds no .pdf file"))
     pages = _pages(p.get("pages"))
     client = client or default_client()
-    model = model or default_model()
+    model = model or ctx.model                          # the Spark model for the user's tier
 
     box = box or SshBox()
     if not await box.reachable():                      # before any model call: an offline engine costs nothing

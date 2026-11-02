@@ -120,7 +120,8 @@ async def test_unknown_tool_and_tool_exception_are_reported_not_fatal():
 @pytest.mark.asyncio
 async def test_cost_limit_pauses():
     client, _ = fake_client([tool("read_page", {"page": n}) for n in range(1, 9)])
-    st = await run_agent(system=SYSTEM, tools=box(), user_text="go", client=client, model="claude-opus-5-5", max_cost_usd=0.0015)
+    # The fake answers as "fake-model", priced at the unknown-model rate: $0.001 a turn, so the second turn crosses $0.0015.
+    st = await run_agent(system=SYSTEM, tools=box(), user_text="go", client=client, model="muse-spark-1.3", max_cost_usd=0.0015)
     assert st.status == "paused" and st.turn == 2 and "cost" in st.log[-1]
 
 

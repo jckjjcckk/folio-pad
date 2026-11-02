@@ -38,6 +38,8 @@ from ..spend import Charge
 from . import Job, JobContext, ScoreFailure, handler, landmarks
 from .voice_prompt import ScoreFacts, build_prompt, checked_marks, derive_groups, parse_answer
 
+# One name for every profile: Meta lists no -contributor variant of Voice Transcribe (GET /v1/models, 2026-11-01), so the
+# model tier changes only the Spark call below (`ctx.complete` uses `ctx.model`).
 ASR_MODEL = "muse-voice-transcribe-1.0"
 ASR_MODE = "DIARIZATION"          # the eval's choice: 22/26 lines fully right against 20/26 for PUSH_TO_TALK
 ASR_USD_PER_HOUR = Decimal("0.18")
@@ -276,7 +278,8 @@ async def transcribe_voice(job: Job, ctx: JobContext, *, transcribe: Transcriber
         system, user = build_prompt(transcript, score.facts)
         # Effort minimal on chat completions, streamed: the setting every voice eval ran at (013-text-eval,
         # 013-always-on) and half the time of Messages/low with the same marks (speed pass, benchmark 5.10).
-        c = await ctx.complete(user, system=system, effort=VOICE_EFFORT, max_tokens=8192, provider="meta", stream=True)
+        # The Spark model is the user's tier (`ctx.complete` passes `ctx.model`).
+        c = await ctx.complete(user, system=system, effort=VOICE_EFFORT, max_tokens=8192, stream=True)
         cost += c.charge.cost_usd
         try:
             answer = parse_answer(c.text)

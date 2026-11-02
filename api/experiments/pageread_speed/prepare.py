@@ -53,7 +53,7 @@ async def main() -> None:
         if use_header and not hf.exists():
             guard()
             pid0 = pages[0][0]
-            h = await read_header(Ctx(book), pngs[pid0], _client("meta"), MODEL, page=1, title=title)
+            h = await read_header(Ctx(book), pngs[pid0], _client(), MODEL, page=1, title=title)
             h.pop("overlay_png", None)
             hf.write_text(json.dumps(h, indent=1))
         header = json.loads(hf.read_text()) if hf.exists() else None

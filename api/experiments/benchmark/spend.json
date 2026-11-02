@@ -5,10 +5,22 @@
    "anthropic_usd": 0.88571,
    "calls": 348,
    "updated": "2026-10-28T02:54:34"
+  },
+  "spark12-vs-13-2026-11-01": {
+   "meta_usd": 0.43037,
+   "anthropic_usd": 0,
+   "calls": 54,
+   "updated": "2026-11-01T21:01:23"
+  },
+  "spark12-vs-13-r2": {
+   "meta_usd": 0.398803,
+   "anthropic_usd": 0,
+   "calls": 54,
+   "updated": "2026-11-01T21:04:15"
   }
  },
  "total": {
-  "meta_usd": 1.455539,
+  "meta_usd": 2.284712,
   "anthropic_usd": 0.88571
  }
 }

@@ -47,3 +47,4 @@ docs/design/r3/shots/
 api/fixtures/pdf
 api/fixtures/voice/audio/
 api/experiments/voice/out/
+api/experiments/spark12/runs/**/*.png

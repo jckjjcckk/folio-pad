@@ -137,7 +137,7 @@ async def main() -> None:
     pc.ask_model = wrapped
 
     t0 = time.time()
-    out = await pc.part_cut(job, ctx, client=_client("meta"), model=settings.meta_model)
+    out = await pc.part_cut(job, ctx, client=_client(), model=settings.meta_model)
     wall = time.time() - t0
     sc = ctx.result["agent"]["scratch"]
     commits = {k: {"staves": v["staves"], "rechecks": [{"block": r["block"], "verdict": r["verdict"]} for r in v.get("rechecks") or []]}

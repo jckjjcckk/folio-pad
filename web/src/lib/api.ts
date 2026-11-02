@@ -90,8 +90,13 @@ export const saveDetails = (scoreId: string, body: DetailsBody, token: string) =
 /** `GET /me`: the account and what it may still spend. The shared project cap comes back too; the web never shows it. */
 export interface MeBudget { budget_usd: number; spent_usd: number; shared_cap_usd: number; shared_spent_usd: number; can_call_models: boolean }
 export interface Membership { member_id: string; ensemble_id: string; ensemble_name: string | null; role: 'admin' | 'player'; part: string | null }
-export interface Me { id: string; email: string; display_name: string | null; memberships: Membership[]; budget: MeBudget }
+/** Meta's two model tiers (`profiles.model_tier`): standard is not used for training; contributor is cheaper and Meta
+ *  may use the content to train future models. A server or database without the column answers nothing: standard. */
+export type ModelTier = 'standard' | 'contributor'
+export interface Me { id: string; email: string; display_name: string | null; model_tier?: ModelTier; model?: string; memberships: Membership[]; budget: MeBudget }
 export const getMe = (token: string) => request<Me>('/me', token)
+/** `PATCH /me`: the caller sets their own model tier; the API answers with the account as `GET /me` does. */
+export const setModelTier = (model_tier: ModelTier, token: string) => request<Me>('/me', token, { model_tier }, 'PATCH')
 
 /** The API's two 402 refusals (`require_budget` in `api/app/spend.py`), word for word, so the account menu and the
  *  refusal say the same thing. */

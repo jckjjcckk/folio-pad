@@ -1,5 +1,3 @@
-from typing import Literal
-
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -10,10 +8,8 @@ class Settings(BaseSettings):
     supabase_url: str = ""
     supabase_secret_key: str = ""
 
-    # LLM provider for text + vision reasoning. SAM and Voice Transcribe always go through Meta.
-    llm_provider: Literal["anthropic", "meta"] = "anthropic"
-    anthropic_api_key: str = ""
-    anthropic_model: str = "claude-opus-5-5"
+    # Meta Model API: Muse Spark for text + vision reasoning, Voice Transcribe, SAM. The only runtime provider.
+    # META_MODEL is the standard (non-training) tier; a profile on the contributor tier gets META_MODEL + "-contributor".
     meta_api_key: str = ""
     meta_api_base_url: str = "https://api.meta.ai/v1"
     meta_model: str = "muse-spark-1.3"

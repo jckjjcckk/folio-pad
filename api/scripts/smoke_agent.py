@@ -1,6 +1,6 @@
-"""Live smoke of the agent loop against the configured provider (LLM_PROVIDER=meta for Spark).
+"""Live smoke of the agent loop against Muse Spark (META_MODEL, the standard tier).
 
-    cd api && LLM_PROVIDER=meta PYTHONPATH=. uv run scripts/smoke_agent.py
+    cd api && PYTHONPATH=. uv run scripts/smoke_agent.py
 
 A three-page pretend score. The model must read every page, commit the parts of each one (the commit tool
 refuses when the part count does not match the staves it was told), and finish. Prints the turn log, cost

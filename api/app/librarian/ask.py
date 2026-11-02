@@ -9,11 +9,10 @@ from __future__ import annotations
 import json
 from typing import Any
 
-from anthropic import AsyncAnthropic
+from anthropic import AsyncAnthropic   # the SDK client for Meta's Messages-compatible API (llm._client)
 
 from .. import llm
 from ..llm import price
-from ..settings import settings
 from ..spend import Charge
 from . import JobContext
 from . import header as hdr
@@ -35,15 +34,13 @@ async def ask_model(ctx: JobContext, client: AsyncAnthropic, model: str, prompt:
     """One image+text call outside the loop (header, labels, recheck, signature), charged like a turn. The answer is
     parsed with the JSON repair; a reply cut off at max_tokens or one that does not parse is asked again (`retries`
     times, every attempt charged); so is JSON without the `require`d list. `_cost_usd` is the sum, `_retries` the reasons; raises when no attempt parsed.
-    `effort="minimal"` with Spark goes to chat completions (`llm.chat`), same prompt, image and system; `_api` says which."""
+    `effort="minimal"` goes to chat completions (`llm.chat`), same prompt, image and system; `_api` says which.
+    `model` is the job's tier model (`ctx.model`), so a contributor-tier user's calls go to the contributor model."""
     content = [{"type": "image", "source": {"type": "base64", "media_type": "image/png", "data": ctx.png_b64(png)}}, {"type": "text", "text": prompt}]
-    is_meta = settings.llm_provider == "meta" or model.startswith("muse")
     total, why, data, err = 0.0, [], None, None
-    # A real client goes to chat completions; an injected stand-in (the tests' fakes) keeps answering on .messages and
-    # sees effort "minimal" in output_config, so a test can tell which effort was asked for.
-    use_chat = effort == llm.CHAT_EFFORT and is_meta and (client is None or isinstance(client, AsyncAnthropic))
-    if effort == llm.CHAT_EFFORT and not is_meta:
-        effort = "low"
+    # A client pointed at Meta (or none) goes to chat completions; an injected stand-in (the tests' fakes, another base
+    # URL) keeps answering on .messages and sees effort "minimal" in output_config, so a test can tell which effort was asked for.
+    use_chat = effort == llm.CHAT_EFFORT and (client is None or llm.on_meta(client))
     for _ in range(retries + 1):
         if use_chat:
             r = await llm.chat([{"role": "system", "content": system},
@@ -51,13 +48,13 @@ async def ask_model(ctx: JobContext, client: AsyncAnthropic, model: str, prompt:
                                effort=effort, max_tokens=max_tokens, model=model)
             n_in, n_out, got_model, text, truncated = r.input_tokens, r.output_tokens, r.model or model, r.text, r.finish_reason == "length"
         else:
-            res = await client.messages.create(model=model, max_tokens=max(max_tokens, 1024) if is_meta else max_tokens, system=system,
+            res = await client.messages.create(model=model, max_tokens=max(max_tokens, 1024), system=system,
                                                messages=[{"role": "user", "content": content}], output_config={"effort": effort})
             n_in, n_out, got_model = res.usage.input_tokens, res.usage.output_tokens, res.model or model
             text = "".join(b.text for b in res.content if b.type == "text")
             truncated = res.stop_reason == "max_tokens"
         cost = price(got_model, n_in, n_out)
-        ctx.charge(Charge("meta" if is_meta else "anthropic", got_model, "spark" if is_meta else "claude", cost, n_in, n_out))
+        ctx.charge(Charge("meta", got_model, "spark", cost, n_in, n_out))
         total += float(cost)
         try:
             data, repaired = hdr.parse_json(text)

@@ -23,12 +23,11 @@ def _messages_client(calls):
 
 @pytest.fixture
 def meta(monkeypatch):
-    monkeypatch.setattr(llm.settings, "llm_provider", "meta")
     monkeypatch.setattr(llm.settings, "meta_api_key", "test-key")
     monkeypatch.setattr(llm.settings, "meta_api_base_url", "https://meta.test/v1")
     sent: list[dict] = []
     msgs: list[dict] = []
-    monkeypatch.setattr(llm, "_client", lambda provider=None: _messages_client(msgs))
+    monkeypatch.setattr(llm, "_client", lambda: _messages_client(msgs))
     return SimpleNamespace(sent=sent, msgs=msgs, mp=monkeypatch)
 
 
@@ -78,11 +77,24 @@ def test_minimal_budget_floor_and_length(meta):
     assert meta.sent[0]["body"]["messages"] == [{"role": "user", "content": "x"}]
 
 
-def test_minimal_with_anthropic_is_low_on_messages(meta):
-    meta.mp.setattr(llm.settings, "llm_provider", "anthropic")
-    meta.mp.setattr(llm, "_chat_transport", _transport(meta.sent, []))
-    c = asyncio.run(llm.complete("x", effort="minimal"))
-    assert c.api == "messages" and meta.msgs[0]["output_config"] == {"effort": "low"} and not meta.sent
+def test_model_tier_names_and_prices():
+    assert llm.model_name() == llm.model_name("standard") == "muse-spark-1.3"
+    assert llm.model_name("contributor") == "muse-spark-1.3-contributor"
+    assert llm.model_name("nonsense") == llm.model_name(None) == "muse-spark-1.3"      # anything else is standard
+    assert llm.price("muse-spark-1.3-contributor", 1_000_000, 1_000_000) == Decimal("0.30")
+
+
+def test_contributor_model_on_both_endpoints(meta):
+    """The caller's tier model goes out on chat completions and on Messages, and the charge records what Meta named."""
+    reply = httpx.Response(200, json={"model": "muse-spark-1.3-contributor", "choices": [{"message": {"content": "{}"}, "finish_reason": "stop"}],
+                                      "usage": {"prompt_tokens": 1000, "completion_tokens": 100}})
+    meta.mp.setattr(llm, "_chat_transport", _transport(meta.sent, [reply]))
+    c = asyncio.run(llm.complete("x", effort="minimal", model="muse-spark-1.3-contributor"))
+    assert meta.sent[0]["body"]["model"] == "muse-spark-1.3-contributor" and c.charge.model == "muse-spark-1.3-contributor"
+    assert c.charge.cost_usd == (Decimal("0.10") * 1000 + Decimal("0.20") * 100) / Decimal(1_000_000)
+    c = asyncio.run(llm.complete("x", effort="low", model="muse-spark-1.3-contributor"))
+    assert meta.msgs[0]["model"] == "muse-spark-1.3-contributor" and c.api == "messages"
+    assert c.charge == llm.Charge("meta", "muse-spark-1.3-contributor", "spark", llm.price("muse-spark-1.3-contributor", 100, 20), 100, 20)
 
 
 def test_streamed_chat_joins_deltas_and_reads_usage(meta):
@@ -92,7 +104,7 @@ def test_streamed_chat_joins_deltas_and_reads_usage(meta):
         'data: {"choices":[],"usage":{"prompt_tokens":500,"completion_tokens":40}}',
         "data: [DONE]"]) + "\n\n"
     meta.mp.setattr(llm, "_chat_transport", _transport(meta.sent, [httpx.Response(200, text=sse, headers={"content-type": "text/event-stream"})]))
-    c = asyncio.run(llm.complete("x", effort="minimal", provider="meta", stream=True))
+    c = asyncio.run(llm.complete("x", effort="minimal", stream=True))
     assert c.text == '{"none": true}' and c.charge.input_tokens == 500 and c.charge.output_tokens == 40
     assert meta.sent[0]["body"]["stream"] is True and meta.sent[0]["body"]["stream_options"] == {"include_usage": True}
     assert c.first_token_s is not None

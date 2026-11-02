@@ -24,10 +24,9 @@ from dataclasses import asdict, dataclass, field
 from decimal import Decimal
 from typing import Any
 
-from anthropic import AsyncAnthropic
+from anthropic import AsyncAnthropic   # the SDK client for Meta's Messages-compatible API (llm._client)
 
 from ..llm import _client as default_client, model_name as default_model, price
-from ..settings import settings
 from ..spend import Charge
 from .tools import Refusal, Stop, ToolBox
 
@@ -118,7 +117,6 @@ async def run_agent(
 
     c = client or default_client()
     m = model or default_model()
-    is_meta = settings.llm_provider == "meta" or m.startswith("muse")
     defs = tools.definitions()
 
     async def save() -> None:
@@ -137,7 +135,7 @@ async def run_agent(
         msgs = list(st.messages)
         if last_turn and isinstance(msgs[-1].get("content"), list):
             msgs[-1] = {**msgs[-1], "content": [*msgs[-1]["content"], {"type": "text", "text": LAST_TURN_NUDGE}]}
-        kw: dict[str, Any] = {"model": m, "max_tokens": max(max_tokens, 1024) if is_meta else max_tokens,
+        kw: dict[str, Any] = {"model": m, "max_tokens": max(max_tokens, 1024),
                               "system": system, "tools": defs, "messages": msgs,
                               "output_config": {"effort": effort}}
         t0 = time.time()
@@ -149,7 +147,7 @@ async def run_agent(
         st.input_tokens += u.input_tokens
         st.output_tokens += u.output_tokens
         if charge:
-            out = charge(Charge("meta" if is_meta else "anthropic", res.model or m, "spark" if is_meta else "claude", cost, u.input_tokens, u.output_tokens))
+            out = charge(Charge("meta", res.model or m, "spark", cost, u.input_tokens, u.output_tokens))
             if hasattr(out, "__await__"):
                 await out
         blocks = _dump_blocks(res.content)

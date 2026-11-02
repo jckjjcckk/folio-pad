@@ -62,7 +62,7 @@ async def main() -> None:
     t1 = time.time()
     j2 = Job(str(uuid.uuid4()), "process_pages", {"score_id": score, "source_id": "src1"}, score, "u1", 1, 3)
     ctx = Ctx(j2, db, files, tag=tag)
-    out = await process_pages(j2, ctx, client=_client("meta"), model=settings.meta_model)
+    out = await process_pages(j2, ctx, client=_client(), model=settings.meta_model)
     t2 = time.time()
     state = db.rows["interpretations"][-1]["params"]["state"]
     sc = db.rows["scores"][0]

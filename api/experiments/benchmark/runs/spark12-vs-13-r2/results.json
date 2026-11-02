@@ -1,0 +1,5092 @@
+{
+ "run": "spark12-vs-13-r2",
+ "grid": {
+  "name": "spark12-vs-13-2026-11-01",
+  "corpus": "corpus/manifest.yaml",
+  "tasks": [
+   "header",
+   "labels",
+   "text",
+   "closed"
+  ],
+  "models": [
+   "muse-spark-1.2",
+   "muse-spark-1.3"
+  ],
+  "efforts": [
+   "minimal",
+   "low"
+  ],
+  "resolutions": [
+   "150dpi"
+  ],
+  "max_tokens": 16000,
+  "omr": {},
+  "concurrency": {
+   "meta": 4,
+   "anthropic": 6,
+   "omr": 2
+  }
+ },
+ "records": {
+  "labels|beethoven9-p172|muse-spark-1.2|minimal|150dpi": {
+   "id": "labels|beethoven9-p172|muse-spark-1.2|minimal|150dpi",
+   "task": "labels",
+   "item": "beethoven9-p172",
+   "page": "beethoven9-p172",
+   "model": "muse-spark-1.2",
+   "provider": "meta",
+   "effort": "minimal",
+   "resolution": "150dpi",
+   "ts": "2026-11-01T21:01:54",
+   "image_px": [
+    3153,
+    4000
+   ],
+   "image_bytes": 3116461,
+   "media_type": "image/jpeg",
+   "cost_usd": 0.009788,
+   "latency_s": 4.61,
+   "attempts": [
+    {
+     "input_tokens": 4570,
+     "output_tokens": 959,
+     "cost_usd": 0.009788,
+     "stop_reason": "stop",
+     "api": "chat",
+     "reasoning_tokens": 760,
+     "model_returned": "muse-spark-1.2",
+     "call_s": 4.61,
+     "repaired": false
+    }
+   ],
+   "json_fail_first": false,
+   "raw_text": "{\"systems\":[{\"index\":1,\"wanted_staves\":[13],\"status\":\"resting\",\"margin_labels\":[{\"text\":\"Flauti.\",\"staves\":[2]},{\"text\":\"Oboi.\",\"staves\":[3]},{\"text\":\"Clarinetti.\",\"staves\":[4]},{\"text\":\"Fagotti.\",\"staves\":[5]},{\"text\":\"Corni in D.\",\"staves\":[6]},{\"text\":\"Tympani in D.\",\"staves\":[7]},{\"text\":\"Alto e Tenore Tromboni\",\"staves\":[8]},{\"text\":\"Basso.\",\"staves\":[9]},{\"text\":\"Violini.\",\"staves\":[10,11]},{\"text\":\"Viola.\",\"staves\":[12]},{\"text\":\"C O R O\",\"staves\":[13,14,15,16]},{\"text\":\"Violoncello & Bassi.\",\"staves\":[17]}]}],\"confidence\":\"high\",\"notes\":\"\"}",
+   "status": "ok",
+   "answer": {
+    "systems": [
+     {
+      "index": 1,
+      "wanted_staves": [
+       13
+      ],
+      "status": "resting",
+      "margin_labels": [
+       {
+        "text": "Flauti.",
+        "staves": [
+         2
+        ]
+       },
+       {
+        "text": "Oboi.",
+        "staves": [
+         3
+        ]
+       },
+       {
+        "text": "Clarinetti.",
+        "staves": [
+         4
+        ]
+       },
+       {
+        "text": "Fagotti.",
+        "staves": [
+         5
+        ]
+       },
+       {
+        "text": "Corni in D.",
+        "staves": [
+         6
+        ]
+       },
+       {
+        "text": "Tympani in D.",
+        "staves": [
+         7
+        ]
+       },
+       {
+        "text": "Alto e Tenore Tromboni",
+        "staves": [
+         8
+        ]
+       },
+       {
+        "text": "Basso.",
+        "staves": [
+         9
+        ]
+       },
+       {
+        "text": "Violini.",
+        "staves": [
+         10,
+         11
+        ]
+       },
+       {
+        "text": "Viola.",
+        "staves": [
+         12
+        ]
+       },
+       {
+        "text": "C O R O",
+        "staves": [
+         13,
+         14,
+         15,
+         16
+        ]
+       },
+       {
+        "text": "Violoncello & Bassi.",
+        "staves": [
+         17
+        ]
+       }
+      ]
+     }
+    ],
+    "confidence": "high",
+    "notes": ""
+   },
+   "score": {
+    "systems_ok": 1,
+    "systems_n": 1,
+    "page_ok": 1,
+    "wrong": {}
+   }
+  },
+  "labels|beethoven9-p174|muse-spark-1.2|minimal|150dpi": {
+   "id": "labels|beethoven9-p174|muse-spark-1.2|minimal|150dpi",
+   "task": "labels",
+   "item": "beethoven9-p174",
+   "page": "beethoven9-p174",
+   "model": "muse-spark-1.2",
+   "provider": "meta",
+   "effort": "minimal",
+   "resolution": "150dpi",
+   "ts": "2026-11-01T21:01:54",
+   "image_px": [
+    3153,
+    4000
+   ],
+   "image_bytes": 3474511,
+   "media_type": "image/png",
+   "cost_usd": 0.008122,
+   "latency_s": 4.75,
+   "attempts": [
+    {
+     "input_tokens": 4570,
+     "output_tokens": 567,
+     "cost_usd": 0.008122,
+     "stop_reason": "stop",
+     "api": "chat",
+     "reasoning_tokens": 409,
+     "model_returned": "muse-spark-1.2",
+     "call_s": 4.75,
+     "repaired": false
+    }
+   ],
+   "json_fail_first": false,
+   "raw_text": "{\"systems\":[{\"index\":1,\"wanted_staves\":[13],\"status\":\"playing\",\"margin_labels\":[]}],\"confidence\":\"medium\",\"notes\":\"System is full 18-stave system (bars 1-10 on page 170). Staff 13 is CORO Soprano by header order (clef C1/alto-tenor on first page, here alto clef with G# key sig, text 'Kuss der gan-zen Welt!'). Staff 13 contains notes in bars 1-4 and rests thereafter, so playing. No instrument names are legibly printed in the cropped left margin on this scan; Bassi e Violoncelli is printed mid-system below staff 17, not in left margin.\"}",
+   "status": "ok",
+   "answer": {
+    "systems": [
+     {
+      "index": 1,
+      "wanted_staves": [
+       13
+      ],
+      "status": "playing",
+      "margin_labels": []
+     }
+    ],
+    "confidence": "medium",
+    "notes": "System is full 18-stave system (bars 1-10 on page 170). Staff 13 is CORO Soprano by header order (clef C1/alto-tenor on first page, here alto clef with G# key sig, text 'Kuss der gan-zen Welt!'). Staff 13 contains notes in bars 1-4 and rests thereafter, so playing. No instrument names are legibly printed in the cropped left margin on this scan; Bassi e Violoncelli is printed mid-system below staff 17, not in left margin."
+   },
+   "score": {
+    "systems_ok": 1,
+    "systems_n": 1,
+    "page_ok": 1,
+    "wrong": {}
+   }
+  },
+  "labels|beethoven9-p173|muse-spark-1.2|minimal|150dpi": {
+   "id": "labels|beethoven9-p173|muse-spark-1.2|minimal|150dpi",
+   "task": "labels",
+   "item": "beethoven9-p173",
+   "page": "beethoven9-p173",
+   "model": "muse-spark-1.2",
+   "provider": "meta",
+   "effort": "minimal",
+   "resolution": "150dpi",
+   "ts": "2026-11-01T21:01:54",
+   "image_px": [
+    3136,
+    4000
+   ],
+   "image_bytes": 3136790,
+   "media_type": "image/jpeg",
+   "cost_usd": 0.011955,
+   "latency_s": 7.28,
+   "attempts": [
+    {
+     "input_tokens": 4770,
+     "output_tokens": 1410,
+     "cost_usd": 0.011955,
+     "stop_reason": "stop",
+     "api": "chat",
+     "reasoning_tokens": 958,
+     "model_returned": "muse-spark-1.2",
+     "call_s": 7.27,
+     "repaired": false
+    }
+   ],
+   "json_fail_first": false,
+   "raw_text": "{\"systems\": [{\"index\": 1, \"wanted_staves\": [], \"status\": \"absent\", \"margin_labels\": []}, {\"index\": 2, \"wanted_staves\": [13], \"status\": \"playing\", \"margin_labels\": [{\"text\": \"Flauti.\", \"staves\": [2]}, {\"text\": \"Oboi.\", \"staves\": [3]}, {\"text\": \"Clarinetti.\", \"staves\": [4]}, {\"text\": \"Fagotti.\", \"staves\": [5]}, {\"text\": \"Corni in D.\", \"staves\": [6]}, {\"text\": \"Tympani in D.\", \"staves\": [7]}, {\"text\": \"Tromboni Alto e Tenore\", \"staves\": [8]}, {\"text\": \"Tromboni Basso.\", \"staves\": [9]}, {\"text\": \"Violini. I.\", \"staves\": [10]}, {\"text\": \"Violini. II.\", \"staves\": [11]}, {\"text\": \"Viola.\", \"staves\": [12]}, {\"text\": \"CORO Soprano\", \"staves\": [13]}]}, {\"index\": 3, \"wanted_staves\": [], \"status\": \"absent\", \"margin_labels\": []}], \"confidence\": \"medium\", \"notes\": \"Tag 1 = pos1 False detection top edge, tag14-15 = pos14-15 false bottom edge truncated systems. System2 is truncated full system 2..13 (pos13 Soprano present on tag13 treble clef with text 'Seyd umschlungen Milli-o-nen! die-sen' and playing); positions 14-18 (CORO Alto, Tenore, Basso, Violoncello & Bassi, pos18 false) not printed = absent. System3 tags14-15 correspond to pos14 CORO Alto and pos15 CORO Tenore with 5 bars, Soprano pos13 not printed so absent. No margin text legibly printed on this scan; labels inferred from header order, brace and clef.\"}",
+   "status": "ok",
+   "answer": {
+    "systems": [
+     {
+      "index": 1,
+      "wanted_staves": [],
+      "status": "absent",
+      "margin_labels": []
+     },
+     {
+      "index": 2,
+      "wanted_staves": [
+       13
+      ],
+      "status": "playing",
+      "margin_labels": [
+       {
+        "text": "Flauti.",
+        "staves": [
+         2
+        ]
+       },
+       {
+        "text": "Oboi.",
+        "staves": [
+         3
+        ]
+       },
+       {
+        "text": "Clarinetti.",
+        "staves": [
+         4
+        ]
+       },
+       {
+        "text": "Fagotti.",
+        "staves": [
+         5
+        ]
+       },
+       {
+        "text": "Corni in D.",
+        "staves": [
+         6
+        ]
+       },
+       {
+        "text": "Tympani in D.",
+        "staves": [
+         7
+        ]
+       },
+       {
+        "text": "Tromboni Alto e Tenore",
+        "staves": [
+         8
+        ]
+       },
+       {
+        "text": "Tromboni Basso.",
+        "staves": [
+         9
+        ]
+       },
+       {
+        "text": "Violini. I.",
+        "staves": [
+         10
+        ]
+       },
+       {
+        "text": "Violini. II.",
+        "staves": [
+         11
+        ]
+       },
+       {
+        "text": "Viola.",
+        "staves": [
+         12
+        ]
+       },
+       {
+        "text": "CORO Soprano",
+        "staves": [
+         13
+        ]
+       }
+      ]
+     },
+     {
+      "index": 3,
+      "wanted_staves": [],
+      "status": "absent",
+      "margin_labels": []
+     }
+    ],
+    "confidence": "medium",
+    "notes": "Tag 1 = pos1 False detection top edge, tag14-15 = pos14-15 false bottom edge truncated systems. System2 is truncated full system 2..13 (pos13 Soprano present on tag13 treble clef with text 'Seyd umschlungen Milli-o-nen! die-sen' and playing); positions 14-18 (CORO Alto, Tenore, Basso, Violoncello & Bassi, pos18 false) not printed = absent. System3 tags14-15 correspond to pos14 CORO Alto and pos15 CORO Tenore with 5 bars, Soprano pos13 not printed so absent. No margin text legibly printed on this scan; labels inferred from header order, brace and clef."
+   },
+   "score": {
+    "systems_ok": 2,
+    "systems_n": 3,
+    "page_ok": 0,
+    "wrong": {
+     "2": [
+      13
+     ]
+    }
+   }
+  },
+  "labels|rach1-gutheil-p01|muse-spark-1.2|minimal|150dpi": {
+   "id": "labels|rach1-gutheil-p01|muse-spark-1.2|minimal|150dpi",
+   "task": "labels",
+   "item": "rach1-gutheil-p01",
+   "page": "rach1-gutheil-p01",
+   "model": "muse-spark-1.2",
+   "provider": "meta",
+   "effort": "minimal",
+   "resolution": "150dpi",
+   "ts": "2026-11-01T21:01:58",
+   "image_px": [
+    1275,
+    1756
+   ],
+   "image_bytes": 588624,
+   "media_type": "image/png",
+   "cost_usd": 0.008104,
+   "latency_s": 3.92,
+   "attempts": [
+    {
+     "input_tokens": 3335,
+     "output_tokens": 926,
+     "cost_usd": 0.008104,
+     "stop_reason": "stop",
+     "api": "chat",
+     "reasoning_tokens": 648,
+     "model_returned": "muse-spark-1.2",
+     "call_s": 3.92,
+     "repaired": false
+    }
+   ],
+   "json_fail_first": false,
+   "raw_text": "{\"systems\":[{\"index\":1,\"wanted_staves\":[11,12],\"status\":\"playing\",\"margin_labels\":[{\"text\":\"Flauti I. II.\",\"staves\":[1]},{\"text\":\"Oboi I. II.\",\"staves\":[2]},{\"text\":\"Clarinetti I. II in A.\",\"staves\":[3]},{\"text\":\"Fagotti I. II.\",\"staves\":[4]},{\"text\":\"Corni in F.\",\"staves\":[5,6]},{\"text\":\"I. II.\",\"staves\":[5]},{\"text\":\"III. IV.\",\"staves\":[6]},{\"text\":\"Trombe I. II in B.\",\"staves\":[7]},{\"text\":\"Tromboni ten. I. II.\",\"staves\":[8]},{\"text\":\"Trombone basso\",\"staves\":[9]},{\"text\":\"Timpani in A. H.\",\"staves\":[10]},{\"text\":\"Piano.\",\"staves\":[11,12]},{\"text\":\"Violini I.\",\"staves\":[13]},{\"text\":\"Violini II.\",\"staves\":[14]},{\"text\":\"Viole.\",\"staves\":[15]},{\"text\":\"Violoncelli.\",\"staves\":[16]},{\"text\":\"Contrabassi.\",\"staves\":[17]}]}],\"confidence\":\"high\",\"notes\":\"\"}",
+   "status": "ok",
+   "answer": {
+    "systems": [
+     {
+      "index": 1,
+      "wanted_staves": [
+       11,
+       12
+      ],
+      "status": "playing",
+      "margin_labels": [
+       {
+        "text": "Flauti I. II.",
+        "staves": [
+         1
+        ]
+       },
+       {
+        "text": "Oboi I. II.",
+        "staves": [
+         2
+        ]
+       },
+       {
+        "text": "Clarinetti I. II in A.",
+        "staves": [
+         3
+        ]
+       },
+       {
+        "text": "Fagotti I. II.",
+        "staves": [
+         4
+        ]
+       },
+       {
+        "text": "Corni in F.",
+        "staves": [
+         5,
+         6
+        ]
+       },
+       {
+        "text": "I. II.",
+        "staves": [
+         5
+        ]
+       },
+       {
+        "text": "III. IV.",
+        "staves": [
+         6
+        ]
+       },
+       {
+        "text": "Trombe I. II in B.",
+        "staves": [
+         7
+        ]
+       },
+       {
+        "text": "Tromboni ten. I. II.",
+        "staves": [
+         8
+        ]
+       },
+       {
+        "text": "Trombone basso",
+        "staves": [
+         9
+        ]
+       },
+       {
+        "text": "Timpani in A. H.",
+        "staves": [
+         10
+        ]
+       },
+       {
+        "text": "Piano.",
+        "staves": [
+         11,
+         12
+        ]
+       },
+       {
+        "text": "Violini I.",
+        "staves": [
+         13
+        ]
+       },
+       {
+        "text": "Violini II.",
+        "staves": [
+         14
+        ]
+       },
+       {
+        "text": "Viole.",
+        "staves": [
+         15
+        ]
+       },
+       {
+        "text": "Violoncelli.",
+        "staves": [
+         16
+        ]
+       },
+       {
+        "text": "Contrabassi.",
+        "staves": [
+         17
+        ]
+       }
+      ]
+     }
+    ],
+    "confidence": "high",
+    "notes": ""
+   },
+   "score": {
+    "systems_ok": 1,
+    "systems_n": 1,
+    "page_ok": 1,
+    "wrong": {}
+   }
+  },
+  "labels|beethoven9-p175|muse-spark-1.2|minimal|150dpi": {
+   "id": "labels|beethoven9-p175|muse-spark-1.2|minimal|150dpi",
+   "task": "labels",
+   "item": "beethoven9-p175",
+   "page": "beethoven9-p175",
+   "model": "muse-spark-1.2",
+   "provider": "meta",
+   "effort": "minimal",
+   "resolution": "150dpi",
+   "ts": "2026-11-01T21:01:54",
+   "image_px": [
+    3136,
+    4000
+   ],
+   "image_bytes": 3206140,
+   "media_type": "image/jpeg",
+   "cost_usd": 0.014485,
+   "latency_s": 10.41,
+   "attempts": [
+    {
+     "input_tokens": 4686,
+     "output_tokens": 2030,
+     "cost_usd": 0.014485,
+     "stop_reason": "stop",
+     "api": "chat",
+     "reasoning_tokens": 1865,
+     "model_returned": "muse-spark-1.2",
+     "call_s": 10.41,
+     "repaired": false
+    }
+   ],
+   "json_fail_first": false,
+   "raw_text": "{\"systems\":[{\"index\":1,\"wanted_staves\":[12],\"status\":\"playing\",\"margin_labels\":[]},{\"index\":2,\"wanted_staves\":[],\"status\":\"absent\",\"margin_labels\":[]}],\"confidence\":\"medium\",\"notes\":\"Page tags 1..17 include music only; tag1=pos2 Flauti. via tag=pos-1 mapping so pos1 false top not tagged and pos18 false bottom = tag17 system2. System1 has 16 music staves = pos2..17 full, so no music instrument absent, only false detections outside system1. System1 pos13 CORO Soprano = tag12. System2 contains only tag17 = pos18 false detection bottom edge, zero bars, so Soprano not printed.\"}",
+   "status": "ok",
+   "answer": {
+    "systems": [
+     {
+      "index": 1,
+      "wanted_staves": [
+       12
+      ],
+      "status": "playing",
+      "margin_labels": []
+     },
+     {
+      "index": 2,
+      "wanted_staves": [],
+      "status": "absent",
+      "margin_labels": []
+     }
+    ],
+    "confidence": "medium",
+    "notes": "Page tags 1..17 include music only; tag1=pos2 Flauti. via tag=pos-1 mapping so pos1 false top not tagged and pos18 false bottom = tag17 system2. System1 has 16 music staves = pos2..17 full, so no music instrument absent, only false detections outside system1. System1 pos13 CORO Soprano = tag12. System2 contains only tag17 = pos18 false detection bottom edge, zero bars, so Soprano not printed."
+   },
+   "score": {
+    "systems_ok": 2,
+    "systems_n": 2,
+    "page_ok": 1,
+    "wrong": {}
+   }
+  },
+  "labels|rach1-gutheil-p02|muse-spark-1.2|minimal|150dpi": {
+   "id": "labels|rach1-gutheil-p02|muse-spark-1.2|minimal|150dpi",
+   "task": "labels",
+   "item": "rach1-gutheil-p02",
+   "page": "rach1-gutheil-p02",
+   "model": "muse-spark-1.2",
+   "provider": "meta",
+   "effort": "minimal",
+   "resolution": "150dpi",
+   "ts": "2026-11-01T21:01:59",
+   "image_px": [
+    1275,
+    1756
+   ],
+   "image_bytes": 806154,
+   "media_type": "image/png",
+   "cost_usd": 0.010381,
+   "latency_s": 6.6,
+   "attempts": [
+    {
+     "input_tokens": 3419,
+     "output_tokens": 1437,
+     "cost_usd": 0.010381,
+     "stop_reason": "stop",
+     "api": "chat",
+     "reasoning_tokens": 1102,
+     "model_returned": "muse-spark-1.2",
+     "call_s": 6.6,
+     "repaired": false
+    }
+   ],
+   "json_fail_first": false,
+   "raw_text": "{\"systems\":[{\"index\":1,\"wanted_staves\":[1,2],\"status\":\"playing\",\"margin_labels\":[{\"text\":\"Pno.\",\"staves\":[1,2]}]},{\"index\":2,\"wanted_staves\":[18,19],\"status\":\"playing\",\"margin_labels\":[{\"text\":\"Fl.\",\"staves\":[8]},{\"text\":\"Ob.\",\"staves\":[9]},{\"text\":\"Clar.\",\"staves\":[10]},{\"text\":\"Fag.\",\"staves\":[11]},{\"text\":\"Cor.\",\"staves\":[12,13]},{\"text\":\"Tr.\",\"staves\":[14]},{\"text\":\"Tromb. ten.\",\"staves\":[15]},{\"text\":\"Tromb. basso.\",\"staves\":[16]},{\"text\":\"Timp.\",\"staves\":[17]},{\"text\":\"Pno.\",\"staves\":[18,19]}]}],\"confidence\":\"high\",\"notes\":\"System1 has 7 staves vs header 17 staves per full system. Detector grouping correct. Staves 1-2 are Pno. (brace, Pno. label, treble/bass clefs, piano figuration). Staves 3-7 are the 5 string groups (Vl.I, Vl.II, Vla., Vc., Cb.) with rests; wind/brass/percussion positions 1-10 of header are not printed (tacet). System2 is full 17 staves 8-24. By header order positions 11-12 Piano correspond to staves 18-19, confirmed by Pno. label, brace, treble/bass clefs and piano writing.\"}",
+   "status": "ok",
+   "answer": {
+    "systems": [
+     {
+      "index": 1,
+      "wanted_staves": [
+       1,
+       2
+      ],
+      "status": "playing",
+      "margin_labels": [
+       {
+        "text": "Pno.",
+        "staves": [
+         1,
+         2
+        ]
+       }
+      ]
+     },
+     {
+      "index": 2,
+      "wanted_staves": [
+       18,
+       19
+      ],
+      "status": "playing",
+      "margin_labels": [
+       {
+        "text": "Fl.",
+        "staves": [
+         8
+        ]
+       },
+       {
+        "text": "Ob.",
+        "staves": [
+         9
+        ]
+       },
+       {
+        "text": "Clar.",
+        "staves": [
+         10
+        ]
+       },
+       {
+        "text": "Fag.",
+        "staves": [
+         11
+        ]
+       },
+       {
+        "text": "Cor.",
+        "staves": [
+         12,
+         13
+        ]
+       },
+       {
+        "text": "Tr.",
+        "staves": [
+         14
+        ]
+       },
+       {
+        "text": "Tromb. ten.",
+        "staves": [
+         15
+        ]
+       },
+       {
+        "text": "Tromb. basso.",
+        "staves": [
+         16
+        ]
+       },
+       {
+        "text": "Timp.",
+        "staves": [
+         17
+        ]
+       },
+       {
+        "text": "Pno.",
+        "staves": [
+         18,
+         19
+        ]
+       }
+      ]
+     }
+    ],
+    "confidence": "high",
+    "notes": "System1 has 7 staves vs header 17 staves per full system. Detector grouping correct. Staves 1-2 are Pno. (brace, Pno. label, treble/bass clefs, piano figuration). Staves 3-7 are the 5 string groups (Vl.I, Vl.II, Vla., Vc., Cb.) with rests; wind/brass/percussion positions 1-10 of header are not printed (tacet). System2 is full 17 staves 8-24. By header order positions 11-12 Piano correspond to staves 18-19, confirmed by Pno. label, brace, treble/bass clefs and piano writing."
+   },
+   "score": {
+    "systems_ok": 2,
+    "systems_n": 2,
+    "page_ok": 1,
+    "wrong": {}
+   }
+  },
+  "labels|beethoven9-p172|muse-spark-1.3|minimal|150dpi": {
+   "id": "labels|beethoven9-p172|muse-spark-1.3|minimal|150dpi",
+   "task": "labels",
+   "item": "beethoven9-p172",
+   "page": "beethoven9-p172",
+   "model": "muse-spark-1.3",
+   "provider": "meta",
+   "effort": "minimal",
+   "resolution": "150dpi",
+   "ts": "2026-11-01T21:02:02",
+   "image_px": [
+    3153,
+    4000
+   ],
+   "image_bytes": 3116461,
+   "media_type": "image/jpeg",
+   "cost_usd": 0.009682,
+   "latency_s": 5.04,
+   "attempts": [
+    {
+     "input_tokens": 4570,
+     "output_tokens": 934,
+     "cost_usd": 0.009682,
+     "stop_reason": "stop",
+     "api": "chat",
+     "reasoning_tokens": 668,
+     "model_returned": "muse-spark-1.3",
+     "call_s": 5.04,
+     "repaired": false
+    }
+   ],
+   "json_fail_first": false,
+   "raw_text": "{\"systems\": [{\"index\": 1, \"wanted_staves\": [13], \"status\": \"resting\", \"margin_labels\": [{\"text\": \"Flauti.\", \"staves\": [2]}, {\"text\": \"Oboi.\", \"staves\": [3]}, {\"text\": \"Clarinetti.\", \"staves\": [4]}, {\"text\": \"Fagotti.\", \"staves\": [5]}, {\"text\": \"Corni in D.\", \"staves\": [6]}, {\"text\": \"Tympani in D.\", \"staves\": [7]}, {\"text\": \"Alto e Tenore\", \"staves\": [8]}, {\"text\": \"Tromboni\", \"staves\": [8, 9]}, {\"text\": \"Basso.\", \"staves\": [9]}, {\"text\": \"Violini.\", \"staves\": [10, 11]}, {\"text\": \"Viola.\", \"staves\": [12]}, {\"text\": \"C O R O\", \"staves\": [13, 14, 15, 16]}, {\"text\": \"Violoncello & Bassi.\", \"staves\": [17]}]}], \"confidence\": \"high\", \"notes\": \"\"}",
+   "status": "ok",
+   "answer": {
+    "systems": [
+     {
+      "index": 1,
+      "wanted_staves": [
+       13
+      ],
+      "status": "resting",
+      "margin_labels": [
+       {
+        "text": "Flauti.",
+        "staves": [
+         2
+        ]
+       },
+       {
+        "text": "Oboi.",
+        "staves": [
+         3
+        ]
+       },
+       {
+        "text": "Clarinetti.",
+        "staves": [
+         4
+        ]
+       },
+       {
+        "text": "Fagotti.",
+        "staves": [
+         5
+        ]
+       },
+       {
+        "text": "Corni in D.",
+        "staves": [
+         6
+        ]
+       },
+       {
+        "text": "Tympani in D.",
+        "staves": [
+         7
+        ]
+       },
+       {
+        "text": "Alto e Tenore",
+        "staves": [
+         8
+        ]
+       },
+       {
+        "text": "Tromboni",
+        "staves": [
+         8,
+         9
+        ]
+       },
+       {
+        "text": "Basso.",
+        "staves": [
+         9
+        ]
+       },
+       {
+        "text": "Violini.",
+        "staves": [
+         10,
+         11
+        ]
+       },
+       {
+        "text": "Viola.",
+        "staves": [
+         12
+        ]
+       },
+       {
+        "text": "C O R O",
+        "staves": [
+         13,
+         14,
+         15,
+         16
+        ]
+       },
+       {
+        "text": "Violoncello & Bassi.",
+        "staves": [
+         17
+        ]
+       }
+      ]
+     }
+    ],
+    "confidence": "high",
+    "notes": ""
+   },
+   "score": {
+    "systems_ok": 1,
+    "systems_n": 1,
+    "page_ok": 1,
+    "wrong": {}
+   }
+  },
+  "labels|beethoven9-p174|muse-spark-1.3|minimal|150dpi": {
+   "id": "labels|beethoven9-p174|muse-spark-1.3|minimal|150dpi",
+   "task": "labels",
+   "item": "beethoven9-p174",
+   "page": "beethoven9-p174",
+   "model": "muse-spark-1.3",
+   "provider": "meta",
+   "effort": "minimal",
+   "resolution": "150dpi",
+   "ts": "2026-11-01T21:02:05",
+   "image_px": [
+    3153,
+    4000
+   ],
+   "image_bytes": 3474511,
+   "media_type": "image/png",
+   "cost_usd": 0.006851,
+   "latency_s": 3.52,
+   "attempts": [
+    {
+     "input_tokens": 4570,
+     "output_tokens": 268,
+     "cost_usd": 0.006851,
+     "stop_reason": "stop",
+     "api": "chat",
+     "reasoning_tokens": 218,
+     "model_returned": "muse-spark-1.3",
+     "call_s": 3.51,
+     "repaired": false
+    }
+   ],
+   "json_fail_first": false,
+   "raw_text": "{\"systems\": [{\"index\": 1, \"wanted_staves\": [13], \"status\": \"playing\", \"margin_labels\": []}], \"confidence\": \"high\", \"notes\": \"\"}",
+   "status": "ok",
+   "answer": {
+    "systems": [
+     {
+      "index": 1,
+      "wanted_staves": [
+       13
+      ],
+      "status": "playing",
+      "margin_labels": []
+     }
+    ],
+    "confidence": "high",
+    "notes": ""
+   },
+   "score": {
+    "systems_ok": 1,
+    "systems_n": 1,
+    "page_ok": 1,
+    "wrong": {}
+   }
+  },
+  "labels|rach1-gutheil-p03|muse-spark-1.2|minimal|150dpi": {
+   "id": "labels|rach1-gutheil-p03|muse-spark-1.2|minimal|150dpi",
+   "task": "labels",
+   "item": "rach1-gutheil-p03",
+   "page": "rach1-gutheil-p03",
+   "model": "muse-spark-1.2",
+   "provider": "meta",
+   "effort": "minimal",
+   "resolution": "150dpi",
+   "ts": "2026-11-01T21:02:01",
+   "image_px": [
+    1275,
+    1756
+   ],
+   "image_bytes": 878847,
+   "media_type": "image/png",
+   "cost_usd": 0.013724,
+   "latency_s": 9.43,
+   "attempts": [
+    {
+     "input_tokens": 3448,
+     "output_tokens": 2215,
+     "cost_usd": 0.013724,
+     "stop_reason": "stop",
+     "api": "chat",
+     "reasoning_tokens": 1822,
+     "model_returned": "muse-spark-1.2",
+     "call_s": 9.42,
+     "repaired": false
+    }
+   ],
+   "json_fail_first": false,
+   "raw_text": "{\"systems\":[{\"index\":1,\"wanted_staves\":[6,7],\"status\":\"playing\",\"margin_labels\":[{\"text\":\"Ob.I.\",\"staves\":[1]},{\"text\":\"Clar.\",\"staves\":[2]},{\"text\":\"Fag.\",\"staves\":[3]},{\"text\":\"Cor.\",\"staves\":[4,5]},{\"text\":\"Pno.\",\"staves\":[6,7]}]},{\"index\":2,\"wanted_staves\":[],\"status\":\"absent\",\"margin_labels\":[{\"text\":\"Fl.\",\"staves\":[13]},{\"text\":\"Ob.\",\"staves\":[14]},{\"text\":\"Clar.\",\"staves\":[15]},{\"text\":\"Fag.\",\"staves\":[16]},{\"text\":\"Cor.\",\"staves\":[17,18]}]}],\"confidence\":\"medium\",\"notes\":\"System 1 has 12 staves not 17: resting instruments not printed. Pno. is 2 staves (11..12 in full-system numbering) here detected as staves 6,7 via brace, treble/bass clefs and label Pno., playing (arpeggiated chords bar1 then rests). Absent/not printed in this system: Fl. (pos1), Trbe. I.II. (pos7), Trbni. I.II. (pos8), Trbne. b. (pos9), Timp. (pos10); string labels not printed in margin but staves 8..12 are Vl.I, Vl.II, Vla. div., Vc., Cb. System 2 has 11 staves not 17: resting instruments not printed. Pno. pos11..12 absent (no brace/label, no staves). Absent/not printed: Trbe. I.II., Trbni. I.II., Trbne. b., Timp., Pno.; also one wind/bass staff collapsed. No detector miss.\"}",
+   "status": "ok",
+   "answer": {
+    "systems": [
+     {
+      "index": 1,
+      "wanted_staves": [
+       6,
+       7
+      ],
+      "status": "playing",
+      "margin_labels": [
+       {
+        "text": "Ob.I.",
+        "staves": [
+         1
+        ]
+       },
+       {
+        "text": "Clar.",
+        "staves": [
+         2
+        ]
+       },
+       {
+        "text": "Fag.",
+        "staves": [
+         3
+        ]
+       },
+       {
+        "text": "Cor.",
+        "staves": [
+         4,
+         5
+        ]
+       },
+       {
+        "text": "Pno.",
+        "staves": [
+         6,
+         7
+        ]
+       }
+      ]
+     },
+     {
+      "index": 2,
+      "wanted_staves": [],
+      "status": "absent",
+      "margin_labels": [
+       {
+        "text": "Fl.",
+        "staves": [
+         13
+        ]
+       },
+       {
+        "text": "Ob.",
+        "staves": [
+         14
+        ]
+       },
+       {
+        "text": "Clar.",
+        "staves": [
+         15
+        ]
+       },
+       {
+        "text": "Fag.",
+        "staves": [
+         16
+        ]
+       },
+       {
+        "text": "Cor.",
+        "staves": [
+         17,
+         18
+        ]
+       }
+      ]
+     }
+    ],
+    "confidence": "medium",
+    "notes": "System 1 has 12 staves not 17: resting instruments not printed. Pno. is 2 staves (11..12 in full-system numbering) here detected as staves 6,7 via brace, treble/bass clefs and label Pno., playing (arpeggiated chords bar1 then rests). Absent/not printed in this system: Fl. (pos1), Trbe. I.II. (pos7), Trbni. I.II. (pos8), Trbne. b. (pos9), Timp. (pos10); string labels not printed in margin but staves 8..12 are Vl.I, Vl.II, Vla. div., Vc., Cb. System 2 has 11 staves not 17: resting instruments not printed. Pno. pos11..12 absent (no brace/label, no staves). Absent/not printed: Trbe. I.II., Trbni. I.II., Trbne. b., Timp., Pno.; also one wind/bass staff collapsed. No detector miss."
+   },
+   "score": {
+    "systems_ok": 2,
+    "systems_n": 2,
+    "page_ok": 1,
+    "wrong": {}
+   }
+  },
+  "labels|beethoven9-p173|muse-spark-1.3|minimal|150dpi": {
+   "id": "labels|beethoven9-p173|muse-spark-1.3|minimal|150dpi",
+   "task": "labels",
+   "item": "beethoven9-p173",
+   "page": "beethoven9-p173",
+   "model": "muse-spark-1.3",
+   "provider": "meta",
+   "effort": "minimal",
+   "resolution": "150dpi",
+   "ts": "2026-11-01T21:02:04",
+   "image_px": [
+    3136,
+    4000
+   ],
+   "image_bytes": 3136790,
+   "media_type": "image/jpeg",
+   "cost_usd": 0.010718,
+   "latency_s": 6.69,
+   "attempts": [
+    {
+     "input_tokens": 4770,
+     "output_tokens": 1119,
+     "cost_usd": 0.010718,
+     "stop_reason": "stop",
+     "api": "chat",
+     "reasoning_tokens": 905,
+     "model_returned": "muse-spark-1.3",
+     "call_s": 6.68,
+     "repaired": false
+    }
+   ],
+   "json_fail_first": false,
+   "raw_text": "{\"systems\": [{\"index\": 1, \"wanted_staves\": [], \"status\": \"absent\", \"margin_labels\": []}, {\"index\": 2, \"wanted_staves\": [11], \"status\": \"playing\", \"margin_labels\": []}, {\"index\": 3, \"wanted_staves\": [], \"status\": \"absent\", \"margin_labels\": []}], \"confidence\": \"medium\", \"notes\": \"System1 is false top-edge detection, no music. System2 contains staves 2-13; box 11 carries soprano text 'Seyd umschlungen Millionen! diesen' and is identified as CORO Soprano; left margin instrument names not legible in scan so no margin text transcribed. Unboxed violin/viola staves between boxes 9-10 and Vc/Cb contra-fag staff below box 13 appear missed by detector, so staff count does not equal full 18. System3 is false bottom-edge detection.\"}",
+   "status": "ok",
+   "answer": {
+    "systems": [
+     {
+      "index": 1,
+      "wanted_staves": [],
+      "status": "absent",
+      "margin_labels": []
+     },
+     {
+      "index": 2,
+      "wanted_staves": [
+       11
+      ],
+      "status": "playing",
+      "margin_labels": []
+     },
+     {
+      "index": 3,
+      "wanted_staves": [],
+      "status": "absent",
+      "margin_labels": []
+     }
+    ],
+    "confidence": "medium",
+    "notes": "System1 is false top-edge detection, no music. System2 contains staves 2-13; box 11 carries soprano text 'Seyd umschlungen Millionen! diesen' and is identified as CORO Soprano; left margin instrument names not legible in scan so no margin text transcribed. Unboxed violin/viola staves between boxes 9-10 and Vc/Cb contra-fag staff below box 13 appear missed by detector, so staff count does not equal full 18. System3 is false bottom-edge detection."
+   },
+   "score": {
+    "systems_ok": 3,
+    "systems_n": 3,
+    "page_ok": 1,
+    "wrong": {}
+   }
+  },
+  "labels|rach1-gutheil-p01|muse-spark-1.3|minimal|150dpi": {
+   "id": "labels|rach1-gutheil-p01|muse-spark-1.3|minimal|150dpi",
+   "task": "labels",
+   "item": "rach1-gutheil-p01",
+   "page": "rach1-gutheil-p01",
+   "model": "muse-spark-1.3",
+   "provider": "meta",
+   "effort": "minimal",
+   "resolution": "150dpi",
+   "ts": "2026-11-01T21:02:09",
+   "image_px": [
+    1275,
+    1756
+   ],
+   "image_bytes": 588624,
+   "media_type": "image/png",
+   "cost_usd": 0.010123,
+   "latency_s": 6.44,
+   "attempts": [
+    {
+     "input_tokens": 3335,
+     "output_tokens": 1401,
+     "cost_usd": 0.010123,
+     "stop_reason": "stop",
+     "api": "chat",
+     "reasoning_tokens": 1067,
+     "model_returned": "muse-spark-1.3",
+     "call_s": 6.44,
+     "repaired": false
+    }
+   ],
+   "json_fail_first": false,
+   "raw_text": "{\"systems\": [{\"index\": 1, \"wanted_staves\": [11, 12], \"status\": \"playing\", \"margin_labels\": [{\"text\": \"Flauti I. II.\", \"staves\": [1]}, {\"text\": \"Oboi I. II.\", \"staves\": [2]}, {\"text\": \"Clarinetti I.II in A.\", \"staves\": [3]}, {\"text\": \"Fagotti I.II.\", \"staves\": [4]}, {\"text\": \"I. II.\", \"staves\": [5]}, {\"text\": \"Corni in F.\", \"staves\": [5, 6]}, {\"text\": \"III. IV.\", \"staves\": [6]}, {\"text\": \"Trombe I.II in B.\", \"staves\": [7]}, {\"text\": \"Tromboni ten.I.II.\", \"staves\": [8]}, {\"text\": \"Trombone basso\", \"staves\": [9]}, {\"text\": \"Timpani\", \"staves\": [10]}, {\"text\": \"Piano.\", \"staves\": [11, 12]}, {\"text\": \"Violini I.\", \"staves\": [13]}, {\"text\": \"Violini II.\", \"staves\": [14]}, {\"text\": \"Viole.\", \"staves\": [15]}, {\"text\": \"Violoncelli.\", \"staves\": [16]}, {\"text\": \"Contrabassi.\", \"staves\": [17]}]}], \"confidence\": \"high\", \"notes\": \"\"}",
+   "status": "ok",
+   "answer": {
+    "systems": [
+     {
+      "index": 1,
+      "wanted_staves": [
+       11,
+       12
+      ],
+      "status": "playing",
+      "margin_labels": [
+       {
+        "text": "Flauti I. II.",
+        "staves": [
+         1
+        ]
+       },
+       {
+        "text": "Oboi I. II.",
+        "staves": [
+         2
+        ]
+       },
+       {
+        "text": "Clarinetti I.II in A.",
+        "staves": [
+         3
+        ]
+       },
+       {
+        "text": "Fagotti I.II.",
+        "staves": [
+         4
+        ]
+       },
+       {
+        "text": "I. II.",
+        "staves": [
+         5
+        ]
+       },
+       {
+        "text": "Corni in F.",
+        "staves": [
+         5,
+         6
+        ]
+       },
+       {
+        "text": "III. IV.",
+        "staves": [
+         6
+        ]
+       },
+       {
+        "text": "Trombe I.II in B.",
+        "staves": [
+         7
+        ]
+       },
+       {
+        "text": "Tromboni ten.I.II.",
+        "staves": [
+         8
+        ]
+       },
+       {
+        "text": "Trombone basso",
+        "staves": [
+         9
+        ]
+       },
+       {
+        "text": "Timpani",
+        "staves": [
+         10
+        ]
+       },
+       {
+        "text": "Piano.",
+        "staves": [
+         11,
+         12
+        ]
+       },
+       {
+        "text": "Violini I.",
+        "staves": [
+         13
+        ]
+       },
+       {
+        "text": "Violini II.",
+        "staves": [
+         14
+        ]
+       },
+       {
+        "text": "Viole.",
+        "staves": [
+         15
+        ]
+       },
+       {
+        "text": "Violoncelli.",
+        "staves": [
+         16
+        ]
+       },
+       {
+        "text": "Contrabassi.",
+        "staves": [
+         17
+        ]
+       }
+      ]
+     }
+    ],
+    "confidence": "high",
+    "notes": ""
+   },
+   "score": {
+    "systems_ok": 1,
+    "systems_n": 1,
+    "page_ok": 1,
+    "wrong": {}
+   }
+  },
+  "labels|beethoven9-p175|muse-spark-1.3|minimal|150dpi": {
+   "id": "labels|beethoven9-p175|muse-spark-1.3|minimal|150dpi",
+   "task": "labels",
+   "item": "beethoven9-p175",
+   "page": "beethoven9-p175",
+   "model": "muse-spark-1.3",
+   "provider": "meta",
+   "effort": "minimal",
+   "resolution": "150dpi",
+   "ts": "2026-11-01T21:02:07",
+   "image_px": [
+    3136,
+    4000
+   ],
+   "image_bytes": 3206140,
+   "media_type": "image/jpeg",
+   "cost_usd": 0.01001,
+   "latency_s": 8.58,
+   "attempts": [
+    {
+     "input_tokens": 4686,
+     "output_tokens": 977,
+     "cost_usd": 0.01001,
+     "stop_reason": "stop",
+     "api": "chat",
+     "reasoning_tokens": 799,
+     "model_returned": "muse-spark-1.3",
+     "call_s": 8.58,
+     "repaired": false
+    }
+   ],
+   "json_fail_first": false,
+   "raw_text": "{\"systems\": [{\"index\": 1, \"wanted_staves\": [12], \"status\": \"playing\", \"margin_labels\": []}, {\"index\": 2, \"wanted_staves\": [], \"status\": \"absent\", \"margin_labels\": []}], \"confidence\": \"medium\", \"notes\": \"System 1 has 16 detected staves = header positions 2-17. Header positions 1 and 18 are false top/bottom edge detections, not printed; no musical staves missing. Detector staff 12 = header 13 CORO Soprano, playing with text 'Br\\u00fc-der \\u00fc-berm Sternenzelt'. System 2 staff 17 is header 18 false bottom edge, 0 bars, no music; all real instruments absent in that detection.\"}",
+   "status": "ok",
+   "answer": {
+    "systems": [
+     {
+      "index": 1,
+      "wanted_staves": [
+       12
+      ],
+      "status": "playing",
+      "margin_labels": []
+     },
+     {
+      "index": 2,
+      "wanted_staves": [],
+      "status": "absent",
+      "margin_labels": []
+     }
+    ],
+    "confidence": "medium",
+    "notes": "System 1 has 16 detected staves = header positions 2-17. Header positions 1 and 18 are false top/bottom edge detections, not printed; no musical staves missing. Detector staff 12 = header 13 CORO Soprano, playing with text 'Brü-der ü-berm Sternenzelt'. System 2 staff 17 is header 18 false bottom edge, 0 bars, no music; all real instruments absent in that detection."
+   },
+   "score": {
+    "systems_ok": 2,
+    "systems_n": 2,
+    "page_ok": 1,
+    "wrong": {}
+   }
+  },
+  "labels|rach1-gutheil-p02|muse-spark-1.3|minimal|150dpi": {
+   "id": "labels|rach1-gutheil-p02|muse-spark-1.3|minimal|150dpi",
+   "task": "labels",
+   "item": "rach1-gutheil-p02",
+   "page": "rach1-gutheil-p02",
+   "model": "muse-spark-1.3",
+   "provider": "meta",
+   "effort": "minimal",
+   "resolution": "150dpi",
+   "ts": "2026-11-01T21:02:11",
+   "image_px": [
+    1275,
+    1756
+   ],
+   "image_bytes": 806154,
+   "media_type": "image/png",
+   "cost_usd": 0.009408,
+   "latency_s": 6.05,
+   "attempts": [
+    {
+     "input_tokens": 3419,
+     "output_tokens": 1208,
+     "cost_usd": 0.009408,
+     "stop_reason": "stop",
+     "api": "chat",
+     "reasoning_tokens": 846,
+     "model_returned": "muse-spark-1.3",
+     "call_s": 6.05,
+     "repaired": false
+    }
+   ],
+   "json_fail_first": false,
+   "raw_text": "{\"systems\": [{\"index\": 1, \"wanted_staves\": [1, 2], \"status\": \"playing\", \"margin_labels\": [{\"text\": \"Pno.\", \"staves\": [1, 2]}]}, {\"index\": 2, \"wanted_staves\": [18, 19], \"status\": \"playing\", \"margin_labels\": [{\"text\": \"Fl.\", \"staves\": [8]}, {\"text\": \"Ob.\", \"staves\": [9]}, {\"text\": \"Clar.\", \"staves\": [10]}, {\"text\": \"Fag.\", \"staves\": [11]}, {\"text\": \"Cor.\", \"staves\": [12, 13]}, {\"text\": \"Tr.\", \"staves\": [14]}, {\"text\": \"Tromb. ten.\", \"staves\": [15]}, {\"text\": \"Tromb. basso.\", \"staves\": [16]}, {\"text\": \"Timp.\", \"staves\": [17]}, {\"text\": \"Pno.\", \"staves\": [18, 19]}]}], \"confidence\": \"high\", \"notes\": \"System 1 has 7 staves: staves 1-2 are Piano (Pno., treble/bass braced) playing solo cadenza; staves 3-7 are resting strings (Vl I, Vl II, Vla, Vc, Cb) with whole-bar rests, winds/brass/timpani positions 1-10 absent/not printed. System 2 has full 17 staves 8-24 matching header order, Piano is staves 18-19 by order, confirmed by Pno. label, treble/bass clefs and brace.\"}",
+   "status": "ok",
+   "answer": {
+    "systems": [
+     {
+      "index": 1,
+      "wanted_staves": [
+       1,
+       2
+      ],
+      "status": "playing",
+      "margin_labels": [
+       {
+        "text": "Pno.",
+        "staves": [
+         1,
+         2
+        ]
+       }
+      ]
+     },
+     {
+      "index": 2,
+      "wanted_staves": [
+       18,
+       19
+      ],
+      "status": "playing",
+      "margin_labels": [
+       {
+        "text": "Fl.",
+        "staves": [
+         8
+        ]
+       },
+       {
+        "text": "Ob.",
+        "staves": [
+         9
+        ]
+       },
+       {
+        "text": "Clar.",
+        "staves": [
+         10
+        ]
+       },
+       {
+        "text": "Fag.",
+        "staves": [
+         11
+        ]
+       },
+       {
+        "text": "Cor.",
+        "staves": [
+         12,
+         13
+        ]
+       },
+       {
+        "text": "Tr.",
+        "staves": [
+         14
+        ]
+       },
+       {
+        "text": "Tromb. ten.",
+        "staves": [
+         15
+        ]
+       },
+       {
+        "text": "Tromb. basso.",
+        "staves": [
+         16
+        ]
+       },
+       {
+        "text": "Timp.",
+        "staves": [
+         17
+        ]
+       },
+       {
+        "text": "Pno.",
+        "staves": [
+         18,
+         19
+        ]
+       }
+      ]
+     }
+    ],
+    "confidence": "high",
+    "notes": "System 1 has 7 staves: staves 1-2 are Piano (Pno., treble/bass braced) playing solo cadenza; staves 3-7 are resting strings (Vl I, Vl II, Vla, Vc, Cb) with whole-bar rests, winds/brass/timpani positions 1-10 absent/not printed. System 2 has full 17 staves 8-24 matching header order, Piano is staves 18-19 by order, confirmed by Pno. label, treble/bass clefs and brace."
+   },
+   "score": {
+    "systems_ok": 2,
+    "systems_n": 2,
+    "page_ok": 1,
+    "wrong": {}
+   }
+  },
+  "labels|rach1-gutheil-p03|muse-spark-1.3|minimal|150dpi": {
+   "id": "labels|rach1-gutheil-p03|muse-spark-1.3|minimal|150dpi",
+   "task": "labels",
+   "item": "rach1-gutheil-p03",
+   "page": "rach1-gutheil-p03",
+   "model": "muse-spark-1.3",
+   "provider": "meta",
+   "effort": "minimal",
+   "resolution": "150dpi",
+   "ts": "2026-11-01T21:02:11",
+   "image_px": [
+    1275,
+    1756
+   ],
+   "image_bytes": 878847,
+   "media_type": "image/png",
+   "cost_usd": 0.011229,
+   "latency_s": 7.95,
+   "attempts": [
+    {
+     "input_tokens": 3448,
+     "output_tokens": 1628,
+     "cost_usd": 0.011229,
+     "stop_reason": "stop",
+     "api": "chat",
+     "reasoning_tokens": 1302,
+     "model_returned": "muse-spark-1.3",
+     "call_s": 7.95,
+     "repaired": false
+    }
+   ],
+   "json_fail_first": false,
+   "raw_text": "{\"systems\": [{\"index\": 1, \"wanted_staves\": [6, 7], \"status\": \"playing\", \"margin_labels\": [{\"text\": \"Ob.I.\", \"staves\": [1]}, {\"text\": \"Clar.\", \"staves\": [2]}, {\"text\": \"Fag.\", \"staves\": [3]}, {\"text\": \"Cor.\", \"staves\": [5]}, {\"text\": \"Pno.\", \"staves\": [6, 7]}]}, {\"index\": 2, \"wanted_staves\": [], \"status\": \"absent\", \"margin_labels\": [{\"text\": \"Fl.\", \"staves\": [13]}, {\"text\": \"Ob.\", \"staves\": [14]}, {\"text\": \"Clar.\", \"staves\": [15]}, {\"text\": \"Fag.\", \"staves\": [16]}, {\"text\": \"Cor.\", \"staves\": [18]}]}], \"confidence\": \"medium\", \"notes\": \"System 1 has 12 staves: Fl., Trbe., Trbni., Trbne.b., Timp. not printed as resting; Cor. label on stave 5 covers brace 4-5; Pno. brace 6-7 treble/bass playing. System 2 has 11 staves: Trbe., Trbni., Trbne.b., Timp., Pno. not printed; wanted Piano absent. String staves 8-12 and 19-23 have bare margin in this scan.\"}",
+   "status": "ok",
+   "answer": {
+    "systems": [
+     {
+      "index": 1,
+      "wanted_staves": [
+       6,
+       7
+      ],
+      "status": "playing",
+      "margin_labels": [
+       {
+        "text": "Ob.I.",
+        "staves": [
+         1
+        ]
+       },
+       {
+        "text": "Clar.",
+        "staves": [
+         2
+        ]
+       },
+       {
+        "text": "Fag.",
+        "staves": [
+         3
+        ]
+       },
+       {
+        "text": "Cor.",
+        "staves": [
+         5
+        ]
+       },
+       {
+        "text": "Pno.",
+        "staves": [
+         6,
+         7
+        ]
+       }
+      ]
+     },
+     {
+      "index": 2,
+      "wanted_staves": [],
+      "status": "absent",
+      "margin_labels": [
+       {
+        "text": "Fl.",
+        "staves": [
+         13
+        ]
+       },
+       {
+        "text": "Ob.",
+        "staves": [
+         14
+        ]
+       },
+       {
+        "text": "Clar.",
+        "staves": [
+         15
+        ]
+       },
+       {
+        "text": "Fag.",
+        "staves": [
+         16
+        ]
+       },
+       {
+        "text": "Cor.",
+        "staves": [
+         18
+        ]
+       }
+      ]
+     }
+    ],
+    "confidence": "medium",
+    "notes": "System 1 has 12 staves: Fl., Trbe., Trbni., Trbne.b., Timp. not printed as resting; Cor. label on stave 5 covers brace 4-5; Pno. brace 6-7 treble/bass playing. System 2 has 11 staves: Trbe., Trbni., Trbne.b., Timp., Pno. not printed; wanted Piano absent. String staves 8-12 and 19-23 have bare margin in this scan."
+   },
+   "score": {
+    "systems_ok": 2,
+    "systems_n": 2,
+    "page_ok": 1,
+    "wrong": {}
+   }
+  },
+  "text|goldberg-bga-p01-s1|muse-spark-1.2|minimal|150dpi": {
+   "id": "text|goldberg-bga-p01-s1|muse-spark-1.2|minimal|150dpi",
+   "task": "text",
+   "item": "goldberg-bga-p01-s1",
+   "page": "goldberg-bga-p01",
+   "model": "muse-spark-1.2",
+   "provider": "meta",
+   "effort": "minimal",
+   "resolution": "150dpi",
+   "ts": "2026-11-01T21:02:30",
+   "image_px": [
+    1068,
+    216
+   ],
+   "image_bytes": 86519,
+   "media_type": "image/png",
+   "cost_usd": 0.006364,
+   "latency_s": 6.86,
+   "attempts": [
+    {
+     "input_tokens": 685,
+     "output_tokens": 1296,
+     "cost_usd": 0.006364,
+     "stop_reason": "stop",
+     "api": "chat",
+     "reasoning_tokens": 1034,
+     "model_returned": "muse-spark-1.2",
+     "call_s": 6.86,
+     "repaired": false
+    }
+   ],
+   "json_fail_first": false,
+   "raw_text": "{\"measures\": [{\"number\": 1, \"text\": [\"p\", \"dolce\"], \"ornaments\": [{\"staff\": \"upper\", \"note_index\": 2, \"kind\": \"mordent\"}], \"fingering_count\": 3}, {\"number\": 2, \"text\": [], \"ornaments\": [{\"staff\": \"upper\", \"note_index\": 1, \"kind\": \"turn\"}], \"fingering_count\": 4}, {\"number\": 3, \"text\": [], \"ornaments\": [{\"staff\": \"upper\", \"note_index\": 1, \"kind\": \"mordent\"}, {\"staff\": \"upper\", \"note_index\": 1, \"kind\": \"trill\"}], \"fingering_count\": 1}, {\"number\": 4, \"text\": [], \"ornaments\": [], \"fingering_count\": 1}, {\"number\": 5, \"text\": [], \"ornaments\": [{\"staff\": \"upper\", \"note_index\": 2, \"kind\": \"inverted_mordent\"}], \"fingering_count\": 2}, {\"number\": 6, \"text\": [], \"ornaments\": [], \"fingering_count\": 3}]}",
+   "status": "ok",
+   "answer": {
+    "measures": [
+     {
+      "number": 1,
+      "text": [
+       "p",
+       "dolce"
+      ],
+      "ornaments": [
+       {
+        "staff": "upper",
+        "note_index": 2,
+        "kind": "mordent"
+       }
+      ],
+      "fingering_count": 3
+     },
+     {
+      "number": 2,
+      "text": [],
+      "ornaments": [
+       {
+        "staff": "upper",
+        "note_index": 1,
+        "kind": "turn"
+       }
+      ],
+      "fingering_count": 4
+     },
+     {
+      "number": 3,
+      "text": [],
+      "ornaments": [
+       {
+        "staff": "upper",
+        "note_index": 1,
+        "kind": "mordent"
+       },
+       {
+        "staff": "upper",
+        "note_index": 1,
+        "kind": "trill"
+       }
+      ],
+      "fingering_count": 1
+     },
+     {
+      "number": 4,
+      "text": [],
+      "ornaments": [],
+      "fingering_count": 1
+     },
+     {
+      "number": 5,
+      "text": [],
+      "ornaments": [
+       {
+        "staff": "upper",
+        "note_index": 2,
+        "kind": "inverted_mordent"
+       }
+      ],
+      "fingering_count": 2
+     },
+     {
+      "number": 6,
+      "text": [],
+      "ornaments": [],
+      "fingering_count": 3
+     }
+    ]
+   },
+   "score": {
+    "tp": 2,
+    "pred": 2,
+    "gold": 2
+   }
+  },
+  "text|goldberg-bga-p01-s2|muse-spark-1.2|minimal|150dpi": {
+   "id": "text|goldberg-bga-p01-s2|muse-spark-1.2|minimal|150dpi",
+   "task": "text",
+   "item": "goldberg-bga-p01-s2",
+   "page": "goldberg-bga-p01",
+   "model": "muse-spark-1.2",
+   "provider": "meta",
+   "effort": "minimal",
+   "resolution": "150dpi",
+   "ts": "2026-11-01T21:02:30",
+   "image_px": [
+    1154,
+    220
+   ],
+   "image_bytes": 105136,
+   "media_type": "image/png",
+   "cost_usd": 0.007215,
+   "latency_s": 6.95,
+   "attempts": [
+    {
+     "input_tokens": 709,
+     "output_tokens": 1489,
+     "cost_usd": 0.007215,
+     "stop_reason": "stop",
+     "api": "chat",
+     "reasoning_tokens": 1128,
+     "model_returned": "muse-spark-1.2",
+     "call_s": 6.94,
+     "repaired": false
+    }
+   ],
+   "json_fail_first": false,
+   "raw_text": "{\"measures\": [{\"number\": 7, \"text\": [], \"ornaments\": [{\"staff\": \"upper\", \"note_index\": 1, \"kind\": \"mordent\"}, {\"staff\": \"upper\", \"note_index\": 2, \"kind\": \"mordent\"}, {\"staff\": \"upper\", \"note_index\": 5, \"kind\": \"turn\"}, {\"staff\": \"lower\", \"note_index\": 2, \"kind\": \"schleifer\"}], \"fingering_count\": 4}, {\"number\": 8, \"text\": [], \"ornaments\": [{\"staff\": \"upper\", \"note_index\": 3, \"kind\": \"mordent\"}, {\"staff\": \"lower\", \"note_index\": 3, \"kind\": \"mordent\"}], \"fingering_count\": 3}, {\"number\": 9, \"text\": [\"cresc.\"], \"ornaments\": [{\"staff\": \"upper\", \"note_index\": 2, \"kind\": \"trill\"}], \"fingering_count\": 4}, {\"number\": 10, \"text\": [], \"ornaments\": [{\"staff\": \"lower\", \"note_index\": 4, \"kind\": \"mordent\"}], \"fingering_count\": 3}, {\"number\": 11, \"text\": [\"f\"], \"ornaments\": [{\"staff\": \"upper\", \"note_index\": 2, \"kind\": \"turn\"}], \"fingering_count\": 2}, {\"number\": 12, \"text\": [], \"ornaments\": [{\"staff\": \"upper\", \"note_index\": 2, \"kind\": \"mordent\"}], \"fingering_count\": 3}]}",
+   "status": "ok",
+   "answer": {
+    "measures": [
+     {
+      "number": 7,
+      "text": [],
+      "ornaments": [
+       {
+        "staff": "upper",
+        "note_index": 1,
+        "kind": "mordent"
+       },
+       {
+        "staff": "upper",
+        "note_index": 2,
+        "kind": "mordent"
+       },
+       {
+        "staff": "upper",
+        "note_index": 5,
+        "kind": "turn"
+       },
+       {
+        "staff": "lower",
+        "note_index": 2,
+        "kind": "schleifer"
+       }
+      ],
+      "fingering_count": 4
+     },
+     {
+      "number": 8,
+      "text": [],
+      "ornaments": [
+       {
+        "staff": "upper",
+        "note_index": 3,
+        "kind": "mordent"
+       },
+       {
+        "staff": "lower",
+        "note_index": 3,
+        "kind": "mordent"
+       }
+      ],
+      "fingering_count": 3
+     },
+     {
+      "number": 9,
+      "text": [
+       "cresc."
+      ],
+      "ornaments": [
+       {
+        "staff": "upper",
+        "note_index": 2,
+        "kind": "trill"
+       }
+      ],
+      "fingering_count": 4
+     },
+     {
+      "number": 10,
+      "text": [],
+      "ornaments": [
+       {
+        "staff": "lower",
+        "note_index": 4,
+        "kind": "mordent"
+       }
+      ],
+      "fingering_count": 3
+     },
+     {
+      "number": 11,
+      "text": [
+       "f"
+      ],
+      "ornaments": [
+       {
+        "staff": "upper",
+        "note_index": 2,
+        "kind": "turn"
+       }
+      ],
+      "fingering_count": 2
+     },
+     {
+      "number": 12,
+      "text": [],
+      "ornaments": [
+       {
+        "staff": "upper",
+        "note_index": 2,
+        "kind": "mordent"
+       }
+      ],
+      "fingering_count": 3
+     }
+    ]
+   },
+   "score": {
+    "tp": 2,
+    "pred": 2,
+    "gold": 2
+   }
+  },
+  "text|goldberg-bga-p01-s4|muse-spark-1.2|minimal|150dpi": {
+   "id": "text|goldberg-bga-p01-s4|muse-spark-1.2|minimal|150dpi",
+   "task": "text",
+   "item": "goldberg-bga-p01-s4",
+   "page": "goldberg-bga-p01",
+   "model": "muse-spark-1.2",
+   "provider": "meta",
+   "effort": "minimal",
+   "resolution": "150dpi",
+   "ts": "2026-11-01T21:02:30",
+   "image_px": [
+    1158,
+    216
+   ],
+   "image_bytes": 86540,
+   "media_type": "image/png",
+   "cost_usd": 0.007134,
+   "latency_s": 8.25,
+   "attempts": [
+    {
+     "input_tokens": 709,
+     "output_tokens": 1470,
+     "cost_usd": 0.007134,
+     "stop_reason": "stop",
+     "api": "chat",
+     "reasoning_tokens": 1274,
+     "model_returned": "muse-spark-1.2",
+     "call_s": 8.25,
+     "repaired": false
+    }
+   ],
+   "json_fail_first": false,
+   "raw_text": "{\"measures\": [{\"number\": 17, \"text\": [], \"ornaments\": [{\"staff\": \"upper\", \"note_index\": 1, \"kind\": \"mordent\"}, {\"staff\": \"upper\", \"note_index\": 2, \"kind\": \"inverted_mordent\"}], \"fingering_count\": 3}, {\"number\": 18, \"text\": [], \"ornaments\": [], \"fingering_count\": 2}, {\"number\": 19, \"text\": [\"cresc.\"], \"ornaments\": [{\"staff\": \"upper\", \"note_index\": 2, \"kind\": \"mordent\"}, {\"staff\": \"lower\", \"note_index\": 2, \"kind\": \"mordent\"}], \"fingering_count\": 2}, {\"number\": 20, \"text\": [], \"ornaments\": [], \"fingering_count\": 7}]}",
+   "status": "ok",
+   "answer": {
+    "measures": [
+     {
+      "number": 17,
+      "text": [],
+      "ornaments": [
+       {
+        "staff": "upper",
+        "note_index": 1,
+        "kind": "mordent"
+       },
+       {
+        "staff": "upper",
+        "note_index": 2,
+        "kind": "inverted_mordent"
+       }
+      ],
+      "fingering_count": 3
+     },
+     {
+      "number": 18,
+      "text": [],
+      "ornaments": [],
+      "fingering_count": 2
+     },
+     {
+      "number": 19,
+      "text": [
+       "cresc."
+      ],
+      "ornaments": [
+       {
+        "staff": "upper",
+        "note_index": 2,
+        "kind": "mordent"
+       },
+       {
+        "staff": "lower",
+        "note_index": 2,
+        "kind": "mordent"
+       }
+      ],
+      "fingering_count": 2
+     },
+     {
+      "number": 20,
+      "text": [],
+      "ornaments": [],
+      "fingering_count": 7
+     }
+    ]
+   },
+   "score": {
+    "tp": 0,
+    "pred": 1,
+    "gold": 1
+   }
+  },
+  "text|goldberg-bga-p01-s3|muse-spark-1.2|minimal|150dpi": {
+   "id": "text|goldberg-bga-p01-s3|muse-spark-1.2|minimal|150dpi",
+   "task": "text",
+   "item": "goldberg-bga-p01-s3",
+   "page": "goldberg-bga-p01",
+   "model": "muse-spark-1.2",
+   "provider": "meta",
+   "effort": "minimal",
+   "resolution": "150dpi",
+   "ts": "2026-11-01T21:02:30",
+   "image_px": [
+    1153,
+    213
+   ],
+   "image_bytes": 82097,
+   "media_type": "image/png",
+   "cost_usd": 0.008383,
+   "latency_s": 9.21,
+   "attempts": [
+    {
+     "input_tokens": 709,
+     "output_tokens": 1764,
+     "cost_usd": 0.008383,
+     "stop_reason": "stop",
+     "api": "chat",
+     "reasoning_tokens": 1528,
+     "model_returned": "muse-spark-1.2",
+     "call_s": 9.21,
+     "repaired": false
+    }
+   ],
+   "json_fail_first": false,
+   "raw_text": "{\"measures\": [{\"number\": 13, \"text\": [\"mf\"], \"ornaments\": [{\"staff\": \"upper\", \"note_index\": 1, \"kind\": \"mordent\"}], \"fingering_count\": 1}, {\"number\": 14, \"text\": [], \"ornaments\": [{\"staff\": \"upper\", \"note_index\": 6, \"kind\": \"inverted_mordent\"}, {\"staff\": \"upper\", \"note_index\": 6, \"kind\": \"schleifer\"}], \"fingering_count\": 2}, {\"number\": 15, \"text\": [], \"ornaments\": [{\"staff\": \"upper\", \"note_index\": 2, \"kind\": \"mordent\"}, {\"staff\": \"lower\", \"note_index\": 2, \"kind\": \"schleifer\"}], \"fingering_count\": 4}, {\"number\": 16, \"text\": [\"p\"], \"ornaments\": [{\"staff\": \"upper\", \"note_index\": 3, \"kind\": \"mordent\"}], \"fingering_count\": 2}]}",
+   "status": "ok",
+   "answer": {
+    "measures": [
+     {
+      "number": 13,
+      "text": [
+       "mf"
+      ],
+      "ornaments": [
+       {
+        "staff": "upper",
+        "note_index": 1,
+        "kind": "mordent"
+       }
+      ],
+      "fingering_count": 1
+     },
+     {
+      "number": 14,
+      "text": [],
+      "ornaments": [
+       {
+        "staff": "upper",
+        "note_index": 6,
+        "kind": "inverted_mordent"
+       },
+       {
+        "staff": "upper",
+        "note_index": 6,
+        "kind": "schleifer"
+       }
+      ],
+      "fingering_count": 2
+     },
+     {
+      "number": 15,
+      "text": [],
+      "ornaments": [
+       {
+        "staff": "upper",
+        "note_index": 2,
+        "kind": "mordent"
+       },
+       {
+        "staff": "lower",
+        "note_index": 2,
+        "kind": "schleifer"
+       }
+      ],
+      "fingering_count": 4
+     },
+     {
+      "number": 16,
+      "text": [
+       "p"
+      ],
+      "ornaments": [
+       {
+        "staff": "upper",
+        "note_index": 3,
+        "kind": "mordent"
+       }
+      ],
+      "fingering_count": 2
+     }
+    ]
+   },
+   "score": {
+    "tp": 2,
+    "pred": 2,
+    "gold": 2
+   }
+  },
+  "text|goldberg-bga-p01-s6|muse-spark-1.2|minimal|150dpi": {
+   "id": "text|goldberg-bga-p01-s6|muse-spark-1.2|minimal|150dpi",
+   "task": "text",
+   "item": "goldberg-bga-p01-s6",
+   "page": "goldberg-bga-p01",
+   "model": "muse-spark-1.2",
+   "provider": "meta",
+   "effort": "minimal",
+   "resolution": "150dpi",
+   "ts": "2026-11-01T21:02:37",
+   "image_px": [
+    1157,
+    219
+   ],
+   "image_bytes": 89775,
+   "media_type": "image/png",
+   "cost_usd": 0.005289,
+   "latency_s": 4.89,
+   "attempts": [
+    {
+     "input_tokens": 709,
+     "output_tokens": 1036,
+     "cost_usd": 0.005289,
+     "stop_reason": "stop",
+     "api": "chat",
+     "reasoning_tokens": 879,
+     "model_returned": "muse-spark-1.2",
+     "call_s": 4.89,
+     "repaired": false
+    }
+   ],
+   "json_fail_first": false,
+   "raw_text": "{\"measures\": [{\"number\": 25, \"text\": [\"p\"], \"ornaments\": [{\"staff\": \"upper\", \"note_index\": 1, \"kind\": \"mordent\"}], \"fingering_count\": 2}, {\"number\": 26, \"text\": [], \"ornaments\": [{\"staff\": \"upper\", \"note_index\": 6, \"kind\": \"mordent\"}], \"fingering_count\": 4}, {\"number\": 27, \"text\": [\"cresc.\", \"poco\"], \"ornaments\": [], \"fingering_count\": 3}, {\"number\": 28, \"text\": [], \"ornaments\": [], \"fingering_count\": 3}]}",
+   "status": "ok",
+   "answer": {
+    "measures": [
+     {
+      "number": 25,
+      "text": [
+       "p"
+      ],
+      "ornaments": [
+       {
+        "staff": "upper",
+        "note_index": 1,
+        "kind": "mordent"
+       }
+      ],
+      "fingering_count": 2
+     },
+     {
+      "number": 26,
+      "text": [],
+      "ornaments": [
+       {
+        "staff": "upper",
+        "note_index": 6,
+        "kind": "mordent"
+       }
+      ],
+      "fingering_count": 4
+     },
+     {
+      "number": 27,
+      "text": [
+       "cresc.",
+       "poco"
+      ],
+      "ornaments": [],
+      "fingering_count": 3
+     },
+     {
+      "number": 28,
+      "text": [],
+      "ornaments": [],
+      "fingering_count": 3
+     }
+    ]
+   },
+   "score": {
+    "tp": 3,
+    "pred": 3,
+    "gold": 3
+   }
+  },
+  "text|goldberg-bga-p01-s5|muse-spark-1.2|minimal|150dpi": {
+   "id": "text|goldberg-bga-p01-s5|muse-spark-1.2|minimal|150dpi",
+   "task": "text",
+   "item": "goldberg-bga-p01-s5",
+   "page": "goldberg-bga-p01",
+   "model": "muse-spark-1.2",
+   "provider": "meta",
+   "effort": "minimal",
+   "resolution": "150dpi",
+   "ts": "2026-11-01T21:02:37",
+   "image_px": [
+    1158,
+    217
+   ],
+   "image_bytes": 90098,
+   "media_type": "image/png",
+   "cost_usd": 0.004669,
+   "latency_s": 5.07,
+   "attempts": [
+    {
+     "input_tokens": 709,
+     "output_tokens": 890,
+     "cost_usd": 0.004669,
+     "stop_reason": "stop",
+     "api": "chat",
+     "reasoning_tokens": 718,
+     "model_returned": "muse-spark-1.2",
+     "call_s": 5.07,
+     "repaired": false
+    }
+   ],
+   "json_fail_first": false,
+   "raw_text": "{\"measures\": [{\"number\": 21, \"text\": [\"mf\"], \"ornaments\": [{\"staff\": \"lower\", \"note_index\": 2, \"kind\": \"mordent\"}], \"fingering_count\": 2}, {\"number\": 22, \"text\": [], \"ornaments\": [{\"staff\": \"lower\", \"note_index\": 2, \"kind\": \"mordent\"}], \"fingering_count\": 2}, {\"number\": 23, \"text\": [\"f\"], \"ornaments\": [{\"staff\": \"upper\", \"note_index\": 2, \"kind\": \"mordent\"}], \"fingering_count\": 6}, {\"number\": 24, \"text\": [], \"ornaments\": [], \"fingering_count\": 1}]}",
+   "status": "ok",
+   "answer": {
+    "measures": [
+     {
+      "number": 21,
+      "text": [
+       "mf"
+      ],
+      "ornaments": [
+       {
+        "staff": "lower",
+        "note_index": 2,
+        "kind": "mordent"
+       }
+      ],
+      "fingering_count": 2
+     },
+     {
+      "number": 22,
+      "text": [],
+      "ornaments": [
+       {
+        "staff": "lower",
+        "note_index": 2,
+        "kind": "mordent"
+       }
+      ],
+      "fingering_count": 2
+     },
+     {
+      "number": 23,
+      "text": [
+       "f"
+      ],
+      "ornaments": [
+       {
+        "staff": "upper",
+        "note_index": 2,
+        "kind": "mordent"
+       }
+      ],
+      "fingering_count": 6
+     },
+     {
+      "number": 24,
+      "text": [],
+      "ornaments": [],
+      "fingering_count": 1
+     }
+    ]
+   },
+   "score": {
+    "tp": 2,
+    "pred": 2,
+    "gold": 2
+   }
+  },
+  "text|goldberg-bga-p01-s1|muse-spark-1.3|minimal|150dpi": {
+   "id": "text|goldberg-bga-p01-s1|muse-spark-1.3|minimal|150dpi",
+   "task": "text",
+   "item": "goldberg-bga-p01-s1",
+   "page": "goldberg-bga-p01",
+   "model": "muse-spark-1.3",
+   "provider": "meta",
+   "effort": "minimal",
+   "resolution": "150dpi",
+   "ts": "2026-11-01T21:02:38",
+   "image_px": [
+    1068,
+    216
+   ],
+   "image_bytes": 86519,
+   "media_type": "image/png",
+   "cost_usd": 0.005433,
+   "latency_s": 5.28,
+   "attempts": [
+    {
+     "input_tokens": 685,
+     "output_tokens": 1077,
+     "cost_usd": 0.005433,
+     "stop_reason": "stop",
+     "api": "chat",
+     "reasoning_tokens": 811,
+     "model_returned": "muse-spark-1.3",
+     "call_s": 5.28,
+     "repaired": false
+    }
+   ],
+   "json_fail_first": false,
+   "raw_text": "{\"measures\": [{\"number\": 1, \"text\": [\"p\", \"dolce\"], \"ornaments\": [{\"staff\": \"upper\", \"note_index\": 2, \"kind\": \"inverted_mordent\"}], \"fingering_count\": 2}, {\"number\": 2, \"text\": [], \"ornaments\": [{\"staff\": \"upper\", \"note_index\": 2, \"kind\": \"turn\"}], \"fingering_count\": 3}, {\"number\": 3, \"text\": [], \"ornaments\": [{\"staff\": \"upper\", \"note_index\": 1, \"kind\": \"inverted_mordent\"}, {\"staff\": \"upper\", \"note_index\": 2, \"kind\": \"trill\"}], \"fingering_count\": 1}, {\"number\": 4, \"text\": [], \"ornaments\": [], \"fingering_count\": 1}, {\"number\": 5, \"text\": [], \"ornaments\": [{\"staff\": \"upper\", \"note_index\": 3, \"kind\": \"inverted_mordent\"}], \"fingering_count\": 2}, {\"number\": 6, \"text\": [], \"ornaments\": [], \"fingering_count\": 3}]}",
+   "status": "ok",
+   "answer": {
+    "measures": [
+     {
+      "number": 1,
+      "text": [
+       "p",
+       "dolce"
+      ],
+      "ornaments": [
+       {
+        "staff": "upper",
+        "note_index": 2,
+        "kind": "inverted_mordent"
+       }
+      ],
+      "fingering_count": 2
+     },
+     {
+      "number": 2,
+      "text": [],
+      "ornaments": [
+       {
+        "staff": "upper",
+        "note_index": 2,
+        "kind": "turn"
+       }
+      ],
+      "fingering_count": 3
+     },
+     {
+      "number": 3,
+      "text": [],
+      "ornaments": [
+       {
+        "staff": "upper",
+        "note_index": 1,
+        "kind": "inverted_mordent"
+       },
+       {
+        "staff": "upper",
+        "note_index": 2,
+        "kind": "trill"
+       }
+      ],
+      "fingering_count": 1
+     },
+     {
+      "number": 4,
+      "text": [],
+      "ornaments": [],
+      "fingering_count": 1
+     },
+     {
+      "number": 5,
+      "text": [],
+      "ornaments": [
+       {
+        "staff": "upper",
+        "note_index": 3,
+        "kind": "inverted_mordent"
+       }
+      ],
+      "fingering_count": 2
+     },
+     {
+      "number": 6,
+      "text": [],
+      "ornaments": [],
+      "fingering_count": 3
+     }
+    ]
+   },
+   "score": {
+    "tp": 2,
+    "pred": 2,
+    "gold": 2
+   }
+  },
+  "text|goldberg-bga-p01-s2|muse-spark-1.3|minimal|150dpi": {
+   "id": "text|goldberg-bga-p01-s2|muse-spark-1.3|minimal|150dpi",
+   "task": "text",
+   "item": "goldberg-bga-p01-s2",
+   "page": "goldberg-bga-p01",
+   "model": "muse-spark-1.3",
+   "provider": "meta",
+   "effort": "minimal",
+   "resolution": "150dpi",
+   "ts": "2026-11-01T21:02:39",
+   "image_px": [
+    1154,
+    220
+   ],
+   "image_bytes": 105136,
+   "media_type": "image/png",
+   "cost_usd": 0.006475,
+   "latency_s": 5.62,
+   "attempts": [
+    {
+     "input_tokens": 709,
+     "output_tokens": 1315,
+     "cost_usd": 0.006475,
+     "stop_reason": "stop",
+     "api": "chat",
+     "reasoning_tokens": 986,
+     "model_returned": "muse-spark-1.3",
+     "call_s": 5.62,
+     "repaired": false
+    }
+   ],
+   "json_fail_first": false,
+   "raw_text": "{\"measures\": [{\"number\": 7, \"text\": [], \"ornaments\": [{\"staff\": \"upper\", \"note_index\": 1, \"kind\": \"mordent\"}, {\"staff\": \"upper\", \"note_index\": 7, \"kind\": \"turn\"}], \"fingering_count\": 2}, {\"number\": 8, \"text\": [], \"ornaments\": [{\"staff\": \"upper\", \"note_index\": 3, \"kind\": \"inverted_mordent\"}, {\"staff\": \"lower\", \"note_index\": 3, \"kind\": \"mordent\"}], \"fingering_count\": 2}, {\"number\": 9, \"text\": [\"cresc.\"], \"ornaments\": [{\"staff\": \"upper\", \"note_index\": 2, \"kind\": \"inverted_mordent\"}], \"fingering_count\": 4}, {\"number\": 10, \"text\": [], \"ornaments\": [{\"staff\": \"lower\", \"note_index\": 4, \"kind\": \"inverted_mordent\"}], \"fingering_count\": 3}, {\"number\": 11, \"text\": [\"f\"], \"ornaments\": [{\"staff\": \"upper\", \"note_index\": 1, \"kind\": \"trill\"}], \"fingering_count\": 2}, {\"number\": 12, \"text\": [], \"ornaments\": [{\"staff\": \"upper\", \"note_index\": 3, \"kind\": \"inverted_mordent\"}], \"fingering_count\": 4}]}",
+   "status": "ok",
+   "answer": {
+    "measures": [
+     {
+      "number": 7,
+      "text": [],
+      "ornaments": [
+       {
+        "staff": "upper",
+        "note_index": 1,
+        "kind": "mordent"
+       },
+       {
+        "staff": "upper",
+        "note_index": 7,
+        "kind": "turn"
+       }
+      ],
+      "fingering_count": 2
+     },
+     {
+      "number": 8,
+      "text": [],
+      "ornaments": [
+       {
+        "staff": "upper",
+        "note_index": 3,
+        "kind": "inverted_mordent"
+       },
+       {
+        "staff": "lower",
+        "note_index": 3,
+        "kind": "mordent"
+       }
+      ],
+      "fingering_count": 2
+     },
+     {
+      "number": 9,
+      "text": [
+       "cresc."
+      ],
+      "ornaments": [
+       {
+        "staff": "upper",
+        "note_index": 2,
+        "kind": "inverted_mordent"
+       }
+      ],
+      "fingering_count": 4
+     },
+     {
+      "number": 10,
+      "text": [],
+      "ornaments": [
+       {
+        "staff": "lower",
+        "note_index": 4,
+        "kind": "inverted_mordent"
+       }
+      ],
+      "fingering_count": 3
+     },
+     {
+      "number": 11,
+      "text": [
+       "f"
+      ],
+      "ornaments": [
+       {
+        "staff": "upper",
+        "note_index": 1,
+        "kind": "trill"
+       }
+      ],
+      "fingering_count": 2
+     },
+     {
+      "number": 12,
+      "text": [],
+      "ornaments": [
+       {
+        "staff": "upper",
+        "note_index": 3,
+        "kind": "inverted_mordent"
+       }
+      ],
+      "fingering_count": 4
+     }
+    ]
+   },
+   "score": {
+    "tp": 2,
+    "pred": 2,
+    "gold": 2
+   }
+  },
+  "text|goldberg-bga-p01-s3|muse-spark-1.3|minimal|150dpi": {
+   "id": "text|goldberg-bga-p01-s3|muse-spark-1.3|minimal|150dpi",
+   "task": "text",
+   "item": "goldberg-bga-p01-s3",
+   "page": "goldberg-bga-p01",
+   "model": "muse-spark-1.3",
+   "provider": "meta",
+   "effort": "minimal",
+   "resolution": "150dpi",
+   "ts": "2026-11-01T21:02:42",
+   "image_px": [
+    1153,
+    213
+   ],
+   "image_bytes": 82097,
+   "media_type": "image/png",
+   "cost_usd": 0.004363,
+   "latency_s": 5.04,
+   "attempts": [
+    {
+     "input_tokens": 709,
+     "output_tokens": 818,
+     "cost_usd": 0.004363,
+     "stop_reason": "stop",
+     "api": "chat",
+     "reasoning_tokens": 644,
+     "model_returned": "muse-spark-1.3",
+     "call_s": 5.04,
+     "repaired": false
+    }
+   ],
+   "json_fail_first": false,
+   "raw_text": "{\"measures\": [{\"number\": 13, \"text\": [\"mf\"], \"ornaments\": [{\"staff\": \"upper\", \"note_index\": 1, \"kind\": \"mordent\"}], \"fingering_count\": 1}, {\"number\": 14, \"text\": [], \"ornaments\": [{\"staff\": \"upper\", \"note_index\": 4, \"kind\": \"inverted_mordent\"}], \"fingering_count\": 2}, {\"number\": 15, \"text\": [], \"ornaments\": [], \"fingering_count\": 4}, {\"number\": 16, \"text\": [\"p\"], \"ornaments\": [{\"staff\": \"upper\", \"note_index\": 3, \"kind\": \"mordent\"}], \"fingering_count\": 2}]}",
+   "status": "ok",
+   "answer": {
+    "measures": [
+     {
+      "number": 13,
+      "text": [
+       "mf"
+      ],
+      "ornaments": [
+       {
+        "staff": "upper",
+        "note_index": 1,
+        "kind": "mordent"
+       }
+      ],
+      "fingering_count": 1
+     },
+     {
+      "number": 14,
+      "text": [],
+      "ornaments": [
+       {
+        "staff": "upper",
+        "note_index": 4,
+        "kind": "inverted_mordent"
+       }
+      ],
+      "fingering_count": 2
+     },
+     {
+      "number": 15,
+      "text": [],
+      "ornaments": [],
+      "fingering_count": 4
+     },
+     {
+      "number": 16,
+      "text": [
+       "p"
+      ],
+      "ornaments": [
+       {
+        "staff": "upper",
+        "note_index": 3,
+        "kind": "mordent"
+       }
+      ],
+      "fingering_count": 2
+     }
+    ]
+   },
+   "score": {
+    "tp": 2,
+    "pred": 2,
+    "gold": 2
+   }
+  },
+  "text|goldberg-bga-p01-s4|muse-spark-1.3|minimal|150dpi": {
+   "id": "text|goldberg-bga-p01-s4|muse-spark-1.3|minimal|150dpi",
+   "task": "text",
+   "item": "goldberg-bga-p01-s4",
+   "page": "goldberg-bga-p01",
+   "model": "muse-spark-1.3",
+   "provider": "meta",
+   "effort": "minimal",
+   "resolution": "150dpi",
+   "ts": "2026-11-01T21:02:42",
+   "image_px": [
+    1158,
+    216
+   ],
+   "image_bytes": 86540,
+   "media_type": "image/png",
+   "cost_usd": 0.004962,
+   "latency_s": 5.26,
+   "attempts": [
+    {
+     "input_tokens": 709,
+     "output_tokens": 959,
+     "cost_usd": 0.004962,
+     "stop_reason": "stop",
+     "api": "chat",
+     "reasoning_tokens": 743,
+     "model_returned": "muse-spark-1.3",
+     "call_s": 5.26,
+     "repaired": false
+    }
+   ],
+   "json_fail_first": false,
+   "raw_text": "{\"measures\": [{\"number\": 17, \"text\": [], \"ornaments\": [{\"staff\": \"upper\", \"note_index\": 1, \"kind\": \"inverted_mordent\"}, {\"staff\": \"upper\", \"note_index\": 2, \"kind\": \"trill\"}, {\"staff\": \"lower\", \"note_index\": 2, \"kind\": \"mordent\"}], \"fingering_count\": 3}, {\"number\": 18, \"text\": [], \"ornaments\": [], \"fingering_count\": 2}, {\"number\": 19, \"text\": [\"cresc.\"], \"ornaments\": [{\"staff\": \"upper\", \"note_index\": 3, \"kind\": \"mordent\"}, {\"staff\": \"lower\", \"note_index\": 3, \"kind\": \"mordent\"}], \"fingering_count\": 2}, {\"number\": 20, \"text\": [], \"ornaments\": [], \"fingering_count\": 7}]}",
+   "status": "ok",
+   "answer": {
+    "measures": [
+     {
+      "number": 17,
+      "text": [],
+      "ornaments": [
+       {
+        "staff": "upper",
+        "note_index": 1,
+        "kind": "inverted_mordent"
+       },
+       {
+        "staff": "upper",
+        "note_index": 2,
+        "kind": "trill"
+       },
+       {
+        "staff": "lower",
+        "note_index": 2,
+        "kind": "mordent"
+       }
+      ],
+      "fingering_count": 3
+     },
+     {
+      "number": 18,
+      "text": [],
+      "ornaments": [],
+      "fingering_count": 2
+     },
+     {
+      "number": 19,
+      "text": [
+       "cresc."
+      ],
+      "ornaments": [
+       {
+        "staff": "upper",
+        "note_index": 3,
+        "kind": "mordent"
+       },
+       {
+        "staff": "lower",
+        "note_index": 3,
+        "kind": "mordent"
+       }
+      ],
+      "fingering_count": 2
+     },
+     {
+      "number": 20,
+      "text": [],
+      "ornaments": [],
+      "fingering_count": 7
+     }
+    ]
+   },
+   "score": {
+    "tp": 0,
+    "pred": 1,
+    "gold": 1
+   }
+  },
+  "text|goldberg-bga-p01-s6|muse-spark-1.3|minimal|150dpi": {
+   "id": "text|goldberg-bga-p01-s6|muse-spark-1.3|minimal|150dpi",
+   "task": "text",
+   "item": "goldberg-bga-p01-s6",
+   "page": "goldberg-bga-p01",
+   "model": "muse-spark-1.3",
+   "provider": "meta",
+   "effort": "minimal",
+   "resolution": "150dpi",
+   "ts": "2026-11-01T21:02:45",
+   "image_px": [
+    1157,
+    219
+   ],
+   "image_bytes": 89775,
+   "media_type": "image/png",
+   "cost_usd": 0.00387,
+   "latency_s": 3.62,
+   "attempts": [
+    {
+     "input_tokens": 709,
+     "output_tokens": 702,
+     "cost_usd": 0.00387,
+     "stop_reason": "stop",
+     "api": "chat",
+     "reasoning_tokens": 563,
+     "model_returned": "muse-spark-1.3",
+     "call_s": 3.62,
+     "repaired": false
+    }
+   ],
+   "json_fail_first": false,
+   "raw_text": "{\"measures\": [{\"number\": 25, \"text\": [\"p\"], \"ornaments\": [{\"staff\": \"upper\", \"note_index\": 1, \"kind\": \"inverted_mordent\"}], \"fingering_count\": 2}, {\"number\": 26, \"text\": [], \"ornaments\": [], \"fingering_count\": 4}, {\"number\": 27, \"text\": [\"cresc.\", \"poco\"], \"ornaments\": [], \"fingering_count\": 3}, {\"number\": 28, \"text\": [], \"ornaments\": [], \"fingering_count\": 3}]}",
+   "status": "ok",
+   "answer": {
+    "measures": [
+     {
+      "number": 25,
+      "text": [
+       "p"
+      ],
+      "ornaments": [
+       {
+        "staff": "upper",
+        "note_index": 1,
+        "kind": "inverted_mordent"
+       }
+      ],
+      "fingering_count": 2
+     },
+     {
+      "number": 26,
+      "text": [],
+      "ornaments": [],
+      "fingering_count": 4
+     },
+     {
+      "number": 27,
+      "text": [
+       "cresc.",
+       "poco"
+      ],
+      "ornaments": [],
+      "fingering_count": 3
+     },
+     {
+      "number": 28,
+      "text": [],
+      "ornaments": [],
+      "fingering_count": 3
+     }
+    ]
+   },
+   "score": {
+    "tp": 3,
+    "pred": 3,
+    "gold": 3
+   }
+  },
+  "text|goldberg-bga-p01-s5|muse-spark-1.3|minimal|150dpi": {
+   "id": "text|goldberg-bga-p01-s5|muse-spark-1.3|minimal|150dpi",
+   "task": "text",
+   "item": "goldberg-bga-p01-s5",
+   "page": "goldberg-bga-p01",
+   "model": "muse-spark-1.3",
+   "provider": "meta",
+   "effort": "minimal",
+   "resolution": "150dpi",
+   "ts": "2026-11-01T21:02:43",
+   "image_px": [
+    1158,
+    217
+   ],
+   "image_bytes": 90098,
+   "media_type": "image/png",
+   "cost_usd": 0.005425,
+   "latency_s": 5.77,
+   "attempts": [
+    {
+     "input_tokens": 709,
+     "output_tokens": 1068,
+     "cost_usd": 0.005425,
+     "stop_reason": "stop",
+     "api": "chat",
+     "reasoning_tokens": 896,
+     "model_returned": "muse-spark-1.3",
+     "call_s": 5.77,
+     "repaired": false
+    }
+   ],
+   "json_fail_first": false,
+   "raw_text": "{\"measures\": [{\"number\": 21, \"text\": [\"mf\"], \"ornaments\": [{\"staff\": \"lower\", \"note_index\": 2, \"kind\": \"mordent\"}], \"fingering_count\": 2}, {\"number\": 22, \"text\": [], \"ornaments\": [{\"staff\": \"lower\", \"note_index\": 3, \"kind\": \"mordent\"}], \"fingering_count\": 2}, {\"number\": 23, \"text\": [\"f\"], \"ornaments\": [{\"staff\": \"upper\", \"note_index\": 2, \"kind\": \"mordent\"}], \"fingering_count\": 5}, {\"number\": 24, \"text\": [], \"ornaments\": [], \"fingering_count\": 1}]}",
+   "status": "ok",
+   "answer": {
+    "measures": [
+     {
+      "number": 21,
+      "text": [
+       "mf"
+      ],
+      "ornaments": [
+       {
+        "staff": "lower",
+        "note_index": 2,
+        "kind": "mordent"
+       }
+      ],
+      "fingering_count": 2
+     },
+     {
+      "number": 22,
+      "text": [],
+      "ornaments": [
+       {
+        "staff": "lower",
+        "note_index": 3,
+        "kind": "mordent"
+       }
+      ],
+      "fingering_count": 2
+     },
+     {
+      "number": 23,
+      "text": [
+       "f"
+      ],
+      "ornaments": [
+       {
+        "staff": "upper",
+        "note_index": 2,
+        "kind": "mordent"
+       }
+      ],
+      "fingering_count": 5
+     },
+     {
+      "number": 24,
+      "text": [],
+      "ornaments": [],
+      "fingering_count": 1
+     }
+    ]
+   },
+   "score": {
+    "tp": 2,
+    "pred": 2,
+    "gold": 2
+   }
+  },
+  "header|goldberg-bga-p01|muse-spark-1.2|low|150dpi": {
+   "id": "header|goldberg-bga-p01|muse-spark-1.2|low|150dpi",
+   "task": "header",
+   "item": "goldberg-bga-p01",
+   "page": "goldberg-bga-p01",
+   "model": "muse-spark-1.2",
+   "provider": "meta",
+   "effort": "low",
+   "resolution": "150dpi",
+   "ts": "2026-11-01T21:03:00",
+   "image_px": [
+    1274,
+    1624
+   ],
+   "image_bytes": 571621,
+   "media_type": "image/png",
+   "cost_usd": 0.007685,
+   "latency_s": 10.52,
+   "attempts": [
+    {
+     "input_tokens": 69,
+     "output_tokens": 1788,
+     "cost_usd": 0.007685,
+     "stop_reason": "end_turn",
+     "api": "messages",
+     "reasoning_tokens": null,
+     "model_returned": "muse-spark-1.2",
+     "call_s": null,
+     "repaired": false
+    }
+   ],
+   "json_fail_first": false,
+   "raw_text": "{\"instruments\":[{\"label\":\"Aria.\",\"abbreviations\":[\"Klav.\",\"Pno.\"],\"boxes\":[1,2,3,4,5,6,7,8,9,10,11,12],\"staves\":2,\"clefs\":[\"treble\",\"bass\"],\"family\":\"keyboard\"}],\"staff_total\":12,\"key\":\"G major (1 sharp)\",\"time\":\"3/4\",\"tempo\":\"Andante espressivo. (♩=72.)\",\"sections\":[\"Aria con Variazioni.\",\"Aria.\"],\"piano_present\":true,\"notes\":\"Page is solo keyboard (Goldberg Aria) not orchestral; single bracketed grand staff labelled Aria. occupies all 12 detected boxes (6 systems x 2 staves), treble over bass, no orchestral instruments present.\"}",
+   "status": "ok",
+   "answer": {
+    "instruments": [
+     {
+      "label": "Aria.",
+      "abbreviations": [
+       "Klav.",
+       "Pno."
+      ],
+      "boxes": [
+       1,
+       2,
+       3,
+       4,
+       5,
+       6,
+       7,
+       8,
+       9,
+       10,
+       11,
+       12
+      ],
+      "staves": 2,
+      "clefs": [
+       "treble",
+       "bass"
+      ],
+      "family": "keyboard"
+     }
+    ],
+    "staff_total": 12,
+    "key": "G major (1 sharp)",
+    "time": "3/4",
+    "tempo": "Andante espressivo. (♩=72.)",
+    "sections": [
+     "Aria con Variazioni.",
+     "Aria."
+    ],
+    "piano_present": true,
+    "notes": "Page is solo keyboard (Goldberg Aria) not orchestral; single bracketed grand staff labelled Aria. occupies all 12 detected boxes (6 systems x 2 staves), treble over bass, no orchestral instruments present."
+   },
+   "score": {
+    "staves_ok": 1,
+    "instruments_ok": 1,
+    "staves": 2,
+    "instruments": 1,
+    "box_ok": 2,
+    "box_n": 2,
+    "header_n": 1
+   }
+  },
+  "header|rach1-gutheil-p01|muse-spark-1.2|low|150dpi": {
+   "id": "header|rach1-gutheil-p01|muse-spark-1.2|low|150dpi",
+   "task": "header",
+   "item": "rach1-gutheil-p01",
+   "page": "rach1-gutheil-p01",
+   "model": "muse-spark-1.2",
+   "provider": "meta",
+   "effort": "low",
+   "resolution": "150dpi",
+   "ts": "2026-11-01T21:03:00",
+   "image_px": [
+    1275,
+    1756
+   ],
+   "image_bytes": 588624,
+   "media_type": "image/png",
+   "cost_usd": 0.012674,
+   "latency_s": 15.44,
+   "attempts": [
+    {
+     "input_tokens": 75,
+     "output_tokens": 2960,
+     "cost_usd": 0.012674,
+     "stop_reason": "end_turn",
+     "api": "messages",
+     "reasoning_tokens": null,
+     "model_returned": "muse-spark-1.2",
+     "call_s": null,
+     "repaired": false
+    }
+   ],
+   "json_fail_first": false,
+   "raw_text": "{\"instruments\":[{\"label\":\"Flauti I. II.\",\"abbreviations\":[\"Fl.\"],\"boxes\":[1],\"staves\":1,\"clefs\":[\"treble\"],\"family\":\"woodwind\"},{\"label\":\"Oboi I. II.\",\"abbreviations\":[\"Ob.\"],\"boxes\":[2],\"staves\":1,\"clefs\":[\"treble\"],\"family\":\"woodwind\"},{\"label\":\"Clarinetti I. II in A.\",\"abbreviations\":[\"Cl.\"],\"boxes\":[3],\"staves\":1,\"clefs\":[\"treble\"],\"family\":\"woodwind\"},{\"label\":\"Fagotti I. II.\",\"abbreviations\":[\"Fg.\"],\"boxes\":[4],\"staves\":1,\"clefs\":[\"bass\"],\"family\":\"woodwind\"},{\"label\":\"Corni in F. I. II.\",\"abbreviations\":[\"Cor. I. II.\",\"Hr. I. II.\"],\"boxes\":[5],\"staves\":1,\"clefs\":[\"treble\"],\"family\":\"brass\"},{\"label\":\"Corni in F. III. IV.\",\"abbreviations\":[\"Cor. III. IV.\",\"Hr. III. IV.\"],\"boxes\":[6],\"staves\":1,\"clefs\":[\"treble\"],\"family\":\"brass\"},{\"label\":\"Trombe I. II in B.\",\"abbreviations\":[\"Trbe.\",\"Tr.\"],\"boxes\":[7],\"staves\":1,\"clefs\":[\"treble\"],\"family\":\"brass\"},{\"label\":\"Tromboni ten. I. II.\",\"abbreviations\":[\"Trbn.\",\"Pos. I. II.\"],\"boxes\":[8],\"staves\":1,\"clefs\":[\"bass\"],\"family\":\"brass\"},{\"label\":\"Trombone basso\",\"abbreviations\":[\"Trb. b.\",\"Pos. b.\"],\"boxes\":[9],\"staves\":1,\"clefs\":[\"bass\"],\"family\":\"brass\"},{\"label\":\"Timpani\",\"abbreviations\":[\"Timp.\",\"Pk.\"],\"boxes\":[10],\"staves\":1,\"clefs\":[\"bass\"],\"family\":\"percussion\"},{\"label\":\"Piano.\",\"abbreviations\":[\"Pno.\",\"Pf.\",\"Klav.\",\"Pfte.\"],\"boxes\":[11,12],\"staves\":2,\"clefs\":[\"treble\",\"bass\"],\"family\":\"keyboard\"},{\"label\":\"Violini I.\",\"abbreviations\":[\"Vl. I\",\"Vln. I\"],\"boxes\":[13],\"staves\":1,\"clefs\":[\"treble\"],\"family\":\"strings\"},{\"label\":\"Violini II.\",\"abbreviations\":[\"Vl. II\",\"Vln. II\"],\"boxes\":[14],\"staves\":1,\"clefs\":[\"treble\"],\"family\":\"strings\"},{\"label\":\"Viole.\",\"abbreviations\":[\"Vla.\",\"Ve.\"],\"boxes\":[15],\"staves\":1,\"clefs\":[\"alto\"],\"family\":\"strings\"},{\"label\":\"Violoncello.\",\"abbreviations\":[\"Vc.\",\"Vcl.\"],\"boxes\":[16],\"staves\":1,\"clefs\":[\"bass\"],\"family\":\"strings\"},{\"label\":\"Contrabassi.\",\"abbreviations\":[\"Cb.\",\"Kb.\"],\"boxes\":[17],\"staves\":1,\"clefs\":[\"bass\"],\"family\":\"strings\"}],\"staff_total\":17,\"key\":\"F# minor (3 sharps) printed as 1 sharp - G major/E minor concert appearance, transposed for Cl. in A, Cor. in F, Tr. in B\",\"time\":\"4/4 (C - common time)\",\"tempo\":\"Vivace.\",\"sections\":[\"I\"],\"piano_present\":true,\"notes\":\"No staff missing - 17 blue boxes = 17 printed staves, Piano is the only grand staff with 2 staves, Corni are split on two separate staves I.II. and III.IV.\"}",
+   "status": "ok",
+   "answer": {
+    "instruments": [
+     {
+      "label": "Flauti I. II.",
+      "abbreviations": [
+       "Fl."
+      ],
+      "boxes": [
+       1
+      ],
+      "staves": 1,
+      "clefs": [
+       "treble"
+      ],
+      "family": "woodwind"
+     },
+     {
+      "label": "Oboi I. II.",
+      "abbreviations": [
+       "Ob."
+      ],
+      "boxes": [
+       2
+      ],
+      "staves": 1,
+      "clefs": [
+       "treble"
+      ],
+      "family": "woodwind"
+     },
+     {
+      "label": "Clarinetti I. II in A.",
+      "abbreviations": [
+       "Cl."
+      ],
+      "boxes": [
+       3
+      ],
+      "staves": 1,
+      "clefs": [
+       "treble"
+      ],
+      "family": "woodwind"
+     },
+     {
+      "label": "Fagotti I. II.",
+      "abbreviations": [
+       "Fg."
+      ],
+      "boxes": [
+       4
+      ],
+      "staves": 1,
+      "clefs": [
+       "bass"
+      ],
+      "family": "woodwind"
+     },
+     {
+      "label": "Corni in F. I. II.",
+      "abbreviations": [
+       "Cor. I. II.",
+       "Hr. I. II."
+      ],
+      "boxes": [
+       5
+      ],
+      "staves": 1,
+      "clefs": [
+       "treble"
+      ],
+      "family": "brass"
+     },
+     {
+      "label": "Corni in F. III. IV.",
+      "abbreviations": [
+       "Cor. III. IV.",
+       "Hr. III. IV."
+      ],
+      "boxes": [
+       6
+      ],
+      "staves": 1,
+      "clefs": [
+       "treble"
+      ],
+      "family": "brass"
+     },
+     {
+      "label": "Trombe I. II in B.",
+      "abbreviations": [
+       "Trbe.",
+       "Tr."
+      ],
+      "boxes": [
+       7
+      ],
+      "staves": 1,
+      "clefs": [
+       "treble"
+      ],
+      "family": "brass"
+     },
+     {
+      "label": "Tromboni ten. I. II.",
+      "abbreviations": [
+       "Trbn.",
+       "Pos. I. II."
+      ],
+      "boxes": [
+       8
+      ],
+      "staves": 1,
+      "clefs": [
+       "bass"
+      ],
+      "family": "brass"
+     },
+     {
+      "label": "Trombone basso",
+      "abbreviations": [
+       "Trb. b.",
+       "Pos. b."
+      ],
+      "boxes": [
+       9
+      ],
+      "staves": 1,
+      "clefs": [
+       "bass"
+      ],
+      "family": "brass"
+     },
+     {
+      "label": "Timpani",
+      "abbreviations": [
+       "Timp.",
+       "Pk."
+      ],
+      "boxes": [
+       10
+      ],
+      "staves": 1,
+      "clefs": [
+       "bass"
+      ],
+      "family": "percussion"
+     },
+     {
+      "label": "Piano.",
+      "abbreviations": [
+       "Pno.",
+       "Pf.",
+       "Klav.",
+       "Pfte."
+      ],
+      "boxes": [
+       11,
+       12
+      ],
+      "staves": 2,
+      "clefs": [
+       "treble",
+       "bass"
+      ],
+      "family": "keyboard"
+     },
+     {
+      "label": "Violini I.",
+      "abbreviations": [
+       "Vl. I",
+       "Vln. I"
+      ],
+      "boxes": [
+       13
+      ],
+      "staves": 1,
+      "clefs": [
+       "treble"
+      ],
+      "family": "strings"
+     },
+     {
+      "label": "Violini II.",
+      "abbreviations": [
+       "Vl. II",
+       "Vln. II"
+      ],
+      "boxes": [
+       14
+      ],
+      "staves": 1,
+      "clefs": [
+       "treble"
+      ],
+      "family": "strings"
+     },
+     {
+      "label": "Viole.",
+      "abbreviations": [
+       "Vla.",
+       "Ve."
+      ],
+      "boxes": [
+       15
+      ],
+      "staves": 1,
+      "clefs": [
+       "alto"
+      ],
+      "family": "strings"
+     },
+     {
+      "label": "Violoncello.",
+      "abbreviations": [
+       "Vc.",
+       "Vcl."
+      ],
+      "boxes": [
+       16
+      ],
+      "staves": 1,
+      "clefs": [
+       "bass"
+      ],
+      "family": "strings"
+     },
+     {
+      "label": "Contrabassi.",
+      "abbreviations": [
+       "Cb.",
+       "Kb."
+      ],
+      "boxes": [
+       17
+      ],
+      "staves": 1,
+      "clefs": [
+       "bass"
+      ],
+      "family": "strings"
+     }
+    ],
+    "staff_total": 17,
+    "key": "F# minor (3 sharps) printed as 1 sharp - G major/E minor concert appearance, transposed for Cl. in A, Cor. in F, Tr. in B",
+    "time": "4/4 (C - common time)",
+    "tempo": "Vivace.",
+    "sections": [
+     "I"
+    ],
+    "piano_present": true,
+    "notes": "No staff missing - 17 blue boxes = 17 printed staves, Piano is the only grand staff with 2 staves, Corni are split on two separate staves I.II. and III.IV."
+   },
+   "score": {
+    "staves_ok": 1,
+    "instruments_ok": 1,
+    "staves": 17,
+    "instruments": 16,
+    "box_ok": 17,
+    "box_n": 17,
+    "header_n": 1
+   }
+  },
+  "header|goldberg-bga-p01|muse-spark-1.3|low|150dpi": {
+   "id": "header|goldberg-bga-p01|muse-spark-1.3|low|150dpi",
+   "task": "header",
+   "item": "goldberg-bga-p01",
+   "page": "goldberg-bga-p01",
+   "model": "muse-spark-1.3",
+   "provider": "meta",
+   "effort": "low",
+   "resolution": "150dpi",
+   "ts": "2026-11-01T21:03:10",
+   "image_px": [
+    1274,
+    1624
+   ],
+   "image_bytes": 571621,
+   "media_type": "image/png",
+   "cost_usd": 0.005718,
+   "latency_s": 7.18,
+   "attempts": [
+    {
+     "input_tokens": 69,
+     "output_tokens": 1325,
+     "cost_usd": 0.005718,
+     "stop_reason": "end_turn",
+     "api": "messages",
+     "reasoning_tokens": null,
+     "model_returned": "muse-spark-1.3",
+     "call_s": null,
+     "repaired": false
+    }
+   ],
+   "json_fail_first": false,
+   "raw_text": "{\"instruments\": [{\"label\": \"Aria.\", \"abbreviations\": [\"Aria.\"], \"boxes\": [1, 2], \"staves\": 2, \"clefs\": [\"treble\", \"bass\"], \"family\": \"keyboard\"}], \"staff_total\": 2, \"key\": \"G major (1 sharp)\", \"time\": \"3/4\", \"tempo\": \"Andante espressivo. (d=72.)\", \"sections\": [\"Aria con Variazioni.\", \"Aria.\"], \"piano_present\": true, \"notes\": \"Solo keyboard work on a two-staff grand system labeled Aria, not an orchestral score.\"}",
+   "status": "ok",
+   "answer": {
+    "instruments": [
+     {
+      "label": "Aria.",
+      "abbreviations": [
+       "Aria."
+      ],
+      "boxes": [
+       1,
+       2
+      ],
+      "staves": 2,
+      "clefs": [
+       "treble",
+       "bass"
+      ],
+      "family": "keyboard"
+     }
+    ],
+    "staff_total": 2,
+    "key": "G major (1 sharp)",
+    "time": "3/4",
+    "tempo": "Andante espressivo. (d=72.)",
+    "sections": [
+     "Aria con Variazioni.",
+     "Aria."
+    ],
+    "piano_present": true,
+    "notes": "Solo keyboard work on a two-staff grand system labeled Aria, not an orchestral score."
+   },
+   "score": {
+    "staves_ok": 1,
+    "instruments_ok": 1,
+    "staves": 2,
+    "instruments": 1,
+    "box_ok": 2,
+    "box_n": 2,
+    "header_n": 1
+   }
+  },
+  "header|beethoven9-p172|muse-spark-1.3|low|150dpi": {
+   "id": "header|beethoven9-p172|muse-spark-1.3|low|150dpi",
+   "task": "header",
+   "item": "beethoven9-p172",
+   "page": "beethoven9-p172",
+   "model": "muse-spark-1.3",
+   "provider": "meta",
+   "effort": "low",
+   "resolution": "150dpi",
+   "ts": "2026-11-01T21:03:00",
+   "image_px": [
+    3153,
+    4000
+   ],
+   "image_bytes": 3116461,
+   "media_type": "image/jpeg",
+   "cost_usd": 0.018276,
+   "latency_s": 19.66,
+   "attempts": [
+    {
+     "input_tokens": 31,
+     "output_tokens": 4291,
+     "cost_usd": 0.018276,
+     "stop_reason": "end_turn",
+     "api": "messages",
+     "reasoning_tokens": null,
+     "model_returned": "muse-spark-1.3",
+     "call_s": null,
+     "repaired": false
+    }
+   ],
+   "json_fail_first": false,
+   "raw_text": "{\"instruments\": [{\"label\": \"[page edge artefact, no staff]\", \"abbreviations\": [], \"boxes\": [1], \"staves\": 1, \"clefs\": [\"unknown\"], \"family\": \"other\"}, {\"label\": \"Flauti.\", \"abbreviations\": [\"Fl.\"], \"boxes\": [2], \"staves\": 1, \"clefs\": [\"treble\"], \"family\": \"woodwind\"}, {\"label\": \"Oboi.\", \"abbreviations\": [\"Ob.\"], \"boxes\": [3], \"staves\": 1, \"clefs\": [\"treble\"], \"family\": \"woodwind\"}, {\"label\": \"Clarinetti.\", \"abbreviations\": [\"Clar.\"], \"boxes\": [4], \"staves\": 1, \"clefs\": [\"treble\"], \"family\": \"woodwind\"}, {\"label\": \"Fagotti.\", \"abbreviations\": [\"Fag.\"], \"boxes\": [5], \"staves\": 1, \"clefs\": [\"bass\"], \"family\": \"woodwind\"}, {\"label\": \"Corni in D.\", \"abbreviations\": [\"Cor.\"], \"boxes\": [6], \"staves\": 1, \"clefs\": [\"treble\"], \"family\": \"brass\"}, {\"label\": \"Tympani in D.\", \"abbreviations\": [\"Timp.\"], \"boxes\": [7], \"staves\": 1, \"clefs\": [\"bass\"], \"family\": \"percussion\"}, {\"label\": \"Tromboni Alto e Tenore\", \"abbreviations\": [\"Trb. A. T.\"], \"boxes\": [8], \"staves\": 1, \"clefs\": [\"alto\"], \"family\": \"brass\"}, {\"label\": \"Tromboni Basso.\", \"abbreviations\": [\"Trb. B.\"], \"boxes\": [9], \"staves\": 1, \"clefs\": [\"bass\"], \"family\": \"brass\"}, {\"label\": \"Violini I.\", \"abbreviations\": [\"Vl. I.\"], \"boxes\": [10], \"staves\": 1, \"clefs\": [\"treble\"], \"family\": \"strings\"}, {\"label\": \"Violini II.\", \"abbreviations\": [\"Vl. II.\"], \"boxes\": [11], \"staves\": 1, \"clefs\": [\"treble\"], \"family\": \"strings\"}, {\"label\": \"Viola.\", \"abbreviations\": [\"Vla.\"], \"boxes\": [12], \"staves\": 1, \"clefs\": [\"alto\"], \"family\": \"strings\"}, {\"label\": \"CORO Soprano\", \"abbreviations\": [\"Sopr.\"], \"boxes\": [13], \"staves\": 1, \"clefs\": [\"treble\"], \"family\": \"voice\"}, {\"label\": \"CORO Alto\", \"abbreviations\": [\"Alt.\"], \"boxes\": [14], \"staves\": 1, \"clefs\": [\"treble\"], \"family\": \"voice\"}, {\"label\": \"CORO Tenore\", \"abbreviations\": [\"Ten.\"], \"boxes\": [15], \"staves\": 1, \"clefs\": [\"tenor\"], \"family\": \"voice\"}, {\"label\": \"CORO Basso\", \"abbreviations\": [\"Bass.\"], \"boxes\": [16], \"staves\": 1, \"clefs\": [\"bass\"], \"family\": \"voice\"}, {\"label\": \"Violoncelli & Bassi.\", \"abbreviations\": [\"Vc. e Cb.\"], \"boxes\": [17], \"staves\": 1, \"clefs\": [\"bass\"], \"family\": \"strings\"}, {\"label\": \"[page edge artefact, no staff]\", \"abbreviations\": [], \"boxes\": [18], \"staves\": 1, \"clefs\": [\"unknown\"], \"family\": \"other\"}], \"staff_total\": 16, \"key\": \"D major (2 sharps)\", \"time\": \"3/2\", \"tempo\": \"Andante maestoso.\", \"sections\": [], \"piano_present\": false, \"notes\": \"Boxes 1 and 18 are page-border false detections with no musical staff, 16 real staves present.\"}",
+   "status": "ok",
+   "answer": {
+    "instruments": [
+     {
+      "label": "[page edge artefact, no staff]",
+      "abbreviations": [],
+      "boxes": [
+       1
+      ],
+      "staves": 1,
+      "clefs": [
+       "unknown"
+      ],
+      "family": "other"
+     },
+     {
+      "label": "Flauti.",
+      "abbreviations": [
+       "Fl."
+      ],
+      "boxes": [
+       2
+      ],
+      "staves": 1,
+      "clefs": [
+       "treble"
+      ],
+      "family": "woodwind"
+     },
+     {
+      "label": "Oboi.",
+      "abbreviations": [
+       "Ob."
+      ],
+      "boxes": [
+       3
+      ],
+      "staves": 1,
+      "clefs": [
+       "treble"
+      ],
+      "family": "woodwind"
+     },
+     {
+      "label": "Clarinetti.",
+      "abbreviations": [
+       "Clar."
+      ],
+      "boxes": [
+       4
+      ],
+      "staves": 1,
+      "clefs": [
+       "treble"
+      ],
+      "family": "woodwind"
+     },
+     {
+      "label": "Fagotti.",
+      "abbreviations": [
+       "Fag."
+      ],
+      "boxes": [
+       5
+      ],
+      "staves": 1,
+      "clefs": [
+       "bass"
+      ],
+      "family": "woodwind"
+     },
+     {
+      "label": "Corni in D.",
+      "abbreviations": [
+       "Cor."
+      ],
+      "boxes": [
+       6
+      ],
+      "staves": 1,
+      "clefs": [
+       "treble"
+      ],
+      "family": "brass"
+     },
+     {
+      "label": "Tympani in D.",
+      "abbreviations": [
+       "Timp."
+      ],
+      "boxes": [
+       7
+      ],
+      "staves": 1,
+      "clefs": [
+       "bass"
+      ],
+      "family": "percussion"
+     },
+     {
+      "label": "Tromboni Alto e Tenore",
+      "abbreviations": [
+       "Trb. A. T."
+      ],
+      "boxes": [
+       8
+      ],
+      "staves": 1,
+      "clefs": [
+       "alto"
+      ],
+      "family": "brass"
+     },
+     {
+      "label": "Tromboni Basso.",
+      "abbreviations": [
+       "Trb. B."
+      ],
+      "boxes": [
+       9
+      ],
+      "staves": 1,
+      "clefs": [
+       "bass"
+      ],
+      "family": "brass"
+     },
+     {
+      "label": "Violini I.",
+      "abbreviations": [
+       "Vl. I."
+      ],
+      "boxes": [
+       10
+      ],
+      "staves": 1,
+      "clefs": [
+       "treble"
+      ],
+      "family": "strings"
+     },
+     {
+      "label": "Violini II.",
+      "abbreviations": [
+       "Vl. II."
+      ],
+      "boxes": [
+       11
+      ],
+      "staves": 1,
+      "clefs": [
+       "treble"
+      ],
+      "family": "strings"
+     },
+     {
+      "label": "Viola.",
+      "abbreviations": [
+       "Vla."
+      ],
+      "boxes": [
+       12
+      ],
+      "staves": 1,
+      "clefs": [
+       "alto"
+      ],
+      "family": "strings"
+     },
+     {
+      "label": "CORO Soprano",
+      "abbreviations": [
+       "Sopr."
+      ],
+      "boxes": [
+       13
+      ],
+      "staves": 1,
+      "clefs": [
+       "treble"
+      ],
+      "family": "voice"
+     },
+     {
+      "label": "CORO Alto",
+      "abbreviations": [
+       "Alt."
+      ],
+      "boxes": [
+       14
+      ],
+      "staves": 1,
+      "clefs": [
+       "treble"
+      ],
+      "family": "voice"
+     },
+     {
+      "label": "CORO Tenore",
+      "abbreviations": [
+       "Ten."
+      ],
+      "boxes": [
+       15
+      ],
+      "staves": 1,
+      "clefs": [
+       "tenor"
+      ],
+      "family": "voice"
+     },
+     {
+      "label": "CORO Basso",
+      "abbreviations": [
+       "Bass."
+      ],
+      "boxes": [
+       16
+      ],
+      "staves": 1,
+      "clefs": [
+       "bass"
+      ],
+      "family": "voice"
+     },
+     {
+      "label": "Violoncelli & Bassi.",
+      "abbreviations": [
+       "Vc. e Cb."
+      ],
+      "boxes": [
+       17
+      ],
+      "staves": 1,
+      "clefs": [
+       "bass"
+      ],
+      "family": "strings"
+     },
+     {
+      "label": "[page edge artefact, no staff]",
+      "abbreviations": [],
+      "boxes": [
+       18
+      ],
+      "staves": 1,
+      "clefs": [
+       "unknown"
+      ],
+      "family": "other"
+     }
+    ],
+    "staff_total": 16,
+    "key": "D major (2 sharps)",
+    "time": "3/2",
+    "tempo": "Andante maestoso.",
+    "sections": [],
+    "piano_present": false,
+    "notes": "Boxes 1 and 18 are page-border false detections with no musical staff, 16 real staves present."
+   },
+   "score": {
+    "staves_ok": 1,
+    "instruments_ok": 1,
+    "staves": 16,
+    "instruments": 16,
+    "box_ok": 16,
+    "box_n": 16,
+    "header_n": 1
+   }
+  },
+  "header|rach1-gutheil-p01|muse-spark-1.3|low|150dpi": {
+   "id": "header|rach1-gutheil-p01|muse-spark-1.3|low|150dpi",
+   "task": "header",
+   "item": "rach1-gutheil-p01",
+   "page": "rach1-gutheil-p01",
+   "model": "muse-spark-1.3",
+   "provider": "meta",
+   "effort": "low",
+   "resolution": "150dpi",
+   "ts": "2026-11-01T21:03:15",
+   "image_px": [
+    1275,
+    1756
+   ],
+   "image_bytes": 588624,
+   "media_type": "image/png",
+   "cost_usd": 0.018687,
+   "latency_s": 16.0,
+   "attempts": [
+    {
+     "input_tokens": 3260,
+     "output_tokens": 3438,
+     "cost_usd": 0.018687,
+     "stop_reason": "end_turn",
+     "api": "messages",
+     "reasoning_tokens": null,
+     "model_returned": "muse-spark-1.3",
+     "call_s": null,
+     "repaired": false
+    }
+   ],
+   "json_fail_first": false,
+   "raw_text": "{\"instruments\": [{\"label\": \"Flauti I. II.\", \"abbreviations\": [\"Fl.\"], \"boxes\": [1], \"staves\": 2, \"clefs\": [\"treble\", \"treble\"], \"family\": \"woodwind\"}, {\"label\": \"Oboi I. II.\", \"abbreviations\": [\"Ob.\"], \"boxes\": [2], \"staves\": 2, \"clefs\": [\"treble\", \"treble\"], \"family\": \"woodwind\"}, {\"label\": \"Clarinetti I. II in A.\", \"abbreviations\": [\"Cl.\"], \"boxes\": [3], \"staves\": 2, \"clefs\": [\"treble\", \"treble\"], \"family\": \"woodwind\"}, {\"label\": \"Fagotti I. II.\", \"abbreviations\": [\"Fag.\"], \"boxes\": [4], \"staves\": 2, \"clefs\": [\"bass\", \"bass\"], \"family\": \"woodwind\"}, {\"label\": \"Corni in F. I. II.\", \"abbreviations\": [\"Cor.\"], \"boxes\": [5], \"staves\": 2, \"clefs\": [\"treble\", \"treble\"], \"family\": \"brass\"}, {\"label\": \"Corni in F. III. IV.\", \"abbreviations\": [\"Cor.\"], \"boxes\": [6], \"staves\": 2, \"clefs\": [\"treble\", \"treble\"], \"family\": \"brass\"}, {\"label\": \"Trombe I. II in B.\", \"abbreviations\": [\"Trbe.\"], \"boxes\": [7], \"staves\": 1, \"clefs\": [\"treble\"], \"family\": \"brass\"}, {\"label\": \"Tromboni ten. I. II.\", \"abbreviations\": [\"Trbni.\"], \"boxes\": [8], \"staves\": 1, \"clefs\": [\"bass\"], \"family\": \"brass\"}, {\"label\": \"Trombone basso\", \"abbreviations\": [\"Trbne b.\"], \"boxes\": [9], \"staves\": 1, \"clefs\": [\"bass\"], \"family\": \"brass\"}, {\"label\": \"Timpani\", \"abbreviations\": [\"Timp.\"], \"boxes\": [10], \"staves\": 1, \"clefs\": [\"bass\"], \"family\": \"percussion\"}, {\"label\": \"Piano.\", \"abbreviations\": [\"Pno.\"], \"boxes\": [11, 12], \"staves\": 2, \"clefs\": [\"treble\", \"bass\"], \"family\": \"keyboard\"}, {\"label\": \"Violini I.\", \"abbreviations\": [\"Vl. I\"], \"boxes\": [13], \"staves\": 1, \"clefs\": [\"treble\"], \"family\": \"strings\"}, {\"label\": \"Violini II.\", \"abbreviations\": [\"Vl. II\"], \"boxes\": [14], \"staves\": 1, \"clefs\": [\"treble\"], \"family\": \"strings\"}, {\"label\": \"Viole.\", \"abbreviations\": [\"Vle.\"], \"boxes\": [15], \"staves\": 1, \"clefs\": [\"alto\"], \"family\": \"strings\"}, {\"label\": \"Violoncelli.\", \"abbreviations\": [\"Vc.\"], \"boxes\": [16], \"staves\": 1, \"clefs\": [\"bass\"], \"family\": \"strings\"}, {\"label\": \"Contrabassi.\", \"abbreviations\": [\"Cb.\"], \"boxes\": [17], \"staves\": 1, \"clefs\": [\"bass\"], \"family\": \"strings\"}], \"staff_total\": 23, \"key\": \"F# minor (3 sharps)\", \"time\": \"4/4\", \"tempo\": \"Vivace.\", \"sections\": [\"I\"], \"piano_present\": true, \"notes\": \"Detector merged each wind / horn pair into one blue box so boxes 1-6 each cover two staves.\"}",
+   "status": "ok",
+   "answer": {
+    "instruments": [
+     {
+      "label": "Flauti I. II.",
+      "abbreviations": [
+       "Fl."
+      ],
+      "boxes": [
+       1
+      ],
+      "staves": 2,
+      "clefs": [
+       "treble",
+       "treble"
+      ],
+      "family": "woodwind"
+     },
+     {
+      "label": "Oboi I. II.",
+      "abbreviations": [
+       "Ob."
+      ],
+      "boxes": [
+       2
+      ],
+      "staves": 2,
+      "clefs": [
+       "treble",
+       "treble"
+      ],
+      "family": "woodwind"
+     },
+     {
+      "label": "Clarinetti I. II in A.",
+      "abbreviations": [
+       "Cl."
+      ],
+      "boxes": [
+       3
+      ],
+      "staves": 2,
+      "clefs": [
+       "treble",
+       "treble"
+      ],
+      "family": "woodwind"
+     },
+     {
+      "label": "Fagotti I. II.",
+      "abbreviations": [
+       "Fag."
+      ],
+      "boxes": [
+       4
+      ],
+      "staves": 2,
+      "clefs": [
+       "bass",
+       "bass"
+      ],
+      "family": "woodwind"
+     },
+     {
+      "label": "Corni in F. I. II.",
+      "abbreviations": [
+       "Cor."
+      ],
+      "boxes": [
+       5
+      ],
+      "staves": 2,
+      "clefs": [
+       "treble",
+       "treble"
+      ],
+      "family": "brass"
+     },
+     {
+      "label": "Corni in F. III. IV.",
+      "abbreviations": [
+       "Cor."
+      ],
+      "boxes": [
+       6
+      ],
+      "staves": 2,
+      "clefs": [
+       "treble",
+       "treble"
+      ],
+      "family": "brass"
+     },
+     {
+      "label": "Trombe I. II in B.",
+      "abbreviations": [
+       "Trbe."
+      ],
+      "boxes": [
+       7
+      ],
+      "staves": 1,
+      "clefs": [
+       "treble"
+      ],
+      "family": "brass"
+     },
+     {
+      "label": "Tromboni ten. I. II.",
+      "abbreviations": [
+       "Trbni."
+      ],
+      "boxes": [
+       8
+      ],
+      "staves": 1,
+      "clefs": [
+       "bass"
+      ],
+      "family": "brass"
+     },
+     {
+      "label": "Trombone basso",
+      "abbreviations": [
+       "Trbne b."
+      ],
+      "boxes": [
+       9
+      ],
+      "staves": 1,
+      "clefs": [
+       "bass"
+      ],
+      "family": "brass"
+     },
+     {
+      "label": "Timpani",
+      "abbreviations": [
+       "Timp."
+      ],
+      "boxes": [
+       10
+      ],
+      "staves": 1,
+      "clefs": [
+       "bass"
+      ],
+      "family": "percussion"
+     },
+     {
+      "label": "Piano.",
+      "abbreviations": [
+       "Pno."
+      ],
+      "boxes": [
+       11,
+       12
+      ],
+      "staves": 2,
+      "clefs": [
+       "treble",
+       "bass"
+      ],
+      "family": "keyboard"
+     },
+     {
+      "label": "Violini I.",
+      "abbreviations": [
+       "Vl. I"
+      ],
+      "boxes": [
+       13
+      ],
+      "staves": 1,
+      "clefs": [
+       "treble"
+      ],
+      "family": "strings"
+     },
+     {
+      "label": "Violini II.",
+      "abbreviations": [
+       "Vl. II"
+      ],
+      "boxes": [
+       14
+      ],
+      "staves": 1,
+      "clefs": [
+       "treble"
+      ],
+      "family": "strings"
+     },
+     {
+      "label": "Viole.",
+      "abbreviations": [
+       "Vle."
+      ],
+      "boxes": [
+       15
+      ],
+      "staves": 1,
+      "clefs": [
+       "alto"
+      ],
+      "family": "strings"
+     },
+     {
+      "label": "Violoncelli.",
+      "abbreviations": [
+       "Vc."
+      ],
+      "boxes": [
+       16
+      ],
+      "staves": 1,
+      "clefs": [
+       "bass"
+      ],
+      "family": "strings"
+     },
+     {
+      "label": "Contrabassi.",
+      "abbreviations": [
+       "Cb."
+      ],
+      "boxes": [
+       17
+      ],
+      "staves": 1,
+      "clefs": [
+       "bass"
+      ],
+      "family": "strings"
+     }
+    ],
+    "staff_total": 23,
+    "key": "F# minor (3 sharps)",
+    "time": "4/4",
+    "tempo": "Vivace.",
+    "sections": [
+     "I"
+    ],
+    "piano_present": true,
+    "notes": "Detector merged each wind / horn pair into one blue box so boxes 1-6 each cover two staves."
+   },
+   "score": {
+    "staves_ok": 1,
+    "instruments_ok": 1,
+    "staves": 17,
+    "instruments": 16,
+    "box_ok": 17,
+    "box_n": 17,
+    "header_n": 1
+   }
+  },
+  "header|beethoven9-p172|muse-spark-1.2|low|150dpi": {
+   "id": "header|beethoven9-p172|muse-spark-1.2|low|150dpi",
+   "task": "header",
+   "item": "beethoven9-p172",
+   "page": "beethoven9-p172",
+   "model": "muse-spark-1.2",
+   "provider": "meta",
+   "effort": "low",
+   "resolution": "150dpi",
+   "ts": "2026-11-01T21:03:00",
+   "image_px": [
+    3153,
+    4000
+   ],
+   "image_bytes": 3116461,
+   "media_type": "image/jpeg",
+   "cost_usd": 0.029113,
+   "latency_s": 33.45,
+   "attempts": [
+    {
+     "input_tokens": 31,
+     "output_tokens": 6841,
+     "cost_usd": 0.029113,
+     "stop_reason": "end_turn",
+     "api": "messages",
+     "reasoning_tokens": null,
+     "model_returned": "muse-spark-1.2",
+     "call_s": null,
+     "repaired": false
+    }
+   ],
+   "json_fail_first": false,
+   "raw_text": "{\"instruments\": [{\"label\": \"Page border - detector artifact (no music staff)\",\"abbreviations\": [],\"boxes\": [1],\"staves\": 1,\"clefs\": [\"none\"],\"family\": \"other\"}, {\"label\": \"Flauti.\",\"abbreviations\": [\"Fl.\"],\"boxes\": [2],\"staves\": 1,\"clefs\": [\"treble\"],\"family\": \"woodwind\"}, {\"label\": \"Oboi.\",\"abbreviations\": [\"Ob.\"],\"boxes\": [3],\"staves\": 1,\"clefs\": [\"treble\"],\"family\": \"woodwind\"}, {\"label\": \"Clarinetti.\",\"abbreviations\": [\"Cl.\"],\"boxes\": [4],\"staves\": 1,\"clefs\": [\"treble\"],\"family\": \"woodwind\"}, {\"label\": \"Fagotti.\",\"abbreviations\": [\"Fg.\",\"Fag.\"],\"boxes\": [5],\"staves\": 1,\"clefs\": [\"bass\"],\"family\": \"woodwind\"}, {\"label\": \"Corni in D.\",\"abbreviations\": [\"Cor.\",\"Hr.\"],\"boxes\": [6],\"staves\": 1,\"clefs\": [\"treble\"],\"family\": \"brass\"}, {\"label\": \"Tympani in D.\",\"abbreviations\": [\"Timp.\",\"Pauken\"],\"boxes\": [7],\"staves\": 1,\"clefs\": [\"bass\"],\"family\": \"percussion\"}, {\"label\": \"Tromboni Alto e Tenore - Basso.\",\"abbreviations\": [\"Trb.\",\"Pos.\",\"Tromb.\"],\"boxes\": [8,9],\"staves\": 2,\"clefs\": [\"alto\",\"bass\"],\"family\": \"brass\"}, {\"label\": \"Violini.\",\"abbreviations\": [\"Vl.\",\"Vln.\",\"Viol.\"],\"boxes\": [10,11],\"staves\": 2,\"clefs\": [\"treble\",\"treble\"],\"family\": \"strings\"}, {\"label\": \"Viola.\",\"abbreviations\": [\"Vla.\"],\"boxes\": [12],\"staves\": 1,\"clefs\": [\"alto\"],\"family\": \"strings\"}, {\"label\": \"Coro\",\"abbreviations\": [\"Coro\",\"S.\",\"A.\",\"T.\",\"B.\",\"S.A.T.B.\"],\"boxes\": [13,14,15,16],\"staves\": 4,\"clefs\": [\"treble\",\"treble\",\"tenor\",\"bass\"],\"family\": \"voice\"}, {\"label\": \"Violoncello & Bassi.\",\"abbreviations\": [\"Vc.\",\"Cb.\",\"Vcl.\",\"Bassi\"],\"boxes\": [17],\"staves\": 1,\"clefs\": [\"bass\"],\"family\": \"strings\"}, {\"label\": \"Page border - detector artifact (no music staff)\",\"abbreviations\": [],\"boxes\": [18],\"staves\": 1,\"clefs\": [\"none\"],\"family\": \"other\"} ], \"staff_total\": 16, \"key\": \"G major/E minor (1 sharp) - Clarinetti in B flat 1 flat, Corni in D no signature\", \"time\": \"3/2\", \"tempo\": \"Andante maestoso.\", \"sections\": [\"Andante maestoso.\"], \"piano_present\": false, \"notes\": \"Boxes 1 and 18 are page-border false positives with no staff; 16 music staves on page are boxes 2-17, Coro is 4 staves boxed 13-16 and Tromboni and Violini are bracketed pairs; Violoncelli & Bassi share one printed staff here.\"}",
+   "status": "ok",
+   "answer": {
+    "instruments": [
+     {
+      "label": "Page border - detector artifact (no music staff)",
+      "abbreviations": [],
+      "boxes": [
+       1
+      ],
+      "staves": 1,
+      "clefs": [
+       "none"
+      ],
+      "family": "other"
+     },
+     {
+      "label": "Flauti.",
+      "abbreviations": [
+       "Fl."
+      ],
+      "boxes": [
+       2
+      ],
+      "staves": 1,
+      "clefs": [
+       "treble"
+      ],
+      "family": "woodwind"
+     },
+     {
+      "label": "Oboi.",
+      "abbreviations": [
+       "Ob."
+      ],
+      "boxes": [
+       3
+      ],
+      "staves": 1,
+      "clefs": [
+       "treble"
+      ],
+      "family": "woodwind"
+     },
+     {
+      "label": "Clarinetti.",
+      "abbreviations": [
+       "Cl."
+      ],
+      "boxes": [
+       4
+      ],
+      "staves": 1,
+      "clefs": [
+       "treble"
+      ],
+      "family": "woodwind"
+     },
+     {
+      "label": "Fagotti.",
+      "abbreviations": [
+       "Fg.",
+       "Fag."
+      ],
+      "boxes": [
+       5
+      ],
+      "staves": 1,
+      "clefs": [
+       "bass"
+      ],
+      "family": "woodwind"
+     },
+     {
+      "label": "Corni in D.",
+      "abbreviations": [
+       "Cor.",
+       "Hr."
+      ],
+      "boxes": [
+       6
+      ],
+      "staves": 1,
+      "clefs": [
+       "treble"
+      ],
+      "family": "brass"
+     },
+     {
+      "label": "Tympani in D.",
+      "abbreviations": [
+       "Timp.",
+       "Pauken"
+      ],
+      "boxes": [
+       7
+      ],
+      "staves": 1,
+      "clefs": [
+       "bass"
+      ],
+      "family": "percussion"
+     },
+     {
+      "label": "Tromboni Alto e Tenore - Basso.",
+      "abbreviations": [
+       "Trb.",
+       "Pos.",
+       "Tromb."
+      ],
+      "boxes": [
+       8,
+       9
+      ],
+      "staves": 2,
+      "clefs": [
+       "alto",
+       "bass"
+      ],
+      "family": "brass"
+     },
+     {
+      "label": "Violini.",
+      "abbreviations": [
+       "Vl.",
+       "Vln.",
+       "Viol."
+      ],
+      "boxes": [
+       10,
+       11
+      ],
+      "staves": 2,
+      "clefs": [
+       "treble",
+       "treble"
+      ],
+      "family": "strings"
+     },
+     {
+      "label": "Viola.",
+      "abbreviations": [
+       "Vla."
+      ],
+      "boxes": [
+       12
+      ],
+      "staves": 1,
+      "clefs": [
+       "alto"
+      ],
+      "family": "strings"
+     },
+     {
+      "label": "Coro",
+      "abbreviations": [
+       "Coro",
+       "S.",
+       "A.",
+       "T.",
+       "B.",
+       "S.A.T.B."
+      ],
+      "boxes": [
+       13,
+       14,
+       15,
+       16
+      ],
+      "staves": 4,
+      "clefs": [
+       "treble",
+       "treble",
+       "tenor",
+       "bass"
+      ],
+      "family": "voice"
+     },
+     {
+      "label": "Violoncello & Bassi.",
+      "abbreviations": [
+       "Vc.",
+       "Cb.",
+       "Vcl.",
+       "Bassi"
+      ],
+      "boxes": [
+       17
+      ],
+      "staves": 1,
+      "clefs": [
+       "bass"
+      ],
+      "family": "strings"
+     },
+     {
+      "label": "Page border - detector artifact (no music staff)",
+      "abbreviations": [],
+      "boxes": [
+       18
+      ],
+      "staves": 1,
+      "clefs": [
+       "none"
+      ],
+      "family": "other"
+     }
+    ],
+    "staff_total": 16,
+    "key": "G major/E minor (1 sharp) - Clarinetti in B flat 1 flat, Corni in D no signature",
+    "time": "3/2",
+    "tempo": "Andante maestoso.",
+    "sections": [
+     "Andante maestoso."
+    ],
+    "piano_present": false,
+    "notes": "Boxes 1 and 18 are page-border false positives with no staff; 16 music staves on page are boxes 2-17, Coro is 4 staves boxed 13-16 and Tromboni and Violini are bracketed pairs; Violoncelli & Bassi share one printed staff here."
+   },
+   "score": {
+    "staves_ok": 1,
+    "instruments_ok": 1,
+    "staves": 16,
+    "instruments": 11,
+    "box_ok": 16,
+    "box_n": 16,
+    "header_n": 1
+   }
+  },
+  "closed|goldberg-bga-p01-sym11401|muse-spark-1.2|low|150dpi": {
+   "id": "closed|goldberg-bga-p01-sym11401|muse-spark-1.2|low|150dpi",
+   "task": "closed",
+   "item": "goldberg-bga-p01-sym11401",
+   "page": "goldberg-bga-p01",
+   "model": "muse-spark-1.2",
+   "provider": "meta",
+   "effort": "low",
+   "resolution": "150dpi",
+   "ts": "2026-11-01T21:03:43",
+   "image_px": [
+    130,
+    131
+   ],
+   "image_bytes": 9667,
+   "media_type": "image/png",
+   "cost_usd": 0.001606,
+   "latency_s": 2.16,
+   "attempts": [
+    {
+     "input_tokens": 98,
+     "output_tokens": 349,
+     "cost_usd": 0.001606,
+     "stop_reason": "end_turn",
+     "api": "messages",
+     "reasoning_tokens": null,
+     "model_returned": "muse-spark-1.2",
+     "call_s": null,
+     "repaired": false
+    }
+   ],
+   "json_fail_first": false,
+   "raw_text": "{\"verdict\":\"letter_of_word\",\"value\":\"e\",\"confidence\":\"high\"}",
+   "status": "ok",
+   "answer": {
+    "verdict": "letter_of_word",
+    "value": "e",
+    "confidence": "high"
+   },
+   "score": {
+    "right": 1,
+    "n": 1
+   }
+  },
+  "closed|goldberg-bga-p01-sym11400|muse-spark-1.2|low|150dpi": {
+   "id": "closed|goldberg-bga-p01-sym11400|muse-spark-1.2|low|150dpi",
+   "task": "closed",
+   "item": "goldberg-bga-p01-sym11400",
+   "page": "goldberg-bga-p01",
+   "model": "muse-spark-1.2",
+   "provider": "meta",
+   "effort": "low",
+   "resolution": "150dpi",
+   "ts": "2026-11-01T21:03:43",
+   "image_px": [
+    133,
+    138
+   ],
+   "image_bytes": 10927,
+   "media_type": "image/png",
+   "cost_usd": 0.002638,
+   "latency_s": 3.07,
+   "attempts": [
+    {
+     "input_tokens": 210,
+     "output_tokens": 559,
+     "cost_usd": 0.002638,
+     "stop_reason": "end_turn",
+     "api": "messages",
+     "reasoning_tokens": null,
+     "model_returned": "muse-spark-1.2",
+     "call_s": null,
+     "repaired": false
+    }
+   ],
+   "json_fail_first": false,
+   "raw_text": "{\"verdict\":\"letters_of_word\",\"value\":\"d\",\"confidence\":\"high\"}",
+   "status": "ok",
+   "answer": {
+    "verdict": "letters_of_word",
+    "value": "d",
+    "confidence": "high"
+   },
+   "score": {
+    "right": 1,
+    "n": 1
+   }
+  },
+  "closed|goldberg-bga-p01-sym10615|muse-spark-1.2|low|150dpi": {
+   "id": "closed|goldberg-bga-p01-sym10615|muse-spark-1.2|low|150dpi",
+   "task": "closed",
+   "item": "goldberg-bga-p01-sym10615",
+   "page": "goldberg-bga-p01",
+   "model": "muse-spark-1.2",
+   "provider": "meta",
+   "effort": "low",
+   "resolution": "150dpi",
+   "ts": "2026-11-01T21:03:43",
+   "image_px": [
+    222,
+    135
+   ],
+   "image_bytes": 12683,
+   "media_type": "image/png",
+   "cost_usd": 0.003338,
+   "latency_s": 4.17,
+   "attempts": [
+    {
+     "input_tokens": 120,
+     "output_tokens": 750,
+     "cost_usd": 0.003338,
+     "stop_reason": "end_turn",
+     "api": "messages",
+     "reasoning_tokens": null,
+     "model_returned": "muse-spark-1.2",
+     "call_s": null,
+     "repaired": false
+    }
+   ],
+   "json_fail_first": false,
+   "raw_text": "{\"verdict\": \"hairpin_wedge\", \"value\": \"cresc\", \"confidence\": \"high\"}",
+   "status": "ok",
+   "answer": {
+    "verdict": "hairpin_wedge",
+    "value": "cresc",
+    "confidence": "high"
+   },
+   "score": {
+    "right": 1,
+    "n": 1
+   }
+  },
+  "closed|goldberg-bga-p01-sym11533|muse-spark-1.2|low|150dpi": {
+   "id": "closed|goldberg-bga-p01-sym11533|muse-spark-1.2|low|150dpi",
+   "task": "closed",
+   "item": "goldberg-bga-p01-sym11533",
+   "page": "goldberg-bga-p01",
+   "model": "muse-spark-1.2",
+   "provider": "meta",
+   "effort": "low",
+   "resolution": "150dpi",
+   "ts": "2026-11-01T21:03:46",
+   "image_px": [
+    132,
+    137
+   ],
+   "image_bytes": 3822,
+   "media_type": "image/png",
+   "cost_usd": 0.001643,
+   "latency_s": 2.14,
+   "attempts": [
+    {
+     "input_tokens": 97,
+     "output_tokens": 358,
+     "cost_usd": 0.001643,
+     "stop_reason": "end_turn",
+     "api": "messages",
+     "reasoning_tokens": null,
+     "model_returned": "muse-spark-1.2",
+     "call_s": null,
+     "repaired": false
+    }
+   ],
+   "json_fail_first": false,
+   "raw_text": "{\"verdict\": \"letters_of_word\", \"value\": \"J\", \"confidence\": \"high\"}",
+   "status": "ok",
+   "answer": {
+    "verdict": "letters_of_word",
+    "value": "J",
+    "confidence": "high"
+   },
+   "score": {
+    "right": 1,
+    "n": 1
+   }
+  },
+  "closed|goldberg-bga-p01-sym11581|muse-spark-1.2|low|150dpi": {
+   "id": "closed|goldberg-bga-p01-sym11581|muse-spark-1.2|low|150dpi",
+   "task": "closed",
+   "item": "goldberg-bga-p01-sym11581",
+   "page": "goldberg-bga-p01",
+   "model": "muse-spark-1.2",
+   "provider": "meta",
+   "effort": "low",
+   "resolution": "150dpi",
+   "ts": "2026-11-01T21:03:47",
+   "image_px": [
+    137,
+    132
+   ],
+   "image_bytes": 5372,
+   "media_type": "image/png",
+   "cost_usd": 0.001972,
+   "latency_s": 2.53,
+   "attempts": [
+    {
+     "input_tokens": 102,
+     "output_tokens": 434,
+     "cost_usd": 0.001972,
+     "stop_reason": "end_turn",
+     "api": "messages",
+     "reasoning_tokens": null,
+     "model_returned": "muse-spark-1.2",
+     "call_s": null,
+     "repaired": false
+    }
+   ],
+   "json_fail_first": false,
+   "raw_text": "{\"verdict\":\"fingering_or_bracket\",\"value\":\"5\",\"confidence\":\"high\"}",
+   "status": "ok",
+   "answer": {
+    "verdict": "fingering_or_bracket",
+    "value": "5",
+    "confidence": "high"
+   },
+   "score": {
+    "right": 1,
+    "n": 1
+   }
+  },
+  "closed|goldberg-bga-p01-sym11668|muse-spark-1.2|low|150dpi": {
+   "id": "closed|goldberg-bga-p01-sym11668|muse-spark-1.2|low|150dpi",
+   "task": "closed",
+   "item": "goldberg-bga-p01-sym11668",
+   "page": "goldberg-bga-p01",
+   "model": "muse-spark-1.2",
+   "provider": "meta",
+   "effort": "low",
+   "resolution": "150dpi",
+   "ts": "2026-11-01T21:03:48",
+   "image_px": [
+    155,
+    146
+   ],
+   "image_bytes": 12692,
+   "media_type": "image/png",
+   "cost_usd": 0.00135,
+   "latency_s": 1.92,
+   "attempts": [
+    {
+     "input_tokens": 118,
+     "output_tokens": 283,
+     "cost_usd": 0.00135,
+     "stop_reason": "end_turn",
+     "api": "messages",
+     "reasoning_tokens": null,
+     "model_returned": "muse-spark-1.2",
+     "call_s": null,
+     "repaired": false
+    }
+   ],
+   "json_fail_first": false,
+   "raw_text": "{\"verdict\":\"dynamic_marking\",\"value\":\"mf\",\"confidence\":\"high\"}",
+   "status": "ok",
+   "answer": {
+    "verdict": "dynamic_marking",
+    "value": "mf",
+    "confidence": "high"
+   },
+   "score": {
+    "right": 1,
+    "n": 1
+   }
+  },
+  "closed|goldberg-bga-p01-sym10621|muse-spark-1.2|low|150dpi": {
+   "id": "closed|goldberg-bga-p01-sym10621|muse-spark-1.2|low|150dpi",
+   "task": "closed",
+   "item": "goldberg-bga-p01-sym10621",
+   "page": "goldberg-bga-p01",
+   "model": "muse-spark-1.2",
+   "provider": "meta",
+   "effort": "low",
+   "resolution": "150dpi",
+   "ts": "2026-11-01T21:03:43",
+   "image_px": [
+    194,
+    132
+   ],
+   "image_bytes": 10426,
+   "media_type": "image/png",
+   "cost_usd": 0.006706,
+   "latency_s": 7.89,
+   "attempts": [
+    {
+     "input_tokens": 217,
+     "output_tokens": 1514,
+     "cost_usd": 0.006706,
+     "stop_reason": "end_turn",
+     "api": "messages",
+     "reasoning_tokens": null,
+     "model_returned": "muse-spark-1.2",
+     "call_s": null,
+     "repaired": false
+    }
+   ],
+   "json_fail_first": false,
+   "raw_text": "{\"verdict\":\"hairpin_wedge\",\"value\":\"dim\",\"confidence\":\"high\"}",
+   "status": "ok",
+   "answer": {
+    "verdict": "hairpin_wedge",
+    "value": "dim",
+    "confidence": "high"
+   },
+   "score": {
+    "right": 1,
+    "n": 1
+   }
+  },
+  "closed|goldberg-bga-p01-sym11822|muse-spark-1.2|low|150dpi": {
+   "id": "closed|goldberg-bga-p01-sym11822|muse-spark-1.2|low|150dpi",
+   "task": "closed",
+   "item": "goldberg-bga-p01-sym11822",
+   "page": "goldberg-bga-p01",
+   "model": "muse-spark-1.2",
+   "provider": "meta",
+   "effort": "low",
+   "resolution": "150dpi",
+   "ts": "2026-11-01T21:03:48",
+   "image_px": [
+    133,
+    139
+   ],
+   "image_bytes": 9691,
+   "media_type": "image/png",
+   "cost_usd": 0.002707,
+   "latency_s": 3.88,
+   "attempts": [
+    {
+     "input_tokens": 95,
+     "output_tokens": 609,
+     "cost_usd": 0.002707,
+     "stop_reason": "end_turn",
+     "api": "messages",
+     "reasoning_tokens": null,
+     "model_returned": "muse-spark-1.2",
+     "call_s": null,
+     "repaired": false
+    }
+   ],
+   "json_fail_first": false,
+   "raw_text": "{\"verdict\":\"nothing_else\",\"value\":\"\",\"confidence\":\"high\"}",
+   "status": "ok",
+   "answer": {
+    "verdict": "nothing_else",
+    "value": "",
+    "confidence": "high"
+   },
+   "score": {
+    "right": 0,
+    "n": 1
+   }
+  },
+  "closed|goldberg-bga-p01-sym10615|muse-spark-1.3|low|150dpi": {
+   "id": "closed|goldberg-bga-p01-sym10615|muse-spark-1.3|low|150dpi",
+   "task": "closed",
+   "item": "goldberg-bga-p01-sym10615",
+   "page": "goldberg-bga-p01",
+   "model": "muse-spark-1.3",
+   "provider": "meta",
+   "effort": "low",
+   "resolution": "150dpi",
+   "ts": "2026-11-01T21:03:52",
+   "image_px": [
+    222,
+    135
+   ],
+   "image_bytes": 12683,
+   "media_type": "image/png",
+   "cost_usd": 0.003236,
+   "latency_s": 3.81,
+   "attempts": [
+    {
+     "input_tokens": 233,
+     "output_tokens": 693,
+     "cost_usd": 0.003236,
+     "stop_reason": "end_turn",
+     "api": "messages",
+     "reasoning_tokens": null,
+     "model_returned": "muse-spark-1.3",
+     "call_s": null,
+     "repaired": false
+    }
+   ],
+   "json_fail_first": false,
+   "raw_text": "{\"verdict\":\"hairpin_wedge\",\"value\":\"\",\"confidence\":\"high\"}",
+   "status": "ok",
+   "answer": {
+    "verdict": "hairpin_wedge",
+    "value": "",
+    "confidence": "high"
+   },
+   "score": {
+    "right": 1,
+    "n": 1
+   }
+  },
+  "closed|goldberg-bga-p01-sym11940|muse-spark-1.2|low|150dpi": {
+   "id": "closed|goldberg-bga-p01-sym11940|muse-spark-1.2|low|150dpi",
+   "task": "closed",
+   "item": "goldberg-bga-p01-sym11940",
+   "page": "goldberg-bga-p01",
+   "model": "muse-spark-1.2",
+   "provider": "meta",
+   "effort": "low",
+   "resolution": "150dpi",
+   "ts": "2026-11-01T21:03:49",
+   "image_px": [
+    132,
+    139
+   ],
+   "image_bytes": 7708,
+   "media_type": "image/png",
+   "cost_usd": 0.006001,
+   "latency_s": 7.4,
+   "attempts": [
+    {
+     "input_tokens": 95,
+     "output_tokens": 1384,
+     "cost_usd": 0.006001,
+     "stop_reason": "end_turn",
+     "api": "messages",
+     "reasoning_tokens": null,
+     "model_returned": "muse-spark-1.2",
+     "call_s": null,
+     "repaired": false
+    }
+   ],
+   "json_fail_first": false,
+   "raw_text": "{\"verdict\":\"nothing_else\",\"value\":\"\",\"confidence\":\"high\"}",
+   "status": "ok",
+   "answer": {
+    "verdict": "nothing_else",
+    "value": "",
+    "confidence": "high"
+   },
+   "score": {
+    "right": 0,
+    "n": 1
+   }
+  },
+  "closed|goldberg-bga-p01-sym12073|muse-spark-1.2|low|150dpi": {
+   "id": "closed|goldberg-bga-p01-sym12073|muse-spark-1.2|low|150dpi",
+   "task": "closed",
+   "item": "goldberg-bga-p01-sym12073",
+   "page": "goldberg-bga-p01",
+   "model": "muse-spark-1.2",
+   "provider": "meta",
+   "effort": "low",
+   "resolution": "150dpi",
+   "ts": "2026-11-01T21:03:50",
+   "image_px": [
+    122,
+    125
+   ],
+   "image_bytes": 6518,
+   "media_type": "image/png",
+   "cost_usd": 0.00829,
+   "latency_s": 9.54,
+   "attempts": [
+    {
+     "input_tokens": 101,
+     "output_tokens": 1921,
+     "cost_usd": 0.00829,
+     "stop_reason": "end_turn",
+     "api": "messages",
+     "reasoning_tokens": null,
+     "model_returned": "muse-spark-1.2",
+     "call_s": null,
+     "repaired": false
+    }
+   ],
+   "json_fail_first": false,
+   "raw_text": "{\"verdict\":\"noise_or_nothing\",\"value\":\"\",\"confidence\":\"medium\"}",
+   "status": "ok",
+   "answer": {
+    "verdict": "noise_or_nothing",
+    "value": "",
+    "confidence": "medium"
+   },
+   "score": {
+    "right": 1,
+    "n": 1
+   }
+  },
+  "closed|goldberg-bga-p01-sym12123|muse-spark-1.2|low|150dpi": {
+   "id": "closed|goldberg-bga-p01-sym12123|muse-spark-1.2|low|150dpi",
+   "task": "closed",
+   "item": "goldberg-bga-p01-sym12123",
+   "page": "goldberg-bga-p01",
+   "model": "muse-spark-1.2",
+   "provider": "meta",
+   "effort": "low",
+   "resolution": "150dpi",
+   "ts": "2026-11-01T21:03:51",
+   "image_px": [
+    140,
+    131
+   ],
+   "image_bytes": 9442,
+   "media_type": "image/png",
+   "cost_usd": 0.006299,
+   "latency_s": 7.77,
+   "attempts": [
+    {
+     "input_tokens": 106,
+     "output_tokens": 1451,
+     "cost_usd": 0.006299,
+     "stop_reason": "end_turn",
+     "api": "messages",
+     "reasoning_tokens": null,
+     "model_returned": "muse-spark-1.2",
+     "call_s": null,
+     "repaired": false
+    }
+   ],
+   "json_fail_first": false,
+   "raw_text": "{\"verdict\":\"letters_of_word\",\"value\":\"o\",\"confidence\":\"medium\"}",
+   "status": "ok",
+   "answer": {
+    "verdict": "letters_of_word",
+    "value": "o",
+    "confidence": "medium"
+   },
+   "score": {
+    "right": 1,
+    "n": 1
+   }
+  },
+  "closed|goldberg-bga-p01-sym11400|muse-spark-1.3|low|150dpi": {
+   "id": "closed|goldberg-bga-p01-sym11400|muse-spark-1.3|low|150dpi",
+   "task": "closed",
+   "item": "goldberg-bga-p01-sym11400",
+   "page": "goldberg-bga-p01",
+   "model": "muse-spark-1.3",
+   "provider": "meta",
+   "effort": "low",
+   "resolution": "150dpi",
+   "ts": "2026-11-01T21:03:56",
+   "image_px": [
+    133,
+    138
+   ],
+   "image_bytes": 10927,
+   "media_type": "image/png",
+   "cost_usd": 0.003419,
+   "latency_s": 3.97,
+   "attempts": [
+    {
+     "input_tokens": 97,
+     "output_tokens": 776,
+     "cost_usd": 0.003419,
+     "stop_reason": "end_turn",
+     "api": "messages",
+     "reasoning_tokens": null,
+     "model_returned": "muse-spark-1.3",
+     "call_s": null,
+     "repaired": false
+    }
+   ],
+   "json_fail_first": false,
+   "raw_text": "{\"verdict\": \"letters_of_word\", \"value\": \"d\", \"confidence\": \"high\"}",
+   "status": "ok",
+   "answer": {
+    "verdict": "letters_of_word",
+    "value": "d",
+    "confidence": "high"
+   },
+   "score": {
+    "right": 1,
+    "n": 1
+   }
+  },
+  "closed|goldberg-bga-p01-sym11401|muse-spark-1.3|low|150dpi": {
+   "id": "closed|goldberg-bga-p01-sym11401|muse-spark-1.3|low|150dpi",
+   "task": "closed",
+   "item": "goldberg-bga-p01-sym11401",
+   "page": "goldberg-bga-p01",
+   "model": "muse-spark-1.3",
+   "provider": "meta",
+   "effort": "low",
+   "resolution": "150dpi",
+   "ts": "2026-11-01T21:03:59",
+   "image_px": [
+    130,
+    131
+   ],
+   "image_bytes": 9667,
+   "media_type": "image/png",
+   "cost_usd": 0.002069,
+   "latency_s": 2.5,
+   "attempts": [
+    {
+     "input_tokens": 98,
+     "output_tokens": 458,
+     "cost_usd": 0.002069,
+     "stop_reason": "end_turn",
+     "api": "messages",
+     "reasoning_tokens": null,
+     "model_returned": "muse-spark-1.3",
+     "call_s": null,
+     "repaired": false
+    }
+   ],
+   "json_fail_first": false,
+   "raw_text": "{\"verdict\": \"letter_of_word\", \"value\": \"e\", \"confidence\": \"high\"}",
+   "status": "ok",
+   "answer": {
+    "verdict": "letter_of_word",
+    "value": "e",
+    "confidence": "high"
+   },
+   "score": {
+    "right": 1,
+    "n": 1
+   }
+  },
+  "closed|goldberg-bga-p01-sym11533|muse-spark-1.3|low|150dpi": {
+   "id": "closed|goldberg-bga-p01-sym11533|muse-spark-1.3|low|150dpi",
+   "task": "closed",
+   "item": "goldberg-bga-p01-sym11533",
+   "page": "goldberg-bga-p01",
+   "model": "muse-spark-1.3",
+   "provider": "meta",
+   "effort": "low",
+   "resolution": "150dpi",
+   "ts": "2026-11-01T21:03:59",
+   "image_px": [
+    132,
+    137
+   ],
+   "image_bytes": 3822,
+   "media_type": "image/png",
+   "cost_usd": 0.002527,
+   "latency_s": 3.52,
+   "attempts": [
+    {
+     "input_tokens": 97,
+     "output_tokens": 566,
+     "cost_usd": 0.002527,
+     "stop_reason": "end_turn",
+     "api": "messages",
+     "reasoning_tokens": null,
+     "model_returned": "muse-spark-1.3",
+     "call_s": null,
+     "repaired": false
+    }
+   ],
+   "json_fail_first": false,
+   "raw_text": "{\"verdict\": \"letters_of_word\", \"value\": \"J\", \"confidence\": \"high\"}",
+   "status": "ok",
+   "answer": {
+    "verdict": "letters_of_word",
+    "value": "J",
+    "confidence": "high"
+   },
+   "score": {
+    "right": 1,
+    "n": 1
+   }
+  },
+  "closed|goldberg-bga-p01-sym10621|muse-spark-1.3|low|150dpi": {
+   "id": "closed|goldberg-bga-p01-sym10621|muse-spark-1.3|low|150dpi",
+   "task": "closed",
+   "item": "goldberg-bga-p01-sym10621",
+   "page": "goldberg-bga-p01",
+   "model": "muse-spark-1.3",
+   "provider": "meta",
+   "effort": "low",
+   "resolution": "150dpi",
+   "ts": "2026-11-01T21:03:55",
+   "image_px": [
+    194,
+    132
+   ],
+   "image_bytes": 10426,
+   "media_type": "image/png",
+   "cost_usd": 0.006106,
+   "latency_s": 7.74,
+   "attempts": [
+    {
+     "input_tokens": 217,
+     "output_tokens": 1373,
+     "cost_usd": 0.006106,
+     "stop_reason": "end_turn",
+     "api": "messages",
+     "reasoning_tokens": null,
+     "model_returned": "muse-spark-1.3",
+     "call_s": null,
+     "repaired": false
+    }
+   ],
+   "json_fail_first": false,
+   "raw_text": "{\"verdict\": \"hairpin_wedge\", \"value\": \"dim\", \"confidence\": \"high\"}",
+   "status": "ok",
+   "answer": {
+    "verdict": "hairpin_wedge",
+    "value": "dim",
+    "confidence": "high"
+   },
+   "score": {
+    "right": 1,
+    "n": 1
+   }
+  },
+  "closed|goldberg-bga-p01-sym11668|muse-spark-1.3|low|150dpi": {
+   "id": "closed|goldberg-bga-p01-sym11668|muse-spark-1.3|low|150dpi",
+   "task": "closed",
+   "item": "goldberg-bga-p01-sym11668",
+   "page": "goldberg-bga-p01",
+   "model": "muse-spark-1.3",
+   "provider": "meta",
+   "effort": "low",
+   "resolution": "150dpi",
+   "ts": "2026-11-01T21:04:02",
+   "image_px": [
+    155,
+    146
+   ],
+   "image_bytes": 12692,
+   "media_type": "image/png",
+   "cost_usd": 0.003438,
+   "latency_s": 4.31,
+   "attempts": [
+    {
+     "input_tokens": 231,
+     "output_tokens": 741,
+     "cost_usd": 0.003438,
+     "stop_reason": "end_turn",
+     "api": "messages",
+     "reasoning_tokens": null,
+     "model_returned": "muse-spark-1.3",
+     "call_s": null,
+     "repaired": false
+    }
+   ],
+   "json_fail_first": false,
+   "raw_text": "{\"verdict\": \"dynamic_marking\", \"value\": \"mf\", \"confidence\": \"high\"}",
+   "status": "ok",
+   "answer": {
+    "verdict": "dynamic_marking",
+    "value": "mf",
+    "confidence": "high"
+   },
+   "score": {
+    "right": 1,
+    "n": 1
+   }
+  },
+  "closed|goldberg-bga-p01-sym11822|muse-spark-1.3|low|150dpi": {
+   "id": "closed|goldberg-bga-p01-sym11822|muse-spark-1.3|low|150dpi",
+   "task": "closed",
+   "item": "goldberg-bga-p01-sym11822",
+   "page": "goldberg-bga-p01",
+   "model": "muse-spark-1.3",
+   "provider": "meta",
+   "effort": "low",
+   "resolution": "150dpi",
+   "ts": "2026-11-01T21:04:03",
+   "image_px": [
+    133,
+    139
+   ],
+   "image_bytes": 9691,
+   "media_type": "image/png",
+   "cost_usd": 0.003541,
+   "latency_s": 4.31,
+   "attempts": [
+    {
+     "input_tokens": 208,
+     "output_tokens": 772,
+     "cost_usd": 0.003541,
+     "stop_reason": "end_turn",
+     "api": "messages",
+     "reasoning_tokens": null,
+     "model_returned": "muse-spark-1.3",
+     "call_s": null,
+     "repaired": false
+    }
+   ],
+   "json_fail_first": false,
+   "raw_text": "{\"verdict\":\"nothing_else\",\"value\":\"\",\"confidence\":\"high\"}",
+   "status": "ok",
+   "answer": {
+    "verdict": "nothing_else",
+    "value": "",
+    "confidence": "high"
+   },
+   "score": {
+    "right": 0,
+    "n": 1
+   }
+  },
+  "closed|goldberg-bga-p01-sym11581|muse-spark-1.3|low|150dpi": {
+   "id": "closed|goldberg-bga-p01-sym11581|muse-spark-1.3|low|150dpi",
+   "task": "closed",
+   "item": "goldberg-bga-p01-sym11581",
+   "page": "goldberg-bga-p01",
+   "model": "muse-spark-1.3",
+   "provider": "meta",
+   "effort": "low",
+   "resolution": "150dpi",
+   "ts": "2026-11-01T21:04:00",
+   "image_px": [
+    137,
+    132
+   ],
+   "image_bytes": 5372,
+   "media_type": "image/png",
+   "cost_usd": 0.006487,
+   "latency_s": 7.27,
+   "attempts": [
+    {
+     "input_tokens": 215,
+     "output_tokens": 1463,
+     "cost_usd": 0.006487,
+     "stop_reason": "end_turn",
+     "api": "messages",
+     "reasoning_tokens": null,
+     "model_returned": "muse-spark-1.3",
+     "call_s": null,
+     "repaired": false
+    }
+   ],
+   "json_fail_first": false,
+   "raw_text": "{\"verdict\":\"fingering_or_bracket\",\"value\":\"51\",\"confidence\":\"high\"}",
+   "status": "ok",
+   "answer": {
+    "verdict": "fingering_or_bracket",
+    "value": "51",
+    "confidence": "high"
+   },
+   "score": {
+    "right": 1,
+    "n": 1
+   }
+  },
+  "closed|goldberg-bga-p01-sym12123|muse-spark-1.3|low|150dpi": {
+   "id": "closed|goldberg-bga-p01-sym12123|muse-spark-1.3|low|150dpi",
+   "task": "closed",
+   "item": "goldberg-bga-p01-sym12123",
+   "page": "goldberg-bga-p01",
+   "model": "muse-spark-1.3",
+   "provider": "meta",
+   "effort": "low",
+   "resolution": "150dpi",
+   "ts": "2026-11-01T21:04:07",
+   "image_px": [
+    140,
+    131
+   ],
+   "image_bytes": 9442,
+   "media_type": "image/png",
+   "cost_usd": 0.002287,
+   "latency_s": 2.61,
+   "attempts": [
+    {
+     "input_tokens": 106,
+     "output_tokens": 507,
+     "cost_usd": 0.002287,
+     "stop_reason": "end_turn",
+     "api": "messages",
+     "reasoning_tokens": null,
+     "model_returned": "muse-spark-1.3",
+     "call_s": null,
+     "repaired": false
+    }
+   ],
+   "json_fail_first": false,
+   "raw_text": "{\"verdict\": \"letters_of_word\", \"value\": \"o\", \"confidence\": \"high\"}",
+   "status": "ok",
+   "answer": {
+    "verdict": "letters_of_word",
+    "value": "o",
+    "confidence": "high"
+   },
+   "score": {
+    "right": 1,
+    "n": 1
+   }
+  },
+  "closed|goldberg-bga-p01-sym12073|muse-spark-1.3|low|150dpi": {
+   "id": "closed|goldberg-bga-p01-sym12073|muse-spark-1.3|low|150dpi",
+   "task": "closed",
+   "item": "goldberg-bga-p01-sym12073",
+   "page": "goldberg-bga-p01",
+   "model": "muse-spark-1.3",
+   "provider": "meta",
+   "effort": "low",
+   "resolution": "150dpi",
+   "ts": "2026-11-01T21:04:06",
+   "image_px": [
+    122,
+    125
+   ],
+   "image_bytes": 6518,
+   "media_type": "image/png",
+   "cost_usd": 0.007079,
+   "latency_s": 8.68,
+   "attempts": [
+    {
+     "input_tokens": 101,
+     "output_tokens": 1636,
+     "cost_usd": 0.007079,
+     "stop_reason": "end_turn",
+     "api": "messages",
+     "reasoning_tokens": null,
+     "model_returned": "muse-spark-1.3",
+     "call_s": null,
+     "repaired": false
+    }
+   ],
+   "json_fail_first": false,
+   "raw_text": "{\"verdict\": \"staccato_dot\", \"value\": \"\", \"confidence\": \"medium\"}",
+   "status": "ok",
+   "answer": {
+    "verdict": "staccato_dot",
+    "value": "",
+    "confidence": "medium"
+   },
+   "score": {
+    "right": 0,
+    "n": 1
+   }
+  },
+  "closed|goldberg-bga-p01-sym11940|muse-spark-1.3|low|150dpi": {
+   "id": "closed|goldberg-bga-p01-sym11940|muse-spark-1.3|low|150dpi",
+   "task": "closed",
+   "item": "goldberg-bga-p01-sym11940",
+   "page": "goldberg-bga-p01",
+   "model": "muse-spark-1.3",
+   "provider": "meta",
+   "effort": "low",
+   "resolution": "150dpi",
+   "ts": "2026-11-01T21:04:03",
+   "image_px": [
+    132,
+    139
+   ],
+   "image_bytes": 7708,
+   "media_type": "image/png",
+   "cost_usd": 0.009749,
+   "latency_s": 12.02,
+   "attempts": [
+    {
+     "input_tokens": 95,
+     "output_tokens": 2266,
+     "cost_usd": 0.009749,
+     "stop_reason": "end_turn",
+     "api": "messages",
+     "reasoning_tokens": null,
+     "model_returned": "muse-spark-1.3",
+     "call_s": null,
+     "repaired": false
+    }
+   ],
+   "json_fail_first": false,
+   "raw_text": "{\"verdict\": \"nothing_else\", \"value\": \"\", \"confidence\": \"high\"}",
+   "status": "ok",
+   "answer": {
+    "verdict": "nothing_else",
+    "value": "",
+    "confidence": "high"
+   },
+   "score": {
+    "right": 0,
+    "n": 1
+   }
+  }
+ }
+}

@@ -1,16 +1,17 @@
 # Demo video: shot list (3:00)
 
-Built from the demo script in `docs/features/017-demo-and-submission.md` and build-queue items 9 to 11 (Nov 2
-integration and rehearsal run-through, Nov 3 recording and final cut, Nov 4 verification and submission before
-9 PM ET). The order follows the script: the problem, the librarian at work, the question it has to ask, the
-wow moment (a cut and a spoken instruction reaching the stands), play the parts, the close.
+Built from the script of 2026-11-01 in `docs/features/017-demo-and-submission.md` (the exact lines and the model on
+screen per shot are there) and build-queue items 9 to 11 (Nov 2 integration and rehearsal run-through, Nov 3
+recording and final cut, Nov 4 verification and submission before 9 PM ET). The order: what existed before (nothing),
+the problem, the librarian at work, the question it has to ask, parts and Convert, live marks, the conductor's spoken
+note, play the parts, the rule behind it all, the close. CK presents on camera in shots 1, 9 and 13.
 
 Markers: **[2 iPads]** needs two signed-in devices in frame or cut together; **[mic]** needs the real iPad
 microphone, recorded live, not dubbed.
 
 Devices: **iPad A** is the admin's (CK's iPad Pro 13, signed in as Ada, admin of Hart House, plays viola).
-**iPad B** is a player's (signed in as Noor, Violin II). The pianist's shots use iPad A signed in to the pianist's
-personal library, or a third account if a device is free.
+**iPad B** is a player's (signed in as Noor, Violin II). The concerto question (shot 5)
+runs in Ada's library on iPad A.
 
 Books:
 
@@ -24,22 +25,25 @@ Books:
 
 ## Shots
 
-| # | Time | Dur | On screen | Said (one line) | Device | Book | Fallback |
+Every shot where a model runs live carries a lower-third naming it and an inset of the hosted `usage_events` rows
+(model, kind, cost, time), refreshed after the call.
+
+| # | Time | Dur | On screen | Said (short form; exact line in 017) | Device | Book | Fallback |
 |---|---|---|---|---|---|---|---|
-| 1 | 0:00 | 0:12 | Paper parts on four stands; a cut pencilled on three parts and not the fourth; a page turn fumbled | "In a rehearsal, the parts never quite agree." | Camera, no iPad | Printed Op. 18/1 parts | Stills of the stands with the line as a caption |
-| 2 | 0:12 | 0:06 | The Shelf on iPad A, the book covers, the wordmark | "Folio is a librarian for the whole ensemble, on iPads." | iPad A | Shelf | None needed |
-| 3 | 0:18 | 0:12 | Import a PDF from Files; the card's blue rope runs while the librarian reads | "Drop in a scan, and the librarian reads it." | iPad A | Goldberg, 5 pages | Cut the wait (a 5-page import took 23.4 s in testing); if it stalls, use the copy imported beforehand |
-| 4 | 0:30 | 0:12 | Book sheet: key, meter and length; Open PDF; tap a bar and it is selected, with its number | "It finds every bar and names it. Muse Spark reads the labels, geometry does the measuring." | iPad A | Goldberg | Same shots on the copy imported beforehand |
-| 5 | 0:42 | 0:13 | Convert to Digital, then Open Digital: the scan beside the engraved pages | "Convert to Digital turns the scan into notation you can play." | iPad A | Goldberg, converted beforehand | Show only the result (Convert of 5 pages took 114.7 s in testing; never run it live) |
-| 6 | 0:55 | 0:13 | Split by instrument; the rope turns yellow; the question with the numbered staves and "Why am I asked?" | "When it can't tell, it stops and asks, in a musician's words." | iPad A | Concerto | A split started before recording and left parked: the question waits until answered |
-| 7 | 1:08 | 0:14 | The admin taps the staves; "Resuming"; later pages go through without a question; the part strip on the Stand | "It remembers the answer for the rest of the book." | iPad A | Concerto | Cut to the finished part strip if the resume is slow |
-| 8 | 1:22 | 0:15 | Op. 18/1 on both stands, presence faces; the admin draws a cut and it lands on the Violin II stand | "A cut made on one stand reaches every stand." | **[2 iPads]** A and B | Op. 18/1 | Retake; if Realtime misbehaves, the Mac browser signed in as Noor as the second stand |
-| 9 | 1:37 | 0:10 | The admin holds the voice button: strands gather into one string while speaking | "Second violins, from forty-two to forty-eight we're cutting that." | **[mic]** iPad A | Op. 18/1 | Retake in a quieter room; then the proposal from a take recorded before the shoot (proposals wait in the tray until accepted) |
-| 10 | 1:47 | 0:10 | The proposal card and the blue ghost over bars 42 to 48 for Violin II; Accept | "Muse Voice Transcribe writes it down, Spark proposes the mark, the admin confirms." | **[mic]** iPad A | Op. 18/1 | As shot 9 |
-| 11 | 1:57 | 0:10 | The cut on the Violin II stand; the cello stand unchanged | "It lands only on the stands it was meant for." | **[2 iPads]** B, then A as cello or a third device | Op. 18/1 | Show the Violin II stand alone, then the cello part opened on iPad A |
-| 12 | 2:07 | 0:25 | Play the parts from the Stand's "…" menu: Violin II left out, pace 80 %, one bar counted in, a loop over a passage | "Then practise: leave your part out, slow it down, loop it." | iPad B, sound on | Op. 18/1 | Record on the web app in a Mac browser; the iPad shell's sound fix is verified on the simulator only |
-| 13 | 2:32 | 0:16 | The book sheet of the concerto: its parts and state; then a card naming the three Meta models and what each did | "Spark reads and asks, Voice Transcribe listens. SAM 3.1 was tried first and geometry won the tap test." | iPad A, then title card | Concerto | Title card alone |
-| 14 | 2:48 | 0:12 | End card: Folio, folio.jckjjcckk.com, TestFlight, the repo | "Folio. One score for the whole ensemble." | Title card | None | None needed |
+| 1 | 0:00 | 0:08 | CK on camera beside the stands; "Built Oct 26 to Nov 4, 2026" | "Nothing in Folio existed before this hackathon…" | Camera | None | None needed |
+| 2 | 0:08 | 0:10 | Paper parts on four stands; a cut on three parts, not the fourth; a fumbled page turn | "In rehearsal, the parts never quite agree…" | Camera | Printed Op. 18/1 parts | Stills of the stands with the line as a caption |
+| 3 | 0:18 | 0:14 | Import a PDF from Files; the blue rope runs; inset `muse-spark-1.3` rows | "I drop in a public-domain scan…" | iPad A | Goldberg, 5 pages | Cut the wait (23.4 s for 5 pages in testing); if it stalls, use the copy imported beforehand |
+| 4 | 0:32 | 0:12 | Book sheet: key, meter, length; Open PDF; tap a bar, selected with its number | "Spark never places a bar. We tried SAM 3.1…" | iPad A | Goldberg | The copy imported beforehand |
+| 5 | 0:44 | 0:18 | Split by instrument, Piano; yellow rope; the staves question and "Why am I asked?"; tap the staves; "Resuming"; inset recheck rows | "Splitting out the piano, Spark proposes…" | iPad A | Concerto | A split started before recording and left parked, captioned "parked before filming" |
+| 6 | 1:02 | 0:08 | Op. 18/1 opened on Violin II on iPad B, the viola part on iPad A | "Each player opens their own part…" | iPad A and B | Op. 18/1 | One iPad, switching parts |
+| 7 | 1:10 | 0:10 | Open PDF beside Open Digital; engraved pages; caption "Converted before filming" | "Convert to Digital: Audiveris reads the notes…" | iPad A | Goldberg, converted beforehand | Never run Convert live (114.7 s for 5 pages) |
+| 8 | 1:20 | 0:10 | Presence faces; a highlight on iPad A appears on iPad B | "Marks are live…" | **[2 iPads]** A and B | Op. 18/1 | Retake; then the Mac browser signed in as Noor as the second stand |
+| 9 | 1:30 | 0:08 | CK on camera holding the voice button; strands gather while he speaks | "Second violins, from forty-two to forty-eight we're cutting that." | **[mic]** iPad A | Op. 18/1 | Retake in a quieter room; then a take recorded before the shoot (proposals wait in the tray) |
+| 10 | 1:38 | 0:20 | Proposal card, blue ghost over bars 42 to 48 for Violin II; Accept; inset transcribe row then Spark row | "Folio doesn't listen to you play; it listens to the conductor…" | **[mic]** iPad A | Op. 18/1 | As shot 9 |
+| 11 | 1:58 | 0:07 | The cut on the Violin II stand; the cello part unchanged | "It lands only on the stands it was meant for." | **[2 iPads]** B, then A as cello | Op. 18/1 | Violin II stand alone, then the cello part on iPad A |
+| 12 | 2:05 | 0:23 | Play the parts: Violin II silenced, pace 80 %, count-in, loop over bars 42 to 48 | "Then practise. Play the parts…" | iPad B, sound on | Op. 18/1 | Record on the web app in a Mac browser |
+| 13 | 2:28 | 0:22 | CK on camera; iPad A behind CK with the accepted cut; lower-third naming both models | "Everywhere in Folio, the model proposes and a deterministic check decides…" | Camera | Op. 18/1 | None needed |
+| 14 | 2:50 | 0:10 | End card: forte f, Folio, folio.jckjjcckk.com, the repo, "Muse Spark · Muse Voice Transcribe" | "Folio. One score for the whole ensemble." | Title card | None | None needed |
 
 Total: 3:00.
 
@@ -59,3 +63,6 @@ Total: 3:00.
 - [ ] Quiet room for shots 9 and 10; the real-iPad mic tested once before the shoot.
 - [ ] Printed Op. 18/1 parts and four stands for shot 1.
 - [ ] Screen recording on each iPad; a full run-through recorded on Nov 2 as the safety cut.
+- [ ] The `usage_events` inset: the hosted Supabase table view (or a saved query) of model, kind, cost and time,
+      newest first, recorded from the Mac beside each live call (shots 3, 5, 9, 10). It shows ledger rows, not code.
+- [ ] The Op. 18/1 Violin II part has bars 42 to 48 visible on iPad B for shots 10 to 12.

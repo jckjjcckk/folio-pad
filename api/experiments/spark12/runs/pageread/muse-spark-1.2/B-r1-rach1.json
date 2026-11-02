@@ -1,0 +1,599 @@
+[
+ {
+  "page": "rach1-gutheil-p01",
+  "kind": "orchestral",
+  "variant": "B",
+  "run": 1,
+  "trimmed": false,
+  "first_page": true,
+  "fallback": null,
+  "known_in": [],
+  "attempts": [
+   {
+    "seconds": 5.656429750000825,
+    "usd": 0.00993725,
+    "input_tokens": 3795,
+    "output_tokens": 1222,
+    "reasoning_tokens": 684,
+    "cached_tokens": 0,
+    "api": "chat",
+    "finish": "stop",
+    "text": "{\"first_measure_number\":1,\"is_pickup\":false,\"confidence\":\"high\",\"systems\":[{\"index\":1,\"parts\":[\"Flutes I. II.\",\"Oboes I. II.\",\"Clarinets I. II. in A\",\"Bassoons I. II.\",\"Horns in F I. II.\",\"Horns in F III. IV.\",\"Trumpets I. II. in B\",\"Trombones ten. I. II.\",\"Bass Trombone\",\"Timpani\",\"Piano\",\"Violins I\",\"Violins II\",\"Viola\",\"Cellos\",\"Basses\"],\"staves_per_part\":[1,1,1,1,1,1,1,1,1,1,2,1,1,1,1,1]}],\"rehearsal_marks\":[],\"doubtful_measures\":[],\"title\":\"PIANO CONCERTO No. 1 Revised Version (1917) - I\",\"composer\":\"SERGE RACHMANINOFF Op. 1\",\"key_signature\":\"A major\",\"time_signature\":\"4/4\",\"parts_difficulty\":[{\"part\":\"Flutes I. II.\",\"difficulty\":1},{\"part\":\"Oboes I. II.\",\"difficulty\":1},{\"part\":\"Clarinets I. II. in A\",\"difficulty\":2},{\"part\":\"Bassoons I. II.\",\"difficulty\":2},{\"part\":\"Horns in F I. II.\",\"difficulty\":2},{\"part\":\"Horns in F III. IV.\",\"difficulty\":2},{\"part\":\"Trumpets I. II. in B\",\"difficulty\":1},{\"part\":\"Trombones ten. I. II.\",\"difficulty\":1},{\"part\":\"Bass Trombone\",\"difficulty\":1},{\"part\":\"Timpani\",\"difficulty\":1},{\"part\":\"Piano\",\"difficulty\":5},{\"part\":\"Violins I\",\"difficulty\":1},{\"part\":\"Violins II\",\"difficulty\":1},{\"part\":\"Viola\",\"difficulty\":1},{\"part\":\"Cellos\",\"difficulty\":1},{\"part\":\"Basses\",\"difficulty\":1}],\"brief\":\"Rachmaninoff's Piano Concerto No. 1 in F-sharp minor, Op. 1, revised 1917 version, first movement (Vivace) in full orchestral score, dedicated to A. Ziloti. The solo piano part is virtuosic from its entry in measure 3 with rapid octaves and arpeggiated figuration, while the orchestra provides marcato punctuations and sustained accompaniment that will require precise ensemble coordination.\",\"landmarks\":[{\"kind\":\"tempo\",\"text\":\"Vivace.\",\"provisional_measure\":1}]}"
+   }
+  ],
+  "parse_error": null,
+  "seconds": 5.656429750000825,
+  "usd": 0.00993725,
+  "output_tokens": 1222,
+  "input_tokens": 3795,
+  "reasoning_tokens": 684,
+  "n_boxes": 4,
+  "labels": {
+   "first_measure_number": 1,
+   "is_pickup": false,
+   "confidence": "high",
+   "systems": [
+    {
+     "index": 1,
+     "parts": [
+      "Flutes I. II.",
+      "Oboes I. II.",
+      "Clarinets I. II. in A",
+      "Bassoons I. II.",
+      "Horns in F I. II.",
+      "Horns in F III. IV.",
+      "Trumpets I. II. in B",
+      "Trombones ten. I. II.",
+      "Bass Trombone",
+      "Timpani",
+      "Piano",
+      "Violins I",
+      "Violins II",
+      "Viola",
+      "Cellos",
+      "Basses"
+     ],
+     "staves_per_part": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      2,
+      1,
+      1,
+      1,
+      1,
+      1
+     ]
+    }
+   ],
+   "rehearsal_marks": {},
+   "doubtful": {},
+   "title": "PIANO CONCERTO No. 1 Revised Version (1917) - I",
+   "composer": "SERGE RACHMANINOFF Op. 1",
+   "key_signature": "A major",
+   "time_signature": "4/4",
+   "parts_difficulty": {
+    "Flutes I. II": 1,
+    "Oboes I. II": 1,
+    "Clarinets I. II. in A": 2,
+    "Bassoons I. II": 2,
+    "Horns in F I. II": 2,
+    "Horns in F III. IV": 2,
+    "Trumpets I. II. in B": 1,
+    "Trombones ten. I. II": 1,
+    "Bass Trombone": 1,
+    "Timpani": 1,
+    "Piano": 5,
+    "Violins I": 1,
+    "Violins II": 1,
+    "Viola": 1,
+    "Cellos": 1,
+    "Basses": 1
+   },
+   "brief": "Rachmaninoff's Piano Concerto No. 1 in F-sharp minor, Op. 1, revised 1917 version, first movement (Vivace) in full orchestral score, dedicated to A. Ziloti. The solo piano part is virtuosic from its entry in measure 3 with rapid octaves and arpeggiated figuration, while the orchestra provides marcato punctuations and sustained accompaniment that will require precise ensemble coordination.",
+   "cost_usd": 0.0,
+   "model": "",
+   "landmarks": [
+    {
+     "kind": "tempo",
+     "text": "Vivace.",
+     "provisional": 1
+    }
+   ],
+   "landmarks_dropped": []
+  },
+  "assigned": [
+   {
+    "index": 1,
+    "parts": [
+     "Flutes I. II",
+     "Oboes I. II",
+     "Clarinets I. II. in A",
+     "Bassoons I. II",
+     "Horns in F I. II",
+     "Horns in F III. IV",
+     "Trumpets I. II. in B",
+     "Trombones ten. I. II",
+     "Bass Trombone",
+     "Timpani",
+     "Piano",
+     "Violins I",
+     "Violins II",
+     "Viola",
+     "Cellos",
+     "Basses"
+    ],
+    "staves_per_part": [
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     2,
+     1,
+     1,
+     1,
+     1,
+     1
+    ]
+   }
+  ],
+  "question": null
+ },
+ {
+  "page": "rach1-gutheil-p02",
+  "kind": "orchestral",
+  "variant": "B",
+  "run": 1,
+  "trimmed": false,
+  "first_page": false,
+  "fallback": null,
+  "known_in": [
+   "Flutes I. II",
+   "Oboes I. II",
+   "Clarinets I. II. in A",
+   "Bassoons I. II",
+   "Horns in F I. II",
+   "Horns in F III. IV",
+   "Trumpets I. II. in B",
+   "Trombones ten. I. II",
+   "Bass Trombone",
+   "Timpani",
+   "Piano",
+   "Violins I",
+   "Violins II",
+   "Viola",
+   "Cellos",
+   "Basses"
+  ],
+  "attempts": [
+   {
+    "seconds": 8.619276124984026,
+    "usd": 0.0142365,
+    "input_tokens": 3967,
+    "output_tokens": 2183,
+    "reasoning_tokens": 1431,
+    "cached_tokens": 0,
+    "api": "chat",
+    "finish": "stop",
+    "text": "{\"first_measure_number\":1,\"is_pickup\":false,\"confidence\":\"low\",\"systems\":[{\"index\":1,\"parts\":[\"Piano\",\"Violins I\",\"Violins II\",\"Viola\",\"Cellos\",\"Basses\"],\"staves_per_part\":[2,1,1,1,1,1]},{\"index\":2,\"parts\":[\"Flutes I. II\",\"Oboes I. II\",\"Clarinets I. II. in A\",\"Bassoons I. II\",\"Horns in F I. II\",\"Horns in F III. IV\",\"Trumpets I. II. in B\",\"Trombones ten. I. II\",\"Bass Trombone\",\"Timpani\",\"Piano\",\"Violins I\",\"Violins II\",\"Viola\",\"Cellos\",\"Basses\"],\"staves_per_part\":[1,1,1,1,1,1,1,1,1,1,2,1,1,1,1,1]}],\"rehearsal_marks\":[{\"mark\":\"1\",\"provisional_measure\":5}],\"doubtful_measures\":[{\"provisional_measure\":2,\"reason\":\"box is a narrow vertical strip covering only a barline, not a full measure\"},{\"provisional_measure\":3,\"reason\":\"box is a narrow vertical strip covering only a barline, not a full measure\"},{\"provisional_measure\":4,\"reason\":\"box width does not correspond to a full measure and appears split by detector at barline / narrow strip\"},{\"provisional_measure\":6,\"reason\":\"box is a narrow vertical strip covering only a barline / note stem, not a full measure\"},{\"provisional_measure\":7,\"reason\":\"box is a narrow vertical strip covering only a barline, not a full measure\"},{\"provisional_measure\":8,\"reason\":\"box is a narrow vertical strip covering only a barline / note stem, not a full measure\"},{\"provisional_measure\":9,\"reason\":\"box is a narrow vertical strip covering only a barline with fermata chord, not a full measure\"}],\"title\":null,\"composer\":null,\"key_signature\":\"E major\",\"time_signature\":null,\"parts_difficulty\":[{\"part\":\"Piano\",\"difficulty\":5},{\"part\":\"Flutes I. II\",\"difficulty\":1},{\"part\":\"Oboes I. II\",\"difficulty\":1},{\"part\":\"Clarinets I. II. in A\",\"difficulty\":1},{\"part\":\"Bassoons I. II\",\"difficulty\":1},{\"part\":\"Horns in F I. II\",\"difficulty\":3},{\"part\":\"Horns in F III. IV\",\"difficulty\":3},{\"part\":\"Trumpets I. II. in B\",\"difficulty\":3},{\"part\":\"Trombones ten. I. II\",\"difficulty\":2},{\"part\":\"Bass Trombone\",\"difficulty\":1},{\"part\":\"Timpani\",\"difficulty\":1},{\"part\":\"Violins I\",\"difficulty\":3},{\"part\":\"Violins II\",\"difficulty\":3},{\"part\":\"Viola\",\"difficulty\":3},{\"part\":\"Cellos\",\"difficulty\":3},{\"part\":\"Basses\",\"difficulty\":2}],\"brief\":\"Piano concerto with large orchestra (Tchaikovsky Piano Concerto No.1, opening pages: solo piano introduction followed by orchestral entry at rehearsal 1). The most work is the virtuosic solo piano part with rapid octaves, arpeggios and full chords, and the heavy brass and string pesante chords at a tempo.\",\"landmarks\":[{\"kind\":\"tempo\",\"text\":\"rit.\",\"provisional_measure\":4},{\"kind\":\"tempo\",\"text\":\"a tempo\",\"provisional_measure\":5}]}"
+   }
+  ],
+  "parse_error": null,
+  "seconds": 8.619276124984026,
+  "usd": 0.0142365,
+  "output_tokens": 2183,
+  "input_tokens": 3967,
+  "reasoning_tokens": 1431,
+  "n_boxes": 9,
+  "labels": {
+   "first_measure_number": 1,
+   "is_pickup": false,
+   "confidence": "low",
+   "systems": [
+    {
+     "index": 1,
+     "parts": [
+      "Piano",
+      "Violins I",
+      "Violins II",
+      "Viola",
+      "Cellos",
+      "Basses"
+     ],
+     "staves_per_part": [
+      2,
+      1,
+      1,
+      1,
+      1,
+      1
+     ]
+    },
+    {
+     "index": 2,
+     "parts": [
+      "Flutes I. II",
+      "Oboes I. II",
+      "Clarinets I. II. in A",
+      "Bassoons I. II",
+      "Horns in F I. II",
+      "Horns in F III. IV",
+      "Trumpets I. II. in B",
+      "Trombones ten. I. II",
+      "Bass Trombone",
+      "Timpani",
+      "Piano",
+      "Violins I",
+      "Violins II",
+      "Viola",
+      "Cellos",
+      "Basses"
+     ],
+     "staves_per_part": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      2,
+      1,
+      1,
+      1,
+      1,
+      1
+     ]
+    }
+   ],
+   "rehearsal_marks": {
+    "5": "1"
+   },
+   "doubtful": {
+    "2": "box is a narrow vertical strip covering only a barline, not a full measure",
+    "3": "box is a narrow vertical strip covering only a barline, not a full measure",
+    "4": "box width does not correspond to a full measure and appears split by detector at barline / narrow strip",
+    "6": "box is a narrow vertical strip covering only a barline / note stem, not a full measure",
+    "7": "box is a narrow vertical strip covering only a barline, not a full measure",
+    "8": "box is a narrow vertical strip covering only a barline / note stem, not a full measure",
+    "9": "box is a narrow vertical strip covering only a barline with fermata chord, not a full measure"
+   },
+   "title": "",
+   "composer": "",
+   "key_signature": "E major",
+   "time_signature": null,
+   "parts_difficulty": {
+    "Piano": 5,
+    "Flutes I. II": 1,
+    "Oboes I. II": 1,
+    "Clarinets I. II. in A": 1,
+    "Bassoons I. II": 1,
+    "Horns in F I. II": 3,
+    "Horns in F III. IV": 3,
+    "Trumpets I. II. in B": 3,
+    "Trombones ten. I. II": 2,
+    "Bass Trombone": 1,
+    "Timpani": 1,
+    "Violins I": 3,
+    "Violins II": 3,
+    "Viola": 3,
+    "Cellos": 3,
+    "Basses": 2
+   },
+   "brief": "Piano concerto with large orchestra (Tchaikovsky Piano Concerto No.1, opening pages: solo piano introduction followed by orchestral entry at rehearsal 1). The most work is the virtuosic solo piano part with rapid octaves, arpeggios and full chords, and the heavy brass and string pesante chords at a tempo.",
+   "cost_usd": 0.0,
+   "model": "",
+   "landmarks": [
+    {
+     "kind": "tempo",
+     "text": "rit.",
+     "provisional": 4
+    },
+    {
+     "kind": "tempo",
+     "text": "a tempo",
+     "provisional": 5
+    }
+   ],
+   "landmarks_dropped": []
+  },
+  "assigned": [
+   {
+    "index": 1,
+    "parts": [
+     "Piano",
+     "Violins I",
+     "Violins II",
+     "Viola",
+     "Cellos",
+     "Basses"
+    ],
+    "staves_per_part": [
+     2,
+     1,
+     1,
+     1,
+     1,
+     1
+    ]
+   },
+   {
+    "index": 2,
+    "parts": [
+     "Flutes I. II",
+     "Oboes I. II",
+     "Clarinets I. II. in A",
+     "Bassoons I. II",
+     "Horns in F I. II",
+     "Horns in F III. IV",
+     "Trumpets I. II. in B",
+     "Trombones ten. I. II",
+     "Bass Trombone",
+     "Timpani",
+     "Piano",
+     "Violins I",
+     "Violins II",
+     "Viola",
+     "Cellos",
+     "Basses"
+    ],
+    "staves_per_part": [
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     2,
+     1,
+     1,
+     1,
+     1,
+     1
+    ]
+   }
+  ],
+  "question": null
+ },
+ {
+  "page": "rach1-gutheil-p03",
+  "kind": "orchestral",
+  "variant": "B",
+  "run": 1,
+  "trimmed": false,
+  "first_page": false,
+  "fallback": null,
+  "known_in": [
+   "Flutes I. II",
+   "Oboes I. II",
+   "Clarinets I. II. in A",
+   "Bassoons I. II",
+   "Horns in F I. II",
+   "Horns in F III. IV",
+   "Trumpets I. II. in B",
+   "Trombones ten. I. II",
+   "Bass Trombone",
+   "Timpani",
+   "Piano",
+   "Violins I",
+   "Violins II",
+   "Viola",
+   "Cellos",
+   "Basses"
+  ],
+  "attempts": [
+   {
+    "seconds": 7.572243250004249,
+    "usd": 0.012681,
+    "input_tokens": 3967,
+    "output_tokens": 1817,
+    "reasoning_tokens": 1182,
+    "cached_tokens": 0,
+    "api": "chat",
+    "finish": "stop",
+    "text": "{\"first_measure_number\":1,\"is_pickup\":false,\"confidence\":\"low\",\"systems\":[{\"index\":1,\"parts\":[\"Oboe I\",\"Clarinets in A\",\"Bassoons\",\"Horns in F I. II\",\"Horns in F III. IV\",\"Piano\",\"Violins I\",\"Violins II\",\"Viola\",\"Cellos\",\"Basses\"],\"staves_per_part\":[1,1,1,1,1,2,1,1,1,1,1]},{\"index\":2,\"parts\":[\"Flutes I. II\",\"Oboes I. II\",\"Clarinets in A\",\"Bassoons\",\"Horns in F I. II\",\"Horns in F III. IV\",\"Violins I\",\"Violins II\",\"Viola\",\"Cellos\",\"Basses\"],\"staves_per_part\":[1,1,1,1,1,1,1,1,1,1,1]}],\"rehearsal_marks\":[{\"mark\":\"2\",\"provisional_measure\":2},{\"mark\":\"2\",\"provisional_measure\":7}],\"doubtful_measures\":[{\"provisional_measure\":2,\"reason\":\"box is extremely narrow, contains only the end of the Piano arpeggio/chord and no complete bar content; appears to be a fragment of the bar that is split between box 1 and box 3\"},{\"provisional_measure\":7,\"reason\":\"box is extremely narrow, vertical slice through the middle of a bar, contains only note stems/bar interior with no barlines on both sides; appears to be a splitting artifact of a single bar divided between box 6 and box 7\"}],\"title\":null,\"composer\":null,\"key_signature\":\"E major / C# minor (4 sharps)\",\"time_signature\":null,\"parts_difficulty\":[{\"part\":\"Flutes I. II\",\"difficulty\":3},{\"part\":\"Oboe I\",\"difficulty\":3},{\"part\":\"Oboes I. II\",\"difficulty\":3},{\"part\":\"Clarinets in A\",\"difficulty\":3},{\"part\":\"Bassoons\",\"difficulty\":3},{\"part\":\"Horns in F I. II\",\"difficulty\":3},{\"part\":\"Horns in F III. IV\",\"difficulty\":2},{\"part\":\"Piano\",\"difficulty\":4},{\"part\":\"Violins I\",\"difficulty\":4},{\"part\":\"Violins II\",\"difficulty\":4},{\"part\":\"Viola\",\"difficulty\":4},{\"part\":\"Cellos\",\"difficulty\":3},{\"part\":\"Basses\",\"difficulty\":3}],\"brief\":\"Piano concerto with orchestra in Moderato (rehearsal 2), shown in full score with piano and strings prominent. The most work will be the exposed expressive string and piano passages with divisi, triplet figuration, cresc./dim. shaping and intonation in 4 sharps.\",\"landmarks\":[{\"kind\":\"tempo\",\"text\":\"Moderato.\",\"provisional_measure\":2},{\"kind\":\"tempo\",\"text\":\"Moderato.\",\"provisional_measure\":3},{\"kind\":\"tempo\",\"text\":\"Moderato.\",\"provisional_measure\":7}]}"
+   }
+  ],
+  "parse_error": null,
+  "seconds": 7.572243250004249,
+  "usd": 0.012681,
+  "output_tokens": 1817,
+  "input_tokens": 3967,
+  "reasoning_tokens": 1182,
+  "n_boxes": 9,
+  "labels": {
+   "first_measure_number": 1,
+   "is_pickup": false,
+   "confidence": "low",
+   "systems": [
+    {
+     "index": 1,
+     "parts": [
+      "Oboe I",
+      "Clarinets in A",
+      "Bassoons",
+      "Horns in F I. II",
+      "Horns in F III. IV",
+      "Piano",
+      "Violins I",
+      "Violins II",
+      "Viola",
+      "Cellos",
+      "Basses"
+     ],
+     "staves_per_part": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      2,
+      1,
+      1,
+      1,
+      1,
+      1
+     ]
+    },
+    {
+     "index": 2,
+     "parts": [
+      "Flutes I. II",
+      "Oboes I. II",
+      "Clarinets in A",
+      "Bassoons",
+      "Horns in F I. II",
+      "Horns in F III. IV",
+      "Violins I",
+      "Violins II",
+      "Viola",
+      "Cellos",
+      "Basses"
+     ],
+     "staves_per_part": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+     ]
+    }
+   ],
+   "rehearsal_marks": {
+    "2": "2",
+    "7": "2"
+   },
+   "doubtful": {
+    "2": "box is extremely narrow, contains only the end of the Piano arpeggio/chord and no complete bar content; appears to be a fragment of the bar that is split between box 1 and box 3",
+    "7": "box is extremely narrow, vertical slice through the middle of a bar, contains only note stems/bar interior with no barlines on both sides; appears to be a splitting artifact of a single bar divided between box 6 and box 7"
+   },
+   "title": "",
+   "composer": "",
+   "key_signature": "E major / C# minor (4 sharps)",
+   "time_signature": null,
+   "parts_difficulty": {
+    "Flutes I. II": 3,
+    "Oboe I": 3,
+    "Oboes I. II": 3,
+    "Clarinets in A": 3,
+    "Bassoons": 3,
+    "Horns in F I. II": 3,
+    "Horns in F III. IV": 2,
+    "Piano": 4,
+    "Violins I": 4,
+    "Violins II": 4,
+    "Viola": 4,
+    "Cellos": 3,
+    "Basses": 3
+   },
+   "brief": "Piano concerto with orchestra in Moderato (rehearsal 2), shown in full score with piano and strings prominent. The most work will be the exposed expressive string and piano passages with divisi, triplet figuration, cresc./dim. shaping and intonation in 4 sharps.",
+   "cost_usd": 0.0,
+   "model": "",
+   "landmarks": [
+    {
+     "kind": "tempo",
+     "text": "Moderato.",
+     "provisional": 2
+    },
+    {
+     "kind": "tempo",
+     "text": "Moderato.",
+     "provisional": 3
+    },
+    {
+     "kind": "tempo",
+     "text": "Moderato.",
+     "provisional": 7
+    }
+   ],
+   "landmarks_dropped": []
+  },
+  "assigned": [
+   {
+    "index": 1,
+    "parts": [
+     "Oboes I. II",
+     "Clarinets I. II. in A",
+     "Bassoons I. II",
+     "Horns in F I. II",
+     "Horns in F III. IV",
+     "Piano",
+     "Violins I",
+     "Violins II",
+     "Viola",
+     "Cellos",
+     "Basses"
+    ],
+    "staves_per_part": [
+     1,
+     1,
+     1,
+     1,
+     1,
+     2,
+     1,
+     1,
+     1,
+     1,
+     1
+    ]
+   },
+   {
+    "index": 2,
+    "parts": [
+     "Flutes I. II",
+     "Oboes I. II",
+     "Clarinets I. II. in A",
+     "Bassoons I. II",
+     "Horns in F I. II",
+     "Horns in F III. IV",
+     "Violins I",
+     "Violins II",
+     "Viola",
+     "Cellos",
+     "Basses"
+    ],
+    "staves_per_part": [
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1
+    ]
+   }
+  ],
+  "question": null
+ }
+]

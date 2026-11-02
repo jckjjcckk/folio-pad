@@ -1,0 +1,568 @@
+[
+ {
+  "page": "beethoven9-p172",
+  "kind": "orchestral",
+  "variant": "B",
+  "run": 2,
+  "trimmed": false,
+  "first_page": true,
+  "fallback": null,
+  "known_in": [],
+  "attempts": [
+   {
+    "seconds": 10.599668125010794,
+    "usd": 0.0138145,
+    "input_tokens": 5037,
+    "output_tokens": 1769,
+    "reasoning_tokens": 1312,
+    "cached_tokens": 4963,
+    "api": "chat",
+    "finish": "stop",
+    "text": "{\"first_measure_number\": 1, \"is_pickup\": false, \"confidence\": \"low\", \"systems\": [{\"index\": 1, \"parts\": [\"Flauti.\", \"Oboi.\", \"Clarinetti.\", \"Fagotti.\", \"Corni in D.\", \"Tympani in D.\", \"Alto e Tenore Tromboni\", \"Basso.\", \"Violini.\", \"Viola.\", \"CORO\", \"Violoncello & Bassi.\"], \"staves_per_part\": [1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 4, 1]}], \"rehearsal_marks\": [], \"doubtful_measures\": [], \"title\": \"\", \"composer\": \"\", \"key_signature\": \"D major\", \"time_signature\": \"3/2\", \"parts_difficulty\": [{\"part\": \"Flauti.\", \"difficulty\": 1}, {\"part\": \"Oboi.\", \"difficulty\": 1}, {\"part\": \"Clarinetti.\", \"difficulty\": 1}, {\"part\": \"Fagotti.\", \"difficulty\": 1}, {\"part\": \"Corni in D.\", \"difficulty\": 1}, {\"part\": \"Tympani in D.\", \"difficulty\": 1}, {\"part\": \"Alto e Tenore Tromboni\", \"difficulty\": 1}, {\"part\": \"Basso.\", \"difficulty\": 3}, {\"part\": \"Violini.\", \"difficulty\": 2}, {\"part\": \"Viola.\", \"difficulty\": 1}, {\"part\": \"CORO\", \"difficulty\": 3}, {\"part\": \"Violoncello & Bassi.\", \"difficulty\": 2}], \"brief\": \"This is the Andante maestoso Seid umschlungen section for full orchestra and chorus. The chorus, low trombone and low strings carry the theme while upper winds, brass, timpani and upper strings rest for almost the whole page and then enter softly.\", \"landmarks\": [{\"kind\": \"tempo\", \"text\": \"Andante maestoso.\", \"provisional_measure\": 1}]}"
+   }
+  ],
+  "parse_error": null,
+  "seconds": 10.599668125010794,
+  "usd": 0.0138145,
+  "output_tokens": 1769,
+  "input_tokens": 5037,
+  "reasoning_tokens": 1312,
+  "n_boxes": 9,
+  "labels": {
+   "first_measure_number": 1,
+   "is_pickup": false,
+   "confidence": "low",
+   "systems": [
+    {
+     "index": 1,
+     "parts": [
+      "Flauti.",
+      "Oboi.",
+      "Clarinetti.",
+      "Fagotti.",
+      "Corni in D.",
+      "Tympani in D.",
+      "Alto e Tenore Tromboni",
+      "Basso.",
+      "Violini.",
+      "Viola.",
+      "CORO",
+      "Violoncello & Bassi."
+     ],
+     "staves_per_part": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      2,
+      1,
+      4,
+      1
+     ]
+    }
+   ],
+   "rehearsal_marks": {},
+   "doubtful": {},
+   "title": "",
+   "composer": "",
+   "key_signature": "D major",
+   "time_signature": "3/2",
+   "parts_difficulty": {
+    "Flauti": 1,
+    "Oboi": 1,
+    "Clarinetti": 1,
+    "Fagotti": 1,
+    "Corni in D": 1,
+    "Tympani in D": 1,
+    "Alto e Tenore Tromboni": 1,
+    "Basso": 3,
+    "Violini": 2,
+    "Viola": 1,
+    "CORO": 3,
+    "Violoncello & Bassi": 2
+   },
+   "brief": "This is the Andante maestoso Seid umschlungen section for full orchestra and chorus. The chorus, low trombone and low strings carry the theme while upper winds, brass, timpani and upper strings rest for almost the whole page and then enter softly.",
+   "cost_usd": 0.0,
+   "model": "",
+   "landmarks": [
+    {
+     "kind": "tempo",
+     "text": "Andante maestoso.",
+     "provisional": 1
+    }
+   ],
+   "landmarks_dropped": []
+  },
+  "assigned": [
+   {
+    "index": 1,
+    "parts": [
+     "Flauti",
+     "Oboi",
+     "Clarinetti",
+     "Fagotti",
+     "Corni in D",
+     "Tympani in D",
+     "Alto e Tenore Tromboni",
+     "Basso",
+     "Violini",
+     "Viola",
+     "CORO",
+     "Violoncello & Bassi"
+    ],
+    "staves_per_part": [
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     2,
+     1,
+     4,
+     1
+    ]
+   }
+  ],
+  "question": null
+ },
+ {
+  "page": "beethoven9-p173",
+  "kind": "orchestral",
+  "variant": "B",
+  "run": 2,
+  "trimmed": false,
+  "first_page": false,
+  "fallback": null,
+  "known_in": [
+   "Flauti",
+   "Oboi",
+   "Clarinetti",
+   "Fagotti",
+   "Corni in D",
+   "Tympani in D",
+   "Alto e Tenore Tromboni",
+   "Basso",
+   "Violini",
+   "Viola",
+   "CORO",
+   "Violoncello & Bassi"
+  ],
+  "attempts": [
+   {
+    "seconds": 12.244393500004662,
+    "usd": 0.0149015,
+    "input_tokens": 5162,
+    "output_tokens": 1988,
+    "reasoning_tokens": 1546,
+    "cached_tokens": 0,
+    "api": "chat",
+    "finish": "stop",
+    "text": "{\"first_measure_number\": 1, \"is_pickup\": false, \"confidence\": \"low\", \"systems\": [{\"index\": 1, \"parts\": [\"Flauti\", \"Oboi\", \"Clarinetti\", \"Fagotti\", \"Corni in D\", \"Tympani in D\", \"Alto e Tenore Tromboni\", \"Basso\", \"Violini\", \"Viola\", \"CORO\", \"Violoncello & Bassi\"], \"staves_per_part\": [1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 4, 1]}], \"rehearsal_marks\": [], \"doubtful_measures\": [], \"title\": null, \"composer\": null, \"key_signature\": \"D major\", \"time_signature\": null, \"parts_difficulty\": [{\"part\": \"Flauti\", \"difficulty\": 3}, {\"part\": \"Oboi\", \"difficulty\": 3}, {\"part\": \"Clarinetti\", \"difficulty\": 3}, {\"part\": \"Fagotti\", \"difficulty\": 2}, {\"part\": \"Corni in D\", \"difficulty\": 1}, {\"part\": \"Tympani in D\", \"difficulty\": 1}, {\"part\": \"Alto e Tenore Tromboni\", \"difficulty\": 2}, {\"part\": \"Basso\", \"difficulty\": 2}, {\"part\": \"Violini\", \"difficulty\": 4}, {\"part\": \"Viola\", \"difficulty\": 3}, {\"part\": \"CORO\", \"difficulty\": 3}, {\"part\": \"Violoncello & Bassi\", \"difficulty\": 3}], \"brief\": \"This is the full-orchestra and chorus \\\"Seid umschlungen, Millionen!\\\" section from the Finale of Beethoven's Ninth Symphony. The chorus sustaining long hymn notes while the strings play busy passagework and the winds add sforzando chords will take the most work to balance and tune.\", \"landmarks\": []}"
+   }
+  ],
+  "parse_error": null,
+  "seconds": 12.244393500004662,
+  "usd": 0.0149015,
+  "output_tokens": 1988,
+  "input_tokens": 5162,
+  "reasoning_tokens": 1546,
+  "n_boxes": 5,
+  "labels": {
+   "first_measure_number": 1,
+   "is_pickup": false,
+   "confidence": "low",
+   "systems": [
+    {
+     "index": 1,
+     "parts": [
+      "Flauti",
+      "Oboi",
+      "Clarinetti",
+      "Fagotti",
+      "Corni in D",
+      "Tympani in D",
+      "Alto e Tenore Tromboni",
+      "Basso",
+      "Violini",
+      "Viola",
+      "CORO",
+      "Violoncello & Bassi"
+     ],
+     "staves_per_part": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      2,
+      1,
+      4,
+      1
+     ]
+    }
+   ],
+   "rehearsal_marks": {},
+   "doubtful": {},
+   "title": "",
+   "composer": "",
+   "key_signature": "D major",
+   "time_signature": null,
+   "parts_difficulty": {
+    "Flauti": 3,
+    "Oboi": 3,
+    "Clarinetti": 3,
+    "Fagotti": 2,
+    "Corni in D": 1,
+    "Tympani in D": 1,
+    "Alto e Tenore Tromboni": 2,
+    "Basso": 2,
+    "Violini": 4,
+    "Viola": 3,
+    "CORO": 3,
+    "Violoncello & Bassi": 3
+   },
+   "brief": "This is the full-orchestra and chorus \"Seid umschlungen, Millionen!\" section from the Finale of Beethoven's Ninth Symphony. The chorus sustaining long hymn notes while the strings play busy passagework and the winds add sforzando chords will take the most work to balance and tune.",
+   "cost_usd": 0.0,
+   "model": "",
+   "landmarks": [],
+   "landmarks_dropped": []
+  },
+  "assigned": [
+   {
+    "index": 1,
+    "parts": [
+     "Flauti",
+     "Oboi",
+     "Clarinetti",
+     "Fagotti",
+     "Corni in D",
+     "Tympani in D",
+     "Alto e Tenore Tromboni",
+     "Basso",
+     "Violini",
+     "Viola",
+     "CORO",
+     "Violoncello & Bassi"
+    ],
+    "staves_per_part": [
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     2,
+     1,
+     4,
+     1
+    ]
+   }
+  ],
+  "question": null
+ },
+ {
+  "page": "beethoven9-p174",
+  "kind": "orchestral",
+  "variant": "B",
+  "run": 2,
+  "trimmed": false,
+  "first_page": false,
+  "fallback": null,
+  "known_in": [
+   "Flauti",
+   "Oboi",
+   "Clarinetti",
+   "Fagotti",
+   "Corni in D",
+   "Tympani in D",
+   "Alto e Tenore Tromboni",
+   "Basso",
+   "Violini",
+   "Viola",
+   "CORO",
+   "Violoncello & Bassi"
+  ],
+  "attempts": [
+   {
+    "seconds": 11.065801249991637,
+    "usd": 0.01566225,
+    "input_tokens": 5162,
+    "output_tokens": 2167,
+    "reasoning_tokens": 1715,
+    "cached_tokens": 0,
+    "api": "chat",
+    "finish": "stop",
+    "text": "{\"first_measure_number\": 1, \"is_pickup\": false, \"confidence\": \"low\", \"systems\": [{\"index\": 1, \"parts\": [\"Flauti\", \"Oboi\", \"Clarinetti\", \"Fagotti\", \"Corni in D\", \"Tympani in D\", \"Alto e Tenore Tromboni\", \"Basso\", \"Violini\", \"Viola\", \"CORO\", \"Violoncello & Bassi\"], \"staves_per_part\": [1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 4, 1]}], \"rehearsal_marks\": [], \"doubtful_measures\": [], \"title\": \"\", \"composer\": \"\", \"key_signature\": \"D major\", \"time_signature\": null, \"parts_difficulty\": [{\"part\": \"Flauti\", \"difficulty\": 2}, {\"part\": \"Oboi\", \"difficulty\": 2}, {\"part\": \"Clarinetti\", \"difficulty\": 2}, {\"part\": \"Fagotti\", \"difficulty\": 2}, {\"part\": \"Corni in D\", \"difficulty\": 1}, {\"part\": \"Tympani in D\", \"difficulty\": 1}, {\"part\": \"Alto e Tenore Tromboni\", \"difficulty\": 2}, {\"part\": \"Basso\", \"difficulty\": 2}, {\"part\": \"Violini\", \"difficulty\": 4}, {\"part\": \"Viola\", \"difficulty\": 2}, {\"part\": \"CORO\", \"difficulty\": 2}, {\"part\": \"Violoncello & Bassi\", \"difficulty\": 3}], \"brief\": \"This page is from the choral finale of Beethoven's Ninth Symphony, the \\\"Kuss der ganzen Welt / Br\\u00fcder \\u00fcberm Sternenzelt\\\" passage for full orchestra with trombones and four-part chorus. The most work will be the sustained choral singing and the fast violin running figures against the long wind and brass notes.\", \"landmarks\": []}"
+   }
+  ],
+  "parse_error": null,
+  "seconds": 11.065801249991637,
+  "usd": 0.01566225,
+  "output_tokens": 2167,
+  "input_tokens": 5162,
+  "reasoning_tokens": 1715,
+  "n_boxes": 9,
+  "labels": {
+   "first_measure_number": 1,
+   "is_pickup": false,
+   "confidence": "low",
+   "systems": [
+    {
+     "index": 1,
+     "parts": [
+      "Flauti",
+      "Oboi",
+      "Clarinetti",
+      "Fagotti",
+      "Corni in D",
+      "Tympani in D",
+      "Alto e Tenore Tromboni",
+      "Basso",
+      "Violini",
+      "Viola",
+      "CORO",
+      "Violoncello & Bassi"
+     ],
+     "staves_per_part": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      2,
+      1,
+      4,
+      1
+     ]
+    }
+   ],
+   "rehearsal_marks": {},
+   "doubtful": {},
+   "title": "",
+   "composer": "",
+   "key_signature": "D major",
+   "time_signature": null,
+   "parts_difficulty": {
+    "Flauti": 2,
+    "Oboi": 2,
+    "Clarinetti": 2,
+    "Fagotti": 2,
+    "Corni in D": 1,
+    "Tympani in D": 1,
+    "Alto e Tenore Tromboni": 2,
+    "Basso": 2,
+    "Violini": 4,
+    "Viola": 2,
+    "CORO": 2,
+    "Violoncello & Bassi": 3
+   },
+   "brief": "This page is from the choral finale of Beethoven's Ninth Symphony, the \"Kuss der ganzen Welt / Brüder überm Sternenzelt\" passage for full orchestra with trombones and four-part chorus. The most work will be the sustained choral singing and the fast violin running figures against the long wind and brass notes.",
+   "cost_usd": 0.0,
+   "model": "",
+   "landmarks": [],
+   "landmarks_dropped": []
+  },
+  "assigned": [
+   {
+    "index": 1,
+    "parts": [
+     "Flauti",
+     "Oboi",
+     "Clarinetti",
+     "Fagotti",
+     "Corni in D",
+     "Tympani in D",
+     "Alto e Tenore Tromboni",
+     "Basso",
+     "Violini",
+     "Viola",
+     "CORO",
+     "Violoncello & Bassi"
+    ],
+    "staves_per_part": [
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     2,
+     1,
+     4,
+     1
+    ]
+   }
+  ],
+  "question": null
+ },
+ {
+  "page": "beethoven9-p175",
+  "kind": "orchestral",
+  "variant": "B",
+  "run": 2,
+  "trimmed": false,
+  "first_page": false,
+  "fallback": null,
+  "known_in": [
+   "Flauti",
+   "Oboi",
+   "Clarinetti",
+   "Fagotti",
+   "Corni in D",
+   "Tympani in D",
+   "Alto e Tenore Tromboni",
+   "Basso",
+   "Violini",
+   "Viola",
+   "CORO",
+   "Violoncello & Bassi"
+  ],
+  "attempts": [
+   {
+    "seconds": 8.746326749998843,
+    "usd": 0.014519,
+    "input_tokens": 5162,
+    "output_tokens": 1898,
+    "reasoning_tokens": 1373,
+    "cached_tokens": 0,
+    "api": "chat",
+    "finish": "stop",
+    "text": "{\"first_measure_number\": 1, \"is_pickup\": false, \"confidence\": \"low\", \"systems\": [{\"index\": 1, \"parts\": [\"Flauti\", \"Oboi\", \"Clarinetti\", \"Fagotti\", \"Corni in D\", \"Tympani in D\", \"Alto e Tenore Tromboni\", \"Basso\", \"Violini\", \"Viola\", \"CORO\", \"Violoncello & Bassi\"], \"staves_per_part\": [1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 4, 1]}], \"rehearsal_marks\": [], \"doubtful_measures\": [{\"provisional_measure\": 2, \"reason\": \"box is extremely narrow and appears to cover only the key-change and opening notes after the double bar\"}], \"title\": null, \"composer\": null, \"key_signature\": \"G major\", \"time_signature\": null, \"parts_difficulty\": [{\"part\": \"Flauti\", \"difficulty\": 2}, {\"part\": \"Oboi\", \"difficulty\": 2}, {\"part\": \"Clarinetti\", \"difficulty\": 2}, {\"part\": \"Fagotti\", \"difficulty\": 2}, {\"part\": \"Corni in D\", \"difficulty\": 1}, {\"part\": \"Tympani in D\", \"difficulty\": 1}, {\"part\": \"Alto e Tenore Tromboni\", \"difficulty\": 2}, {\"part\": \"Basso\", \"difficulty\": 2}, {\"part\": \"Violini\", \"difficulty\": 4}, {\"part\": \"Viola\", \"difficulty\": 2}, {\"part\": \"CORO\", \"difficulty\": 3}, {\"part\": \"Violoncello & Bassi\", \"difficulty\": 3}], \"brief\": \"This is a full orchestral and choral score page from the finale on the text Vater wohnen, Br\\u00fcder \\u00fcbern Sternenzelt. The most work will be sustaining long tied choral and wind notes in tune through the repeated sforzando Bb sonorities and continuous violin and bass tremolo figures.\", \"landmarks\": [{\"kind\": \"double_bar\", \"text\": \"double bar\", \"provisional_measure\": 1}, {\"kind\": \"key_change\", \"text\": \"1 flat\", \"provisional_measure\": 2}]}"
+   }
+  ],
+  "parse_error": null,
+  "seconds": 8.746326749998843,
+  "usd": 0.014519,
+  "output_tokens": 1898,
+  "input_tokens": 5162,
+  "reasoning_tokens": 1373,
+  "n_boxes": 6,
+  "labels": {
+   "first_measure_number": 1,
+   "is_pickup": false,
+   "confidence": "low",
+   "systems": [
+    {
+     "index": 1,
+     "parts": [
+      "Flauti",
+      "Oboi",
+      "Clarinetti",
+      "Fagotti",
+      "Corni in D",
+      "Tympani in D",
+      "Alto e Tenore Tromboni",
+      "Basso",
+      "Violini",
+      "Viola",
+      "CORO",
+      "Violoncello & Bassi"
+     ],
+     "staves_per_part": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      2,
+      1,
+      4,
+      1
+     ]
+    }
+   ],
+   "rehearsal_marks": {},
+   "doubtful": {
+    "2": "box is extremely narrow and appears to cover only the key-change and opening notes after the double bar"
+   },
+   "title": "",
+   "composer": "",
+   "key_signature": "G major",
+   "time_signature": null,
+   "parts_difficulty": {
+    "Flauti": 2,
+    "Oboi": 2,
+    "Clarinetti": 2,
+    "Fagotti": 2,
+    "Corni in D": 1,
+    "Tympani in D": 1,
+    "Alto e Tenore Tromboni": 2,
+    "Basso": 2,
+    "Violini": 4,
+    "Viola": 2,
+    "CORO": 3,
+    "Violoncello & Bassi": 3
+   },
+   "brief": "This is a full orchestral and choral score page from the finale on the text Vater wohnen, Brüder übern Sternenzelt. The most work will be sustaining long tied choral and wind notes in tune through the repeated sforzando Bb sonorities and continuous violin and bass tremolo figures.",
+   "cost_usd": 0.0,
+   "model": "",
+   "landmarks": [
+    {
+     "kind": "double_bar",
+     "text": "double bar",
+     "provisional": 1
+    },
+    {
+     "kind": "key_change",
+     "text": "1 flat",
+     "provisional": 2
+    }
+   ],
+   "landmarks_dropped": []
+  },
+  "assigned": [
+   {
+    "index": 1,
+    "parts": [
+     "Flauti",
+     "Oboi",
+     "Clarinetti",
+     "Fagotti",
+     "Corni in D",
+     "Tympani in D",
+     "Alto e Tenore Tromboni",
+     "Basso",
+     "Violini",
+     "Viola",
+     "CORO",
+     "Violoncello & Bassi"
+    ],
+    "staves_per_part": [
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     2,
+     1,
+     4,
+     1
+    ]
+   }
+  ],
+  "question": null
+ }
+]

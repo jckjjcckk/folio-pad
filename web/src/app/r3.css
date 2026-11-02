@@ -103,6 +103,7 @@
 .fo .acct-credit-note { font-size: 13px; line-height: 1.4; color: var(--text-3); }
 @media (prefers-reduced-motion: reduce) { .fo .acct-meter span { transition: none; } }
 .fo .acct-out { align-self: flex-start; margin-left: -10px; }
+.fo .acct-pages.is-waiting .acct-tier { opacity: 0.55; }
 
 /* ---------------------------------------------------------------- a book card */
 

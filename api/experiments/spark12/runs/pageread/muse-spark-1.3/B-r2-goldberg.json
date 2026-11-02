@@ -1,0 +1,565 @@
+[
+ {
+  "page": "goldberg-bga-p01",
+  "kind": "keyboard",
+  "variant": "B",
+  "run": 2,
+  "trimmed": false,
+  "first_page": true,
+  "fallback": null,
+  "known_in": [],
+  "attempts": [
+   {
+    "seconds": 9.149916499998653,
+    "usd": 0.00999625,
+    "input_tokens": 3713,
+    "output_tokens": 1260,
+    "reasoning_tokens": 869,
+    "cached_tokens": 3683,
+    "api": "chat",
+    "finish": "stop",
+    "text": "{\"first_measure_number\": 1, \"is_pickup\": false, \"confidence\": \"high\", \"systems\": [{\"index\": 1, \"parts\": [\"Piano\"], \"staves_per_part\": [2]}, {\"index\": 2, \"parts\": [\"Piano\"], \"staves_per_part\": [2]}, {\"index\": 3, \"parts\": [\"Piano\"], \"staves_per_part\": [2]}, {\"index\": 4, \"parts\": [\"Piano\"], \"staves_per_part\": [2]}, {\"index\": 5, \"parts\": [\"Piano\"], \"staves_per_part\": [2]}, {\"index\": 6, \"parts\": [\"Piano\"], \"staves_per_part\": [2]}], \"rehearsal_marks\": [], \"doubtful_measures\": [], \"title\": \"Aria con Variazioni.\", \"composer\": \"J. S. Bach.\", \"key_signature\": \"G major\", \"time_signature\": \"3/4\", \"parts_difficulty\": [{\"part\": \"Piano\", \"difficulty\": 4}], \"brief\": \"This is the opening Aria and start of the first variation from Bach's Goldberg Variations for keyboard. The most work will be voicing the ornamented slow cantilena over a steady bass and managing the increasingly florid variation passagework.\", \"landmarks\": [{\"kind\": \"section\", \"text\": \"Aria.\", \"provisional_measure\": 1}, {\"kind\": \"tempo\", \"text\": \"Andante espressivo. (\\u2669=72.)\", \"provisional_measure\": 1}, {\"kind\": \"repeat\", \"text\": \"end repeat\", \"provisional_measure\": 16}, {\"kind\": \"repeat\", \"text\": \"start repeat\", \"provisional_measure\": 17}]}"
+   }
+  ],
+  "parse_error": null,
+  "seconds": 9.149916499998653,
+  "usd": 0.00999625,
+  "output_tokens": 1260,
+  "input_tokens": 3713,
+  "reasoning_tokens": 869,
+  "n_boxes": 28,
+  "labels": {
+   "first_measure_number": 1,
+   "is_pickup": false,
+   "confidence": "high",
+   "systems": [
+    {
+     "index": 1,
+     "parts": [
+      "Piano"
+     ],
+     "staves_per_part": [
+      2
+     ]
+    },
+    {
+     "index": 2,
+     "parts": [
+      "Piano"
+     ],
+     "staves_per_part": [
+      2
+     ]
+    },
+    {
+     "index": 3,
+     "parts": [
+      "Piano"
+     ],
+     "staves_per_part": [
+      2
+     ]
+    },
+    {
+     "index": 4,
+     "parts": [
+      "Piano"
+     ],
+     "staves_per_part": [
+      2
+     ]
+    },
+    {
+     "index": 5,
+     "parts": [
+      "Piano"
+     ],
+     "staves_per_part": [
+      2
+     ]
+    },
+    {
+     "index": 6,
+     "parts": [
+      "Piano"
+     ],
+     "staves_per_part": [
+      2
+     ]
+    }
+   ],
+   "rehearsal_marks": {},
+   "doubtful": {},
+   "title": "Aria con Variazioni",
+   "composer": "J. S. Bach",
+   "key_signature": "G major",
+   "time_signature": "3/4",
+   "parts_difficulty": {
+    "Piano": 4
+   },
+   "brief": "This is the opening Aria and start of the first variation from Bach's Goldberg Variations for keyboard. The most work will be voicing the ornamented slow cantilena over a steady bass and managing the increasingly florid variation passagework.",
+   "cost_usd": 0.0,
+   "model": "",
+   "landmarks": [
+    {
+     "kind": "section",
+     "text": "Aria.",
+     "provisional": 1
+    },
+    {
+     "kind": "tempo",
+     "text": "Andante espressivo. (♩=72.)",
+     "provisional": 1
+    },
+    {
+     "kind": "repeat",
+     "text": "end repeat",
+     "provisional": 16
+    },
+    {
+     "kind": "repeat",
+     "text": "start repeat",
+     "provisional": 17
+    }
+   ],
+   "landmarks_dropped": []
+  },
+  "assigned": [
+   {
+    "index": 1,
+    "parts": [
+     "Piano"
+    ],
+    "staves_per_part": [
+     2
+    ]
+   },
+   {
+    "index": 2,
+    "parts": [
+     "Piano"
+    ],
+    "staves_per_part": [
+     2
+    ]
+   },
+   {
+    "index": 3,
+    "parts": [
+     "Piano"
+    ],
+    "staves_per_part": [
+     2
+    ]
+   },
+   {
+    "index": 4,
+    "parts": [
+     "Piano"
+    ],
+    "staves_per_part": [
+     2
+    ]
+   },
+   {
+    "index": 5,
+    "parts": [
+     "Piano"
+    ],
+    "staves_per_part": [
+     2
+    ]
+   },
+   {
+    "index": 6,
+    "parts": [
+     "Piano"
+    ],
+    "staves_per_part": [
+     2
+    ]
+   }
+  ],
+  "question": null
+ },
+ {
+  "page": "goldberg-bga-p02",
+  "kind": "keyboard",
+  "variant": "B",
+  "run": 2,
+  "trimmed": false,
+  "first_page": false,
+  "fallback": null,
+  "known_in": [
+   "Piano"
+  ],
+  "attempts": [
+   {
+    "seconds": 8.299980042007519,
+    "usd": 0.0110615,
+    "input_tokens": 3790,
+    "output_tokens": 1488,
+    "reasoning_tokens": 1089,
+    "cached_tokens": 3683,
+    "api": "chat",
+    "finish": "stop",
+    "text": "{\"first_measure_number\": 1, \"is_pickup\": false, \"confidence\": \"low\", \"systems\": [{\"index\": 1, \"parts\": [\"Piano\"], \"staves_per_part\": [2]}, {\"index\": 2, \"parts\": [\"Piano\"], \"staves_per_part\": [2]}, {\"index\": 3, \"parts\": [\"Piano\"], \"staves_per_part\": [2]}, {\"index\": 4, \"parts\": [\"Piano\"], \"staves_per_part\": [2]}, {\"index\": 5, \"parts\": [\"Piano\"], \"staves_per_part\": [2]}, {\"index\": 6, \"parts\": [\"Piano\"], \"staves_per_part\": [2]}], \"rehearsal_marks\": [], \"doubtful_measures\": [], \"title\": \"\", \"composer\": \"\", \"key_signature\": \"G major\", \"time_signature\": null, \"parts_difficulty\": [{\"part\": \"Piano\", \"difficulty\": 4}], \"brief\": \"This page contains the end of a variation and the complete Var.1 (a 1 Clav.) for solo piano in G major, marked Allegro moderato. The continuous sixteenth-note figuration, hand-crossing and rapid scale passages will require the most work for clean articulation and balance.\", \"landmarks\": [{\"kind\": \"section\", \"text\": \"Var.1. (a 1 Clav.)\", \"provisional_measure\": 5}, {\"kind\": \"tempo\", \"text\": \"Allegro moderato. (\\u2669 = 108.)\", \"provisional_measure\": 5}, {\"kind\": \"repeat\", \"text\": \"end repeat\", \"provisional_measure\": 4}, {\"kind\": \"repeat\", \"text\": \"end repeat\", \"provisional_measure\": 20}]}"
+   }
+  ],
+  "parse_error": null,
+  "seconds": 8.299980042007519,
+  "usd": 0.0110615,
+  "output_tokens": 1488,
+  "input_tokens": 3790,
+  "reasoning_tokens": 1089,
+  "n_boxes": 20,
+  "labels": {
+   "first_measure_number": 1,
+   "is_pickup": false,
+   "confidence": "low",
+   "systems": [
+    {
+     "index": 1,
+     "parts": [
+      "Piano"
+     ],
+     "staves_per_part": [
+      2
+     ]
+    },
+    {
+     "index": 2,
+     "parts": [
+      "Piano"
+     ],
+     "staves_per_part": [
+      2
+     ]
+    },
+    {
+     "index": 3,
+     "parts": [
+      "Piano"
+     ],
+     "staves_per_part": [
+      2
+     ]
+    },
+    {
+     "index": 4,
+     "parts": [
+      "Piano"
+     ],
+     "staves_per_part": [
+      2
+     ]
+    },
+    {
+     "index": 5,
+     "parts": [
+      "Piano"
+     ],
+     "staves_per_part": [
+      2
+     ]
+    },
+    {
+     "index": 6,
+     "parts": [
+      "Piano"
+     ],
+     "staves_per_part": [
+      2
+     ]
+    }
+   ],
+   "rehearsal_marks": {},
+   "doubtful": {},
+   "title": "",
+   "composer": "",
+   "key_signature": "G major",
+   "time_signature": null,
+   "parts_difficulty": {
+    "Piano": 4
+   },
+   "brief": "This page contains the end of a variation and the complete Var.1 (a 1 Clav.) for solo piano in G major, marked Allegro moderato. The continuous sixteenth-note figuration, hand-crossing and rapid scale passages will require the most work for clean articulation and balance.",
+   "cost_usd": 0.0,
+   "model": "",
+   "landmarks": [
+    {
+     "kind": "section",
+     "text": "Var.1. (a 1 Clav.)",
+     "provisional": 5
+    },
+    {
+     "kind": "tempo",
+     "text": "Allegro moderato. (♩ = 108.)",
+     "provisional": 5
+    },
+    {
+     "kind": "repeat",
+     "text": "end repeat",
+     "provisional": 4
+    },
+    {
+     "kind": "repeat",
+     "text": "end repeat",
+     "provisional": 20
+    }
+   ],
+   "landmarks_dropped": []
+  },
+  "assigned": [
+   {
+    "index": 1,
+    "parts": [
+     "Piano"
+    ],
+    "staves_per_part": [
+     2
+    ]
+   },
+   {
+    "index": 2,
+    "parts": [
+     "Piano"
+    ],
+    "staves_per_part": [
+     2
+    ]
+   },
+   {
+    "index": 3,
+    "parts": [
+     "Piano"
+    ],
+    "staves_per_part": [
+     2
+    ]
+   },
+   {
+    "index": 4,
+    "parts": [
+     "Piano"
+    ],
+    "staves_per_part": [
+     2
+    ]
+   },
+   {
+    "index": 5,
+    "parts": [
+     "Piano"
+    ],
+    "staves_per_part": [
+     2
+    ]
+   },
+   {
+    "index": 6,
+    "parts": [
+     "Piano"
+    ],
+    "staves_per_part": [
+     2
+    ]
+   }
+  ],
+  "question": null
+ },
+ {
+  "page": "goldberg-bga-p03",
+  "kind": "keyboard",
+  "variant": "B",
+  "run": 2,
+  "trimmed": false,
+  "first_page": false,
+  "fallback": null,
+  "known_in": [
+   "Piano"
+  ],
+  "attempts": [
+   {
+    "seconds": 8.057409333006945,
+    "usd": 0.01033475,
+    "input_tokens": 3790,
+    "output_tokens": 1317,
+    "reasoning_tokens": 861,
+    "cached_tokens": 3683,
+    "api": "chat",
+    "finish": "stop",
+    "text": "{\"first_measure_number\": 1, \"is_pickup\": false, \"confidence\": \"low\", \"systems\": [{\"index\": 1, \"parts\": [\"Piano\"], \"staves_per_part\": [2]}, {\"index\": 2, \"parts\": [\"Piano\"], \"staves_per_part\": [2]}, {\"index\": 3, \"parts\": [\"Piano\"], \"staves_per_part\": [2]}, {\"index\": 4, \"parts\": [\"Piano\"], \"staves_per_part\": [2]}, {\"index\": 5, \"parts\": [\"Piano\"], \"staves_per_part\": [2]}, {\"index\": 6, \"parts\": [\"Piano\"], \"staves_per_part\": [2]}], \"rehearsal_marks\": [], \"doubtful_measures\": [], \"title\": null, \"composer\": null, \"key_signature\": \"G major\", \"time_signature\": null, \"parts_difficulty\": [{\"part\": \"Piano\", \"difficulty\": 4}], \"brief\": \"This page contains the end of a virtuosic piano variation in G major with continuous semiquaver passagework, followed by the start of Var. 2 (a 1 Clav.) marked Allegretto in 2/4. The most work will be even, fast fingerwork with varied articulation and the hand-crossing staccato accompaniment figures.\", \"landmarks\": [{\"kind\": \"double_bar\", \"text\": \"double bar\", \"provisional_measure\": 13}, {\"kind\": \"repeat\", \"text\": \"end repeat\", \"provisional_measure\": 16}, {\"kind\": \"section\", \"text\": \"Var. 2.\", \"provisional_measure\": 17}, {\"kind\": \"section\", \"text\": \"(a 1 Clav.)\", \"provisional_measure\": 17}, {\"kind\": \"tempo\", \"text\": \"Allegretto. (\\u2669.= 92.)\", \"provisional_measure\": 17}, {\"kind\": \"meter_change\", \"text\": \"2/4\", \"provisional_measure\": 17}]}"
+   }
+  ],
+  "parse_error": null,
+  "seconds": 8.057409333006945,
+  "usd": 0.01033475,
+  "output_tokens": 1317,
+  "input_tokens": 3790,
+  "reasoning_tokens": 861,
+  "n_boxes": 21,
+  "labels": {
+   "first_measure_number": 1,
+   "is_pickup": false,
+   "confidence": "low",
+   "systems": [
+    {
+     "index": 1,
+     "parts": [
+      "Piano"
+     ],
+     "staves_per_part": [
+      2
+     ]
+    },
+    {
+     "index": 2,
+     "parts": [
+      "Piano"
+     ],
+     "staves_per_part": [
+      2
+     ]
+    },
+    {
+     "index": 3,
+     "parts": [
+      "Piano"
+     ],
+     "staves_per_part": [
+      2
+     ]
+    },
+    {
+     "index": 4,
+     "parts": [
+      "Piano"
+     ],
+     "staves_per_part": [
+      2
+     ]
+    },
+    {
+     "index": 5,
+     "parts": [
+      "Piano"
+     ],
+     "staves_per_part": [
+      2
+     ]
+    },
+    {
+     "index": 6,
+     "parts": [
+      "Piano"
+     ],
+     "staves_per_part": [
+      2
+     ]
+    }
+   ],
+   "rehearsal_marks": {},
+   "doubtful": {},
+   "title": "",
+   "composer": "",
+   "key_signature": "G major",
+   "time_signature": null,
+   "parts_difficulty": {
+    "Piano": 4
+   },
+   "brief": "This page contains the end of a virtuosic piano variation in G major with continuous semiquaver passagework, followed by the start of Var. 2 (a 1 Clav.) marked Allegretto in 2/4. The most work will be even, fast fingerwork with varied articulation and the hand-crossing staccato accompaniment figures.",
+   "cost_usd": 0.0,
+   "model": "",
+   "landmarks": [
+    {
+     "kind": "double_bar",
+     "text": "double bar",
+     "provisional": 13
+    },
+    {
+     "kind": "repeat",
+     "text": "end repeat",
+     "provisional": 16
+    },
+    {
+     "kind": "section",
+     "text": "Var. 2.",
+     "provisional": 17
+    },
+    {
+     "kind": "section",
+     "text": "(a 1 Clav.)",
+     "provisional": 17
+    },
+    {
+     "kind": "tempo",
+     "text": "Allegretto. (♩.= 92.)",
+     "provisional": 17
+    },
+    {
+     "kind": "meter_change",
+     "text": "2/4",
+     "provisional": 17
+    }
+   ],
+   "landmarks_dropped": []
+  },
+  "assigned": [
+   {
+    "index": 1,
+    "parts": [
+     "Piano"
+    ],
+    "staves_per_part": [
+     2
+    ]
+   },
+   {
+    "index": 2,
+    "parts": [
+     "Piano"
+    ],
+    "staves_per_part": [
+     2
+    ]
+   },
+   {
+    "index": 3,
+    "parts": [
+     "Piano"
+    ],
+    "staves_per_part": [
+     2
+    ]
+   },
+   {
+    "index": 4,
+    "parts": [
+     "Piano"
+    ],
+    "staves_per_part": [
+     2
+    ]
+   },
+   {
+    "index": 5,
+    "parts": [
+     "Piano"
+    ],
+    "staves_per_part": [
+     2
+    ]
+   },
+   {
+    "index": 6,
+    "parts": [
+     "Piano"
+    ],
+    "staves_per_part": [
+     2
+    ]
+   }
+  ],
+  "question": null
+ }
+]

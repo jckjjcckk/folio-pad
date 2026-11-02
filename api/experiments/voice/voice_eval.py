@@ -38,7 +38,7 @@ from app.settings import settings  # noqa: E402
 from . import prompts  # noqa: E402
 from .textnorm import annotation_key, wer  # noqa: E402
 
-assert settings.llm_provider == "meta", "voice eval calls Meta only"
+# Meta is the app's only provider since 2026-11-01 (the old LLM_PROVIDER guard is gone with the setting).
 
 AUDIO = Path(os.environ.get("FOLIO_VOICE_DIR", API / "fixtures" / "voice" / "audio"))
 SCRIPT = API / "fixtures" / "voice" / "script.csv"

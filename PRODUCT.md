@@ -26,7 +26,7 @@ Turn any score, photographed or imported, into clean split parts on every member
 
 ## Positioning
 
-One score object serves the whole life of the music: scan, split, distribute, mark, rehearse, practise. Competing products stop at one step (scanning, or reading, or practising). The scan and cleanup use Meta's SAM 3.1 for page and system segmentation and Muse Spark for reading handwritten markings and writing rehearsal briefs; Muse Voice Transcribe turns spoken rehearsal notes into bar-anchored text.
+One score object serves the whole life of the music: scan, split, distribute, mark, rehearse, practise. Competing products stop at one step (scanning, or reading, or practising). OpenCV geometry finds the systems and bars on a scanned page and Muse Spark reads the printed labels and words on them (bar numbers, part names, titles, markings); Muse Voice Transcribe turns spoken rehearsal notes into text that Spark places on bars. SAM 3.1 was tried first for page segmentation and lost to OpenCV geometry on the tap test (10/28 against 28/28); it is not in the product.
 
 ## Operating Context
 

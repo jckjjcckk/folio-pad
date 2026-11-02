@@ -3,7 +3,7 @@ import { AnimatePresence } from 'motion/react'
 import { useStore, type DarkPage, type Theme } from './store'
 import { useAuth } from './auth'
 import { Pop, Scrim } from './Sheet'
-import { getMe, ownBudgetSpent, sharedBudgetSpent, type MeBudget } from '../lib/api'
+import { ApiError, getMe, ownBudgetSpent, setModelTier, sharedBudgetSpent, type Me, type ModelTier } from '../lib/api'
 
 const themes: { id: Theme; label: string }[] = [
   { id: 'system', label: 'Auto' },
@@ -12,29 +12,30 @@ const themes: { id: Theme; label: string }[] = [
 ]
 const usd = (n: number) => `$${n.toFixed(2)}`
 
-/** What is left of the account's own budget for model calls, read from `GET /me` each time the menu opens so it is
- *  fresh after a job. The shared project cap is never shown; when it stops calls, the API's own sentence says so. */
-function Credit({ open }: { open: boolean }) {
-  const { session } = useAuth()
-  const token = session?.access_token
-  const [budget, setBudget] = useState<MeBudget | null | 'failed'>(null)
-
+/** The account as `GET /me` gives it, read each time the menu opens so the credit is fresh after a job. */
+function useMe(open: boolean, token: string | undefined) {
+  const [me, setMe] = useState<Me | null | 'failed'>(null)
   useEffect(() => {
     if (!open || !token) return
     let live = true
-    setBudget(null)
-    getMe(token).then(m => { if (live) setBudget(m.budget) }, () => { if (live) setBudget('failed') })
+    setMe(null)
+    getMe(token).then(m => { if (live) setMe(m) }, () => { if (live) setMe('failed') })
     return () => { live = false }
   }, [open, token])
+  return [me, setMe] as const
+}
 
-  const b = budget && budget !== 'failed' ? budget : null
+/** What is left of the account's own budget for model calls. The shared project cap is never shown; when it stops
+ *  calls, the API's own sentence says so. */
+function Credit({ me }: { me: Me | null | 'failed' }) {
+  const b = me && me !== 'failed' ? me.budget : null
   const left = b ? Math.max(0, b.budget_usd - b.spent_usd) : 0
   const used = b && b.budget_usd > 0 ? Math.min(1, b.spent_usd / b.budget_usd) : b ? 1 : 0
   const own = b ? b.spent_usd >= b.budget_usd : false
   return (
-    <div className="acct-sec" aria-busy={budget === null}>
+    <div className="acct-sec" aria-busy={me === null}>
       <span className="r3-label" id="acct-credit">Credit</span>
-      {budget === 'failed' ? (
+      {me === 'failed' ? (
         <span className="acct-credit-note">The credit could not be checked just now.</span>
       ) : (
         <>
@@ -46,6 +47,50 @@ function Credit({ open }: { open: boolean }) {
           {b && !b.can_call_models && <span className="acct-credit-note">{own ? ownBudgetSpent : sharedBudgetSpent}.</span>}
         </>
       )}
+    </div>
+  )
+}
+
+const tiers: { id: ModelTier; label: string; sub: string }[] = [
+  { id: 'standard', label: 'Standard', sub: 'Your scores and recordings are not used to train Meta models' },
+  { id: 'contributor', label: 'Contributor', sub: 'Cheaper. Meta may use the content to train future models' },
+]
+
+/** Which of Meta's two tiers reads this account's books and voice notes (`profiles.model_tier`, `PATCH /me`). The
+ *  choice shows at once and is put back, with the reason, when the server refuses it. Standard until the account
+ *  has been read, and wherever the server does not know the setting yet. */
+function Tier({ me, setMe, token }: { me: Me | null | 'failed'; setMe: (m: Me) => void; token: string | undefined }) {
+  const [saving, setSaving] = useState<ModelTier | null>(null)
+  const [note, setNote] = useState<string | null>(null)
+  const acct = me && me !== 'failed' ? me : null
+  const current: ModelTier = saving ?? (acct?.model_tier === 'contributor' ? 'contributor' : 'standard')
+
+  useEffect(() => { if (me === null) setNote(null) }, [me])
+
+  const choose = (t: ModelTier) => {
+    if (!acct || !token || saving || t === current) return
+    setSaving(t)
+    setNote(null)
+    setModelTier(t, token).then(m => setMe(m), (e: unknown) => {
+      const missing = e instanceof ApiError && (e.status === 404 || e.status === 405)
+      setNote(missing ? 'Choosing a model tier is not available on this server yet.'
+        : e instanceof ApiError ? e.message : 'The model tier could not be changed just now.')
+    }).finally(() => setSaving(null))
+  }
+
+  return (
+    <div className="acct-sec" aria-busy={me === null || saving !== null}>
+      <span className="r3-label" id="acct-tier">Model tier</span>
+      <div className={`acct-pages${acct ? '' : ' is-waiting'}`} role="radiogroup" aria-labelledby="acct-tier">
+        {tiers.map(t => (
+          <button key={t.id} type="button" role="radio" aria-checked={current === t.id} disabled={!acct || !token || saving !== null}
+            className="acct-page acct-tier" onClick={() => choose(t.id)}>
+            <span className="acct-page-text"><b>{t.label}</b><span>{t.sub}</span></span>
+          </button>
+        ))}
+      </div>
+      {me === 'failed' && <span className="acct-credit-note">The model tier could not be checked just now.</span>}
+      {note && <span className="acct-credit-note" role="status">{note}</span>}
     </div>
   )
 }
@@ -62,6 +107,8 @@ export function AccountButton({ className = '' }: { className?: string }) {
   const { session, signOut } = useAuth()
   const [open, setOpen] = useState(false)
   const name = world.account.name || session?.user.email || '?'
+  const token = session?.access_token
+  const [me, setMe] = useMe(open, token)
 
   useEffect(() => {
     if (!open) return
@@ -100,7 +147,8 @@ export function AccountButton({ className = '' }: { className?: string }) {
             ))}
           </div>
         </div>
-        <Credit open={open} />
+        <Tier me={me} setMe={setMe} token={token} />
+        <Credit me={me} />
         <button type="button" className="r3-btn is-quiet acct-out" onClick={() => signOut()}>Sign out</button>
       </Pop>
     </div>
