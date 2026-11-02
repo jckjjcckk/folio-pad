@@ -1,0 +1,21 @@
+/* DEBUG: remove before release. The debug take recorder (DebugRecorder.tsx). */
+.fo .dbg-rec { justify-content: center; }
+.fo .dbg-rec.is-live { border-color: var(--fail); color: var(--fail); }
+.fo .dbg-dock {
+  position: fixed; z-index: 1000; left: 50%; transform: translateX(-50%);
+  top: calc(env(safe-area-inset-top, 0px) + 8px);
+  width: min(560px, calc(100vw - 32px)); padding: 10px 12px; border-radius: 14px;
+  border: 1px dashed var(--fail); background: var(--card); color: var(--text);
+  box-shadow: 0 8px 28px rgb(0 0 0 / 0.18); display: flex; flex-direction: column; gap: 8px;
+}
+.fo .dbg-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.fo .dbg-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--fail); animation: dbg-blink 1s steps(2, start) infinite; }
+@keyframes dbg-blink { to { visibility: hidden; } }
+@media (prefers-reduced-motion: reduce) { .fo .dbg-dot { animation: none; } }
+.fo .dbg-time { font-size: 22px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.fo .dbg-sub { font-size: 13px; color: var(--text-3); flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.fo .dbg-name { flex: 1; min-width: 0; font-size: 15px; overflow-wrap: anywhere; }
+.fo .dbg-btn { height: 40px; }
+.fo .dbg-facts { display: grid; grid-template-columns: auto 1fr; gap: 2px 12px; font-size: 13px; margin: 0; }
+.fo .dbg-facts dt { color: var(--text-3); }
+.fo .dbg-facts dd { margin: 0; font-variant-numeric: tabular-nums; }
