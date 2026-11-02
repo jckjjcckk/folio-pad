@@ -10,6 +10,7 @@ import { CheckBars } from './CheckBars'
 import { syncStatusBar } from '../lib/native'
 import './styles.css'
 import './r3.css'
+import { DebugTakeDock } from './DebugRecorder' // DEBUG: remove before release
 
 /** R3's three faces (docs/design/r3/README.md): EB Garamond for display and numbers, Inter for the interface, Noto Music
  *  for clefs and accidentals. Loaded once, before sign-in, and kept for the session. */
@@ -60,6 +61,7 @@ function Shell() {
         <Route path="score/:scoreId/check" element={<CheckBars />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+      <DebugTakeDock />{/* DEBUG: remove before release */}
     </div>
   )
 }

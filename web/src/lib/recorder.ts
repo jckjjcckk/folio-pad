@@ -93,6 +93,14 @@ interface Options {
   onLevel?: (level: number) => void
   /** The take reached `MAX_SECONDS` and stopped capturing; the caller ends it with `stop`. */
   onLimit?: () => void
+  // DEBUG: remove before release. The three below exist only for the debug take recorder (DebugRecorder.tsx); voice
+  // notes never pass them, so their defaults are the production behaviour unchanged.
+  /** The cap in seconds; default `MAX_SECONDS`. `Infinity` for a long take. */
+  maxSeconds?: number
+  /** Every captured block at the context's rate, as it arrives (after the cap is applied). */
+  onBlock?: (block: Float32Array, rate: number) => void
+  /** false: the blocks are not kept in memory (the caller streams them through `onBlock`); `stop` then returns an empty take. Default true. */
+  keepBlocks?: boolean
 }
 
 /** Collects the input in blocks of ~2048 frames and posts them to the page. */
@@ -151,7 +159,7 @@ export async function startRecording(opts: Options = {}): Promise<Recorder> {
   }
 
   const rate = ctx.sampleRate
-  const limit = Math.round(MAX_SECONDS * rate)
+  const limit = Math.round((opts.maxSeconds ?? MAX_SECONDS) * rate)
   const blocks: Float32Array[] = []
   let frames = 0
   let level = 0
@@ -161,8 +169,9 @@ export async function startRecording(opts: Options = {}): Promise<Recorder> {
     if (!open || frames >= limit) return
     const room = limit - frames
     const b = block.length > room ? block.subarray(0, room) : block
-    blocks.push(b)
+    if (opts.keepBlocks !== false) blocks.push(b)
     frames += b.length
+    opts.onBlock?.(b, rate)
     let sum = 0
     for (let i = 0; i < b.length; i++) sum += b[i] * b[i]
     const db = 20 * Math.log10(Math.sqrt(sum / (b.length || 1)) + 1e-9)

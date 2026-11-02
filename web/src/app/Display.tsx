@@ -3,6 +3,7 @@ import { AnimatePresence } from 'motion/react'
 import { useStore, type DarkPage, type Theme } from './store'
 import { useAuth } from './auth'
 import { Pop, Scrim } from './Sheet'
+import { DebugRecordButton } from './DebugRecorder' // DEBUG: remove before release
 import { ApiError, getMe, ownBudgetSpent, setModelTier, sharedBudgetSpent, type Me, type ModelTier } from '../lib/api'
 
 const themes: { id: Theme; label: string }[] = [
@@ -149,6 +150,7 @@ export function AccountButton({ className = '' }: { className?: string }) {
         </div>
         <Tier me={me} setMe={setMe} token={token} />
         <Credit me={me} />
+        <DebugRecordButton />{/* DEBUG: remove before release */}
         <button type="button" className="r3-btn is-quiet acct-out" onClick={() => signOut()}>Sign out</button>
       </Pop>
     </div>
