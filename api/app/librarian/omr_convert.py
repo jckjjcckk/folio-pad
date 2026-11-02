@@ -13,9 +13,11 @@ the bar already holds. The engine is Audiveris 5.11 on the OMR box (a separate p
 imports it).
 
 Payload `{score_id, source_id?, pages?, max_cost_usd?}`, queued by `POST /scores/{id}/convert` (routes/convert.py).
-The job row carries the score in `payload.score_id` and leaves `jobs.score_id` empty on purpose: the worker marks a
-job's score `failed` when the job fails and `ctx.progress` moves the score's meter, and neither may touch a ready
-PDF book because its conversion failed or is running. `max_attempts` is 1: a retry would pay for Spark again.
+The job row carries the score in `payload.score_id` and, since 2026-11-02, in `jobs.score_id` too, so every member
+who can read the book sees the convert (RLS, the shelf's Realtime). `omr_convert` is a side kind
+(`librarian.SIDE_KINDS`): the worker never marks the book failed for it and `ctx.progress` never moves the book's meter,
+because a ready PDF book stays ready while its conversion runs or fails. `max_attempts` is 1: a retry would pay for
+Spark again.
 
 Steps:
   1. `omr_agent.page_kinds`: the PDF is rendered on the Mac (PyMuPDF) and the 003 geometry says which pages have
@@ -28,7 +30,15 @@ Steps:
      own PDF there), one book per run, no `-sheets`, renders the 300 dpi scans, and the results come back as one
      tar. An unreachable box fails the job with `result.reason` "The transcription engine is offline".
   3. `omr_book` reads the book into the bar map (global bar numbers, Audiveris's boxes, the grade gate at 0.6);
-     `omr_score.merge` puts the movements on those numbers (a mismatch fails here).
+     `omr_score.merge` puts the movements on those numbers.
+     A bad page never fails the book (CK 2026-11-02). The box tries a page Audiveris cannot read again alone, from its
+     300 dpi image and at another resolution, and leaves it out if it still fails (`omr_box.recover_page`); a
+     page-by-page read that does not merge is read again as one book, and if that fails too the pages that do not fit
+     (another staff count, bars that do not match their export) are taken out of the page-by-page read
+     (`omr_salvage`) until the rest merges. Each page left out keeps the bars the 004 page reading placed on it as
+     whole-bar rests, flagged with the reading's boxes, so every later bar keeps its number for playback and landmarks.
+     What was tried is in `result.page_log`; the pages left out in `result.pages_unreadable` and the source's
+     `meta.unreadable_pages` ({page, reason, detail, tried, bars}). Only a book with no readable page fails.
   4. `omr_agent.front_matter`, then `reread` and `verify` in parallel (6 calls in flight), within the job's allowance
      (`max_cost_usd`, default $1.00 a page, page-kind questions included); `omr_enrich` writes the answers, each
      undoable by bar: the tempo line at the head of bar 1 (the page's own heading is the file's title; the shelf
@@ -45,7 +55,9 @@ Steps:
      (a re-run replaces the file and updates the same row). The file is read back through the import's own
      `book_facts`: `measures` rows (upsert, never delete); `parts` rows as the import writes them when the book has
      none, else the book's own part names are kept (positionally, when the counts agree) and only their
-     `storage_path` moves to the digital file; the file's landmarks (`landmarks.from_musicxml`) replace the ones page
+     `storage_path` moves to the digital file. Before that, a cut-away full score's staff fragments (one Audiveris
+     logical part per OCR'd label and per silent-instrument layout) are merged on the header's instruments by
+     `parts_merge.merge_parts` (the `parts` rows below position 1000 as the roster) and the file written again; the file's landmarks (`landmarks.from_musicxml`) replace the ones page
      reading found in `scores.landmarks`; score facts only where the score has none: key, meter, bars, pages,
      and from the front-matter form composer, work (the opus) and tempo (the metronome Spark read from the heading;
      Audiveris's unchecked marks are still never taken). `status`, `progress` and `current_interpretation_id` are not
@@ -82,6 +94,8 @@ from .omr_agent import USD_PER_PAGE, Budget, PdfPages, drop_heading, front_matte
 from .omr_book import load_run
 from .omr_enrich import Undos, apply_front, apply_text, apply_verify, false_tuplets, fix_hairpins
 from .omr_verify import verify_edits
+from .parts_merge import merge_parts
+from .omr_salvage import drop_pages, odd_pages, pages_of_movement, reading_bars, unmapped_pages
 from .omr_score import BarsDoNotLineUp, flagged_bars, merge, movement_files
 
 ENGINE = "audiveris-5.11+spark-v2"
@@ -172,6 +186,8 @@ class SshBox:
         n = len(pages) if pages else max_pages
         if (par := parallel_pages() if parallel is None else parallel) > 1 and n > 1:
             args += f" --parallel {par}"
+        elif parallel == 0:
+            args += " --whole-only"        # the convert's own fallback: it has the page-by-page read already
         try:
             rc, out, err = await self.ssh(f"python3 -I {q(d + '/omr_box.py')} {q(d + '/book.pdf')} {q(d + '/out')} --max-pages {max_pages} {args}",
                                           timeout=180 + 90 * n)
@@ -214,6 +230,9 @@ def _box_error(rc: int, info: dict) -> str:
         return f"This PDF has {info.get('pages')} pages; Convert to Digital takes at most {info.get('max_pages')} for now"
     if rc == 2:
         return "The transcription engine could not open this PDF"
+    if rc == 3 and info.get("skipped"):
+        pages = "; ".join(f"page {r.get('pdf_page')}: {r.get('reason')}" for r in info["skipped"][:6])
+        return f"The transcription engine could not read any page of this PDF ({pages})"
     if rc in (3, 4):
         return "The transcription engine could not read this PDF"
     return f"The transcription engine failed ({info.get('error') or rc})"
@@ -362,39 +381,114 @@ async def _convert(job: Job, ctx: JobContext, box: Any, client: AsyncAnthropic |
         ctx.storage_upload(cover_key, book_pages.png(cover["pdf_page"]), "image/png")
 
     await ctx.progress(0.05, "Sending the PDF to the transcription engine")
+    # A page that will not transcribe is skipped, never the book (CK 2026-11-02). What the box and the merge tried for
+    # each page goes in `result.page_log`; the pages left out in `unreadable` (PDF page -> {page, reason, tried}), their
+    # bars kept as rests counted from the page reading (`reading`), so later bars keep their numbers.
+    reading = await asyncio.to_thread(reading_bars, ctx.db, score_id, src)
+    unreadable: dict[int, dict] = {}
+    page_log: list[str] = ctx.result.setdefault("page_log", [])
+
+    def from_box(run_info: dict) -> None:
+        for r in run_info.get("recovered") or []:
+            tried = r.get("tried") or []
+            page_log.append(f"Page {r['pdf_page']}: Audiveris failed ({tried[0].get('why') if tried else '?'}); read on the retry "
+                            f"({tried[-1]['step'] if tried else '?'})")
+        for r in run_info.get("skipped") or []:
+            steps = [t["step"] for t in r.get("tried") or []]
+            unreadable[r["pdf_page"]] = {"page": r["pdf_page"], "reason": "the transcription engine could not read this page",
+                                         "detail": r["reason"], "tried": steps}
+            page_log.append(f"Page {r['pdf_page']}: Audiveris could not read it ({r['reason']}); tried " + ", ".join(steps) + "; left out")
+
+    def gaps() -> dict[int, list]:
+        return {pg: reading.get(pg) or [] for pg in unreadable}
+
+    async def assemble(run: Path) -> tuple[dict, Any, dict]:
+        doc = await asyncio.to_thread(load_run, run, gaps=gaps())
+        if not doc["measures"]:
+            raise BarsDoNotLineUp("no bars")
+        new = [pg for pg in doc["unreadable"] if pg not in unreadable]
+        if new:                                          # Audiveris kept the page but found nothing on it to read
+            for pg in new:
+                unreadable[pg] = {"page": pg, "reason": "the transcription engine found no music it could read on this page",
+                                  "detail": "no sheet or no bars in the engine's book", "tried": ["audiveris"]}
+                page_log.append(f"Page {pg}: Audiveris found no bars it could read; left out")
+            doc = await asyncio.to_thread(load_run, run, gaps=gaps())
+        sc, filled = await asyncio.to_thread(merge, doc, movement_files(run))
+        return doc, sc, filled
+
+    async def salvage(run: Path, run_info: dict, why: str) -> tuple[dict, Any, dict]:
+        """A page-by-page read that does not merge: the pages that do not fit are left out until the rest does."""
+        def drop(bad: dict[int, str]) -> None:
+            for sheet, reason in bad.items():
+                pg = run_info["pdf_pages"][sheet - 1]
+                plain, _, detail = reason.partition(" (")
+                unreadable[pg] = {"page": pg, "reason": plain, "detail": detail.rstrip(")") or None,
+                                  "tried": ["audiveris page by page", "audiveris on the whole book"]}
+                page_log.append(f"Page {pg}: {reason}; left out so the rest of the book lines up")
+            drop_pages(run, set(bad))
+        drop(await asyncio.to_thread(odd_pages, run))
+        for _ in range(len(music) + 1):
+            try:
+                return await assemble(run)
+            except BarsDoNotLineUp as e:
+                bad = pages_of_movement(run, e.movement)
+                if not bad and str(e) != "no bars":
+                    bad = unmapped_pages(run, await asyncio.to_thread(load_run, run, gaps=gaps()))
+                if not bad:
+                    raise
+                drop({sheet: f"the transcription engine's bars on this page do not line up with the rest of the book ({e})" for sheet in bad})
+        raise BarsDoNotLineUp(why)
+
+    def none_read(e: Exception) -> EngineFailed:
+        pages = "; ".join(f"page {r['page']}: {r['reason']}" for r in sorted(unreadable.values(), key=lambda r: r["page"]))
+        return EngineFailed(f"No page of this PDF could be transcribed ({pages or e})")
+
     with tempfile.TemporaryDirectory() as tmp:
-        run = Path(tmp)
+        run = Path(tmp) / "run"
+        run.mkdir()
         await ctx.progress(0.08, f"Reading {len(music)} page{'s' if len(music) != 1 else ''} of music")
         try:
             book_run = await (box.transcribe(job.id, pdf, music, run, uploaded=uploaded) if uploaded is not None
                               else box.transcribe(job.id, pdf, music, run))
         except (EngineOffline, EngineFailed) as e:
             await _fail(ctx, e)
-        doc = await asyncio.to_thread(load_run, run)
+        from_box(book_run)
+        if unreadable:
+            await ctx.progress(0.5, f"{len(unreadable)} page{'s' if len(unreadable) != 1 else ''} could not be read; converting the rest")
         try:
-            if not doc["measures"]:
-                raise BarsDoNotLineUp("no bars")
-            sc, filled = await asyncio.to_thread(merge, doc, movement_files(run))
+            doc, sc, filled = await assemble(run)
         except BarsDoNotLineUp as e:
             if not book_run.get("parallel"):
-                await _fail(ctx, EngineFailed("The transcription engine found no bars in this PDF" if not doc["measures"] else
+                await _fail(ctx, EngineFailed("The transcription engine found no bars in this PDF" if str(e) == "no bars" else
                                               f"The transcription's bars do not line up with its pages ({e})"))
             # The pages read one by one do not stitch (a page with fewer staves, a page Audiveris gave up on): the book
-            # again in one run, the way it was read before the speed pass.
+            # again in one run, the way it was read before the speed pass. If that fails too, the page-by-page read
+            # comes back and the pages that do not fit are left out.
             ctx.result["parallel_fallback"] = str(e)[:200]
-            shutil.rmtree(run)
+            page_log.append(f"The pages read one by one do not line up ({str(e)[:160]}); the book read again as one")
+            stitched, saved = Path(tmp) / "stitched", dict(unreadable)
+            run.rename(stitched)
             run.mkdir()
             try:
-                book_run = await box.transcribe(f"{job.id}-whole", pdf, music, run, parallel=0)
-            except (EngineOffline, EngineFailed) as e2:
+                whole = await box.transcribe(f"{job.id}-whole", pdf, music, run, parallel=0)
+                unreadable.clear()
+                doc, sc, filled = await assemble(run)
+                book_run = whole
+            except EngineOffline as e2:
                 await _fail(ctx, e2)
-            doc = await asyncio.to_thread(load_run, run)
-            if not doc["measures"]:
-                await _fail(ctx, EngineFailed("The transcription engine found no bars in this PDF"))
-            try:
-                sc, filled = await asyncio.to_thread(merge, doc, movement_files(run))
-            except BarsDoNotLineUp as e2:
-                await _fail(ctx, EngineFailed(f"The transcription's bars do not line up with its pages ({e2})"))
+            except (EngineFailed, BarsDoNotLineUp) as e2:
+                page_log.append(f"The book read as one failed too ({str(e2)[:160]}); the pages that do not fit are left out")
+                unreadable.clear()
+                unreadable.update(saved)
+                shutil.rmtree(run)
+                stitched.rename(run)
+                await ctx.progress(0.5, "Leaving out the pages that do not line up")
+                try:
+                    doc, sc, filled = await salvage(run, book_run, str(e))
+                except BarsDoNotLineUp as e3:
+                    await _fail(ctx, none_read(e3))
+        if unreadable:
+            await ctx.progress(0.55, "Left out: " + ", ".join(f"page {pg}" for pg in sorted(unreadable)))
         page = PageLayout.read(movement_files(run)[0])
         geometry_log = await asyncio.to_thread(lambda: fix_hairpins(sc, doc) + false_tuplets(sc))   # Audiveris's own geometry, no model
 
@@ -424,7 +518,9 @@ async def _convert(job: Job, ctx: JobContext, box: Any, client: AsyncAnthropic |
         log = geometry_log + log + text_log + verify_log
         for n, whys in filled.items():
             extra.setdefault(n, []).extend(whys)
-        existing = [r["name"] for r in (ctx.db.table("parts").select("name,position").eq("score_id", score_id).order("position").execute().data or [])]
+        rows = ctx.db.table("parts").select("name,position").eq("score_id", score_id).order("position").execute().data or []
+        existing = [r["name"] for r in rows]
+        roster = [r["name"] for r in rows if (r.get("position") or 0) < 1000]     # the header's instruments, never a cut's row
         groups, kept_names = name_parts(sc, existing)
         data = await asyncio.to_thread(write_musicxml, sc, page, form.get("opus"))
 
@@ -442,6 +538,14 @@ async def _convert(job: Job, ctx: JobContext, box: Any, client: AsyncAnthropic |
             data = await asyncio.to_thread(write_musicxml, sc, page, form.get("opus"))
         for im in scans.values():
             im.close()
+    # A cut-away full score: the engine's staff fragments back on the book's instruments (`parts_merge`; PC3 pp. 1-4
+    # came back as 60 parts for 12), then the file again. The flags are read off the merged staves, so "staff N" in a
+    # reason names a real part. A file the roster already fits is left as it is.
+    sc, merged = await asyncio.to_thread(merge_parts, sc, roster, [s["numbers"] for s in doc["systems"]])
+    if merged["changed"]:
+        ctx.result["parts_merged"] = {k: merged[k] for k in ("before", "after", "unassigned", "dropped", "shared")}
+        groups, kept_names = name_parts(sc, roster)
+        data = await asyncio.to_thread(write_musicxml, sc, page, form.get("opus"))
     flags = await asyncio.to_thread(flagged_bars, sc, doc, extra)
     path = digital_path(score_id)
     ctx.storage_upload(path, data, CONTENT_TYPE)
@@ -456,8 +560,16 @@ async def _convert(job: Job, ctx: JobContext, box: Any, client: AsyncAnthropic |
              "systems_answered": counts["systems_answered"], "systems": counts["systems"],
              "verified": {"systems": checked["asked"], "reverted_bars": sorted(checked["reverted"]), "missing_bars": sorted(checked["missing"]),
                           "skipped": checked["skipped"]}}
+    for ph in doc.get("placeholders") or []:
+        if ph["pdf_page"] in unreadable:
+            unreadable[ph["pdf_page"]].setdefault("bars", []).append(ph["number"])
+    for pg, r in unreadable.items():
+        r.setdefault("bars", [])
+        if not r["bars"]:
+            page_log.append(f"Page {pg}: the page reading placed no bars on it, so the bars after it are numbered on from the page before")
+    unread = sorted(unreadable.values(), key=lambda r: r["page"])
     meta = {"transcribed_from": src["id"], "engine": ENGINE,
-            "flags": {"bars_doubtful": len(flagged), "pages_unreadable": len(doc["unreadable"])},
+            "flags": {"bars_doubtful": len(flagged), "pages_unreadable": len(unread)}, "unreadable_pages": unread,
             "flagged_bars": flags, "pages": book_run["pdf_pages"], "parts": names,
             "page_kinds": [{k: v for k, v in r.items() if k != "staves"} | {"staves": r["staves"]} for r in kinds],
             "cover": cover_key, "front_matter": form | {"read": form_ok}, "items": items, "cost": cost}
@@ -494,13 +606,15 @@ async def _convert(job: Job, ctx: JobContext, box: Any, client: AsyncAnthropic |
     # back already; without pages the reader engraves on the device.
     engraving = await engrave_step(ctx, score_id, row["id"], box=engraver, progress=0.92)
 
-    ctx.result["note"] = f"Digital: {len(f['numbers'])} bars, {len(flagged)} to check" + ("" if engraving.get("ok") else f". {engraving.get('reason')}")
+    ctx.result["note"] = (f"Digital: {len(f['numbers'])} bars, {len(flagged)} to check"
+                          + (f"; page{'s' if len(unread) != 1 else ''} {', '.join(str(r['page']) for r in unread)} could not be transcribed" if unread else "")
+                          + ("" if engraving.get("ok") else f". {engraving.get('reason')}"))
     return {
         "source_id": row["id"], "instruments": names, "bars": len(f["numbers"]), "flagged_bars": flagged, "engraving": engraving,
         "playback": played,
         "seconds": round(time.time() - t0, 1), "cost_usd": cost["total_usd"], "cost_per_page": cost["per_page"],
         "pages": book_run["pdf_pages"], "page_kinds": [(k["pdf_page"], k["kind"]) for k in kinds], "cover": cover_key,
-        "pages_unreadable": doc["unreadable"], "spark_calls": budget.calls, "spark_skipped": budget.skipped,
+        "pages_unreadable": unread, "page_log": page_log, "spark_calls": budget.calls, "spark_skipped": budget.skipped,
         "front_matter": form | {"read": form_ok}, "items": items,
         "edits": {k: sum(1 for e in log if e["layer"] == k) for k in ("hairpin", "tuplet", "front", "words", "dynamic", "dup", "A", "flag")},
         "verify": {k: v for k, v in checked.items() if k != "log"},

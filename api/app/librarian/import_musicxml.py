@@ -1,7 +1,8 @@
 """Path A: a MusicXML file becomes a ready score. No model call; music21 does the reading.
 
 Writes interpretation v(n+1) with engine 'musicxml', the parts (names disambiguated: two "Violin" parts
-become "Violin I" and "Violin II"; "Violoncello" becomes "Cello"), one stable measure row per measure
+become "Violin I" and "Violin II"; "Violoncello" becomes "Cello"; each with its canonical English instrument name in
+`parts.canonical`, `instruments.py`, the name a seat matches on), one stable measure row per measure
 number, and the score's facts (key and meter in the canonical forms of `signature.py`, "F# minor" and "4/4"; bars,
 tempo, duration, pages estimate). Parts are named by `part_groups`, which `part_split` uses too. Difficulty is a rough
 density heuristic until the `brief` job (Spark) replaces it. `book_facts`, `write_parts` and `write_measures` are
@@ -22,6 +23,7 @@ from music21 import converter, key as m21key, meter as m21meter, stream, tempo a
 from . import Job, JobContext, handler
 from . import landmarks, playback
 from .engrave import engrave_step
+from .instruments import store_part_canonicals
 from .musicxml_fix import unzip_mxl
 from .signature import canonical_key, canonical_meter
 
@@ -112,10 +114,13 @@ def book_facts(s) -> dict[str, Any]:
 
 
 def write_parts(db, score_id: str, groups: list[tuple[str, list]], path: str) -> None:
-    """One `parts` row per app part (upsert on score and name) with its difficulty and the file that prints it."""
+    """One `parts` row per app part (upsert on score and name) with its difficulty and the file that prints it, and
+    its canonical instrument name (`instruments.canonical_instrument`: "Violino II" is "Violin II"), the name a seat is
+    matched on (010, CK 2026-11-02); the row's name stays as the file prints it."""
     rows = [{"score_id": score_id, "name": name, "position": i, "difficulty": difficulty_of(staves), "storage_path": path}
             for i, (name, staves) in enumerate(groups)]
     db.table("parts").upsert(rows, on_conflict="score_id,name").execute()
+    store_part_canonicals(db, score_id)
 
 
 def write_measures(db, score_id: str, numbers: list[int]) -> None:

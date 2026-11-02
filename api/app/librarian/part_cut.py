@@ -42,19 +42,20 @@ import json
 import re
 import time
 from decimal import Decimal
-from typing import Any
+from typing import Any, NoReturn
 
 from anthropic import AsyncAnthropic   # the SDK client for Meta's Messages-compatible API (llm._client)
 from PIL import Image
 
 from ..agent import AgentState, Refusal, Stop, ToolBox, run_agent
 from ..llm import _client as default_client
-from . import Job, JobContext, handler
+from . import Job, JobContext, JobFailure, handler
 from . import header as hdr
 from . import label_memory
 from .ask import ASK_SYSTEM, NoJSON, ask_model  # noqa: F401  (re-exported: the benchmark imports ASK_SYSTEM from here)
 from .cut import cut_system, overlay_png, page_geometry, to_png, verify
 from .header import same_instrument  # noqa: F401  (re-exported: the matcher lives with the header)
+from .instruments import store_part_canonicals
 from .label_memory import LabelMemory, same_part
 from .process_pages import CONCURRENCY as PREREAD_CONCURRENCY, page_paths
 
@@ -1168,19 +1169,30 @@ async def part_cut(job: Job, ctx: JobContext, *, client: AsyncAnthropic | None =
         # In a musician's words (011); the refusal that led here stays in the payload's `feedback` for the "why".
         question = f"Which staves are the {label}'s on page {n}, line {k}?"
         st.question, st.question_payload = question, payload     # the typed question is what the resume reads
+        ended(ctx, sc, "question", question)
         ctx.result["agent"] = st.to_dict()
         ctx.needs_review(question, payload, interpretation_id=interp["id"])
         return ctx.result
     if st.status == "paused":
+        # Parked at its turn or cost allowance with nothing more to ask: the worker marks it paused and the admin may
+        # continue it (`POST /jobs/{id}/resume`, 006); it is a parked run with its reason, not a finished split.
+        cut = sum(1 for v in sc["commits"].values() if v.get("key"))
+        ended(ctx, sc, "paused", f"{st.log[-1] if st.log else 'Paused'}; {cut} system{'s' if cut != 1 else ''} cut so far, nothing saved as a part yet")
         ctx.result["agent"] = st.to_dict()
         ctx.result["paused"] = st.log[-1] if st.log else "paused"
         return ctx.result
     if st.status == "failed":
-        raise RuntimeError(st.result.get("error") or "agent failed")
+        why = st.result.get("error") or "the agent stopped"
+        fail_split(ctx, interp, sc, st, f"The split of the {label} stopped: {why}. Nothing was saved; try the split again.")
 
     # done: the derived source and the stable placements
     commits = sorted(sc["commits"].items(), key=lambda kv: tuple(int(x) for x in kv[0].split(":")))
     keys = [v["key"] for _, v in commits if v["key"]]
+    if not keys:
+        # Never a finished split with no part (CK 2026-11-02): every line was absent, so there is nothing to read.
+        where = f"page {pages[0]}" if len(pages) == 1 else f"pages {pages[0]}-{pages[-1]}" if pages == list(range(pages[0], pages[-1] + 1)) else f"pages {', '.join(map(str, pages))}"
+        fail_split(ctx, interp, sc, st, f"Nothing was cut: no staves of the {label} were found on {where} ({len(commits)} line{'s' if len(commits) != 1 else ''} "
+                                        f"without them). Check the instrument as the score prints it, or choose other pages.")
     systems = [{"page": int(k.split(":")[0]), "system": int(k.split(":")[1]), "staves": v["staves"], "blocks": v.get("blocks") or [],
                 "key": v["key"], "bars": v.get("bars")} for k, v in commits]
     # Running bar numbers and tacet pages (010, CK 2026-10-31): the book's placements, which this run copied under its own
@@ -1210,9 +1222,30 @@ async def part_cut(job: Job, ctx: JobContext, *, client: AsyncAnthropic | None =
     names = [r.get("name") or "" for r in (ctx.db.table("parts").select("name").eq("score_id", score_id).execute().data or [])]
     if not any(n == label or (len(instruments) == 1 and same_instrument(n, label)) for n in names):   # "Pianoforte" is the book's "Piano"
         ctx.db.table("parts").insert({"score_id": score_id, "name": label, "position": 1000}).execute()
+    store_part_canonicals(ctx.db, score_id)          # the new row's canonical name, for the seat that reads it (010)
+    ended(ctx, sc, "cut", f"{len(keys)} system{'s' if len(keys) != 1 else ''} cut")
+    ctx.result["agent"] = st.to_dict()
     await ctx.progress(1.0, f"{label}: {len(keys)} systems cut")
     return {**ctx.result, "interpretation_id": interp["id"], "source_id": derived["id"], "systems_cut": len(keys), "absent": len(commits) - len(keys),
             "questions": sc["questions"], "answered_by_memory": sc.get("memory_answers", 0), "cost_usd": cost, "seconds": round(time.time() - t0, 1)}
+
+
+def ended(ctx: JobContext, sc: dict, outcome: str, reason: str) -> None:
+    """How the run ended, on the job's row (`result.outcome`, `result.outcome_reason`) and as the last line of its log:
+    `cut`, `question` (parked on the admin), `paused` (parked at its allowance) or `failed` (`fail_split`). Every
+    return of `part_cut` passes here first; a run never ends `done` with nothing cut (CK 2026-11-02)."""
+    ctx.result.update(outcome=outcome, outcome_reason=reason)
+    sc["log"].append(f"Ended: {outcome}: {reason}")
+
+
+def fail_split(ctx: JobContext, interp: dict, sc: dict, st: AgentState, reason: str) -> NoReturn:
+    """End the split as failed with `reason`, in the musician's words: the job fails with it (no retry, the book as it
+    was: `JobFailure`), the run's interpretation is marked failed with the reason last in its log."""
+    ended(ctx, sc, "failed", reason)
+    ctx.result["agent"] = st.to_dict()
+    summary = {**(interp.get("summary") or {}), "status": "failed", "log": [*(sc["log"][:-1] + st.log)[-39:], sc["log"][-1]]}
+    ctx.db.table("interpretations").update({"status": "failed", "finished_at": ctx.now(), "summary": summary}).eq("id", interp["id"]).execute()
+    raise JobFailure(reason)
 
 
 def write_interpretation(ctx: JobContext, score_id: str, src: dict, intake_id: str | None, instruments: list[str], part_slug: str, sc: dict, st: AgentState,

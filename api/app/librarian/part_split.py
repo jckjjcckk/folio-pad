@@ -19,7 +19,7 @@ from typing import Any
 from music21 import converter, layout, stream
 from music21.musicxml.m21ToXml import GeneralObjectExporter
 
-from . import Job, JobContext, handler
+from . import Job, JobContext, JobFailure, handler
 from .import_musicxml import part_groups
 
 CONTENT_TYPE = "application/vnd.recordare.musicxml+xml"
@@ -90,7 +90,12 @@ async def part_split(job: Job, ctx: JobContext) -> dict:
         raise RuntimeError("the score has no MusicXML source to split")
     # no ctx.progress: it would move the ready book's own progress bar for a split that takes a second
     s = converter.parse(ctx.storage_download(src["storage_paths"][0]), format="musicxml")
-    data, chosen = split_score(s, instruments)
+    try:
+        data, chosen = split_score(s, instruments)
+    except UnknownInstrument as e:
+        raise JobFailure(f"Not in this book: {', '.join(e.unknown)}. Its parts are {', '.join(e.available)}.") from e
+    if not chosen:            # never a finished split with no part (CK 2026-11-02)
+        raise JobFailure(f"Nothing was split: none of {', '.join(instruments)} is a part of this book.")
     part_slug = "+".join(slug(n) for n in chosen)
     key = f"{score_id}/parts/{part_slug}.musicxml"
     ctx.storage_upload(key, data, CONTENT_TYPE)
@@ -103,4 +108,5 @@ async def part_split(job: Job, ctx: JobContext) -> dict:
     else:
         derived = ctx.db.table("sources").insert(row).execute().data[0]
     ctx.result["note"] = f"{' + '.join(chosen)}: split"
+    ctx.result.update(outcome="cut", outcome_reason=f"{len(chosen)} part{'s' if len(chosen) != 1 else ''} split")
     return {"source_id": derived["id"], "instruments": chosen, "storage_path": key, "bytes": len(data), "seconds": round(time.time() - t0, 2)}

@@ -27,6 +27,8 @@ export interface Member {
   name: string
   role: Role
   instrument: string
+  /** The seat's canonical instrument name (`members.part_canonical`, 010): what it is matched to a part on (`seat.ts`). */
+  instrumentCanonical?: string
   partId?: string
   online: boolean
   /** Bar the member is currently looking at, when online in doc mode. */
@@ -44,6 +46,8 @@ export interface Part {
   id: string
   scoreId: string
   name: string
+  /** The canonical instrument name ("Violin II" for a printed "Violino II"; `parts.canonical`, 010), for the seat match. */
+  canonical?: string
   /** Fixture file under /fixtures that renders this part (whole score for now). */
   fixture: string
   pages: number
@@ -108,6 +112,9 @@ export interface Score {
   flaggedBars?: FlaggedBar[]
   /** Pages the reader found no staves on, with its reason (the latest interpretation's summary). */
   unreadable?: { page: number; reason: string }[]
+  /** Pages Convert to Digital could not transcribe and left out (005, 2026-11-02): the PDF page, why, what was tried,
+   *  and the bar numbers that stand in for it as rests. */
+  digitalUnreadable?: { page: number; reason: string; tried: string[]; bars: number[] }[]
   /** Questions on this book already answered (jobs carrying `resume_from`). */
   answered?: number
   /** Play the parts (014): the book's MIDI (one track per part) and bar map in the bucket (`scores.playback`). Only

@@ -170,3 +170,29 @@ async def test_success_resets_the_refusal_streak():
     st = await run_agent(system=SYSTEM, tools=b, user_text="go", client=client, max_refusals=3)
     assert st.status == "done" and st.result["pages"] == 2
     assert last_results(t.calls[4])[0]["refusals"] == 1  # the streak restarted after the good commit on page 1
+
+
+@pytest.mark.asyncio
+async def test_a_paused_run_continues_with_a_fresh_allowance():
+    """A run paused at its turn limit is not a failure (2026-11-02): continued with its state, it gets max_turns more
+    turns from where it stopped, its history goes on unchanged, and it can finish."""
+    client, t = fake_client([tool("read_page", {"page": n}) for n in range(1, 4)])
+    st = await run_agent(system=SYSTEM, tools=box(), user_text="go", client=client, max_turns=3)
+    assert st.status == "paused" and st.pause_reason == "turn_limit" and st.turn == 3
+    saved = AgentState.from_dict(json.loads(json.dumps(st.to_dict())))          # through the job row, as a resume reads it
+    client2, t2 = fake_client([tool("read_page", {"page": 4}), tool("commit_parts", {"page": 4, "parts": ["a", "b"]})])
+    st2 = await run_agent(system=SYSTEM, tools=box(), state=saved, client=client2, max_turns=3)
+    assert st2.status == "done" and st2.turn == 5 and st2.continued == 1 and st2.pause_reason is None
+    assert st2.allowance_from == {"turn": 3, "cost_usd": st.cost_usd}
+    assert any(line.startswith("Continued after a pause (turn_limit) at turn 3") for line in st2.log)
+    assert t2.calls[0]["messages"][-1]["content"][-1]["type"] == "tool_result"     # the history as it was, no new prompt
+    assert len(t2.calls[0]["messages"]) == len(st.messages)
+
+
+@pytest.mark.asyncio
+async def test_a_continued_run_pauses_again_after_its_new_allowance():
+    client, _ = fake_client([tool("read_page", {"page": n}) for n in range(1, 9)])
+    st = await run_agent(system=SYSTEM, tools=box(), user_text="go", client=client, model="muse-spark-1.3", max_cost_usd=0.0015)
+    assert st.status == "paused" and st.pause_reason == "cost_limit"
+    st = await run_agent(system=SYSTEM, tools=box(), state=st, client=client, model="muse-spark-1.3", max_cost_usd=0.0015, max_turns=10)
+    assert st.status == "paused" and st.pause_reason == "cost_limit" and st.turn == 4 and st.continued == 1

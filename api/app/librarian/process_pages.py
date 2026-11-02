@@ -46,6 +46,7 @@ from anthropic import AsyncAnthropic   # the SDK client for Meta's Messages-comp
 from ..llm import _client as default_client
 from . import Job, JobContext, ScoreFailure, handler
 from . import label_memory, landmarks
+from .instruments import store_part_canonicals
 from .label_memory import LabelMemory
 from .cut import page_measures
 from .labels import PageLabels, canon_part, doubtful_names, label_page, match_part, read_header
@@ -603,6 +604,7 @@ async def process_pages(job: Job, ctx: JobContext, *, client: AsyncAnthropic | N
     if part_names:
         ctx.db.table("parts").upsert([{"score_id": score_id, "name": name, "position": i, "difficulty": difficulty.get(name) or 3}
                                       for i, name in enumerate(part_names)], on_conflict="score_id,name").execute()
+        store_part_canonicals(ctx.db, score_id)   # the one English name a seat matches on ("Violino II" -> "Violin II"; 010)
 
     # The book's label memory (008, 006 agentic memory rule): the header's printed names and abbreviations as the parts
     # this reading named ("Klavier" and "Klav." are the "Piano"), so a later part cut starts from what was read here.

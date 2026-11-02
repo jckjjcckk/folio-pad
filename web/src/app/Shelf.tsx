@@ -258,7 +258,7 @@ function BookCard({ score: s, state, share, selected, onOpen, owner }: {
   const shared = !owner && share.sharedWith.length > 0
   // A split or conversion at work, in a line: what, then where it stands or that it waits.
   const job = state.split ?? state.convert
-  const jobLine = job ? `${job.kind === 'part_cut' ? 'Splitting' : 'Converting'} · ${job.state === 'needs_review' ? 'needs you' : job.state === 'queued' ? (job.resuming ? 'resuming' : 'queued') : job.detail.charAt(0).toLowerCase() + job.detail.slice(1)}` : null
+  const jobLine = job ? `${job.kind === 'part_cut' ? 'Splitting' : 'Converting'} · ${job.state === 'needs_review' ? 'needs you' : job.state === 'paused' ? 'paused' : job.state === 'queued' ? (job.resuming ? 'resuming' : 'queued') : job.detail.charAt(0).toLowerCase() + job.detail.slice(1)}` : null
   // No job line to say it: the foot does, so the words are never missing and never said twice.
   const word = jobLine ? null : state.asking ? 'Needs your confirmation' : state.busy ? 'Digitalising' : null
   const said = [

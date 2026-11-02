@@ -5,6 +5,7 @@ has no such account, and test2@muse.test was created with admin1 and test1 at 09
     cd api && PYTHONPATH=. uv run python -m experiments.e2e_night.setup_group
 """
 from app.db import db
+from app.librarian.instruments import store_seat_canonicals
 
 from .common import GROUP
 
@@ -23,6 +24,7 @@ else:
 for email, role, part, name in SEATS:
     d.table("members").upsert({"ensemble_id": eid, "user_id": ids[email], "role": role, "part": part, "display_name": name},
                               on_conflict="ensemble_id,user_id").execute()
+store_seat_canonicals(d, eid)   # the seats' canonical instrument names (010); skipped before migration 20261102130000
 for m in d.table("members").select("role,part,display_name,user_id").eq("ensemble_id", eid).execute().data:
     print(f"  {m['role']:6} {str(m['part']):9} {m['display_name']}")
 print(GROUP, "ready")

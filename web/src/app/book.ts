@@ -12,8 +12,8 @@ import type { RopeState } from './Rope'
 export interface LiveJob {
   id: string
   kind: 'part_cut' | 'omr_convert'
-  /** queued (or resuming with an answer), working, or parked on a question. */
-  state: 'queued' | 'running' | 'needs_review'
+  /** queued (or resuming with an answer), working, parked on a question, or paused at its allowance (a split only). */
+  state: 'queued' | 'running' | 'needs_review' | 'paused'
   /** Queued with the admin's answer: the question is answered and the run picks up from it. */
   resuming: boolean
   /** "Splitting out the Pianoforte", "Converting to Digital". */
@@ -76,13 +76,17 @@ export function bookState(s: Score, bookJobs: BookJob[], partJobs: PartJob[]): B
 const live = (j: { status: string }) => j.status === 'queued' || j.status === 'running' || j.status === 'needs_review'
 const plural = (n: number, w: string) => `${n} ${w}${n === 1 ? '' : 's'}`
 
-/** The newest split still working or waiting on a question. */
+/** The newest split still working or waiting on a question; else the newest split, when it paused at its allowance
+ *  (2026-11-02: shown paused with Continue, never as a failure). */
 function liveSplit(jobs: PartJob[]): LiveJob | null {
-  const j = jobs.find(live)
+  const j = jobs.find(live) ?? (jobs[0]?.status === 'paused' ? jobs[0] : undefined)
   if (!j) return null
   const state = j.status as LiveJob['state']
+  const cut = j.systemsCut ?? j.phase?.systemsCut ?? 0
   const detail = state === 'needs_review'
     ? (j.question?.split('?')[0] ?? 'A question about the staves') + '?'
+    : state === 'paused'
+      ? `${j.pause?.message ?? 'Paused'}${cut ? ` · ${plural(cut, 'system')} cut` : ''}`
     : state === 'queued'
       ? (j.resumed ? 'Picking up with your answer' : 'Starting')
       : j.phase
@@ -107,6 +111,7 @@ function liveConvert(j: BookJob | undefined): LiveJob | null {
 /** What a live job is doing, in a word, for whoever reads it. */
 export function liveWord(j: LiveJob, canAnswer: boolean): string {
   if (j.state === 'needs_review') return canAnswer ? 'Waiting for you' : 'Waiting for the admin'
+  if (j.state === 'paused') return canAnswer ? 'Continue' : 'Paused'
   if (j.state === 'queued') return j.resuming ? 'Resuming' : 'Queued'
   return 'Working'
 }
@@ -117,7 +122,7 @@ export const dotOf = (b: BookState): 'ask' | 'fail' | null => (b.asking ? 'ask' 
 /** What the rope round the book's card says (Rope.tsx): a person is needed before anything else, else an agent at work. */
 export function ropeOf(b: BookState): RopeState | null {
   const job = b.split ?? b.convert
-  return b.asking || job?.state === 'needs_review' ? 'asking' : b.failed ? 'failed' : b.busy || job ? 'working' : null
+  return b.asking || job?.state === 'needs_review' || job?.state === 'paused' ? 'asking' : b.failed ? 'failed' : b.busy || job ? 'working' : null
 }
 
 /** How a book stands with groups (`score_shares`). A personal book can be shared by reference with the owner's groups:

@@ -1,6 +1,6 @@
 # 010 Distribution: parts to players, iPad reading view
 
-Status: prototype (the Read / Practise toggle is gone, 2026-10-30: the player opens from the Stand's "…" menu, 014; a digital book's full score reads from the pages MuseScore engraved on the box, in the book's chosen layout, 2026-10-28; a single part still renders on the device with OSMD; parts match players by seat name; distributing cut images or highlighted page bands is not built) | Meta model: none (the parts come from 002, 004 and 008).
+Status: prototype (the Read / Practise toggle is gone, 2026-10-30: the player opens from the Stand's "…" menu, 014; a digital book's full score reads from the pages MuseScore engraved on the box, in the book's chosen layout, 2026-10-28; a single part still renders on the device with OSMD; parts match players on one canonical instrument name, 2026-11-02; distributing cut images or highlighted page bands is not built) | Meta model: none (the parts come from 002, 004 and 008).
 
 ## Purpose
 
@@ -21,8 +21,8 @@ window.
   changed in the same render; it tracks the loaded instance with a ref. Cleanup sets
   `osmd.AutoResizeEnabled = false` before `clear()`.
 - Engrave times: the full Op. 18/1 score 12 to 16 s, Violin I about 10 s.
-- Parts: `parts` rows per score (name, position, difficulty, `storage_path`); seats match parts by name
-  (`members.part`); the information box shows parts with holder and one-word difficulty; violin2 sees the
+- Parts: `parts` rows per score (name, position, difficulty, `storage_path`, `canonical`); seats match parts on the
+  canonical instrument name (`members.part_canonical`; see "Seats and parts" below); the information box shows parts with holder and one-word difficulty; violin2 sees the
   Vn II badge.
 - Display setting: Instrument or Bound token set, theme auto/light/dark (`DESIGN.md`).
 - Information box (2026-10-28 night, CK: "it still looks like a website"): a book's identity leads it. An
@@ -155,6 +155,44 @@ window.
   panel with the Convert action; the digital route says the same and links the PDF pages.
 - Seen on the local stack in the in-app browser at 834 × 1194 (screenshots in the session scratchpad,
   `fixes/shots/`); not seen on an iPad.
+
+## Seats and parts (2026-11-02, CK, E2E night item 1)
+
+A seat said "Violin II" or "Cello", a PDF book's part "Violino II" or "Violoncello and Double Bass", and both the stand
+(`parts.find(p => p.name === persona.instrument)`) and the policy on marks (`audience_part = my_part(...)`) matched
+exactly: on PC3 and PC5 the cellist and the first violin saw no part and none of the marks meant for them (018).
+
+- **One normaliser** (`api/app/librarian/instruments.py`, `canonical_instrument`), built on the header's synonym table
+  (`header.SYNONYMS`) with a few more names. Rules: lower case with accents folded ("Flöte", "Baß"); the longest
+  instrument phrase first ("Double Bass", "Bass Clarinet", "Cor anglais"); a key after "in" is skipped ("Horn in B
+  basso"); numbers in Roman, Arabic or ordinal words in English, German, Italian and French, before the name ("2nd
+  Violins", "2. Violine") or after it ("Violino II", "Vln. 2"); a bare count before the name is not a number ("2
+  Flauti"), nor "a 2" or "zu 4 Händen"; "Firsts"/"Seconds" alone are the violins; a lone choir letter is its voice;
+  the output is the English name with a Roman numeral ("Violin II", "Double Bass", "Piano"); a shared staff names every
+  player ("Flute I & Flute II", "Cello & Double Bass"); a name the tables do not know keeps its own words. 96 cases in
+  `api/tests/test_instruments.py`, including every part name on the hosted test books.
+- **Stored at import and cut, never computed on the device**: `parts.canonical` beside the printed `parts.name`
+  (`import_musicxml.write_parts`, so Convert to Digital too; `process_pages` for a PDF book; `part_cut` for the row a
+  split adds), `members.part_canonical` beside the seat as typed (`store_seat_canonicals`, called by the seat scripts
+  `scripts/seed_hosted.py` and `experiments/e2e_night/setup_group.py`; there is no seat UI). Both writers read the
+  table first and skip quietly on a database without the columns, so the import and the cut never fail for them.
+- **Match**: a seat reads a part when the canonical names are equal or the part is a shared staff naming the seat
+  ("Cello" reads "Cello & Double Bass"). The stand (`web/src/app/seat.ts` `seatPart`, used by `Stand.tsx`) tries the
+  printed name first, then the canonical name, then a shared staff; a player's strips open on the seat's own split.
+  The policy makes the same comparison (`seat_reads(my_seat(g), part_canonical_of(score, audience_part))` in
+  `can_see_annotation`, with the exact match kept). A row without its canonical name falls back to its own name, as
+  before. The printed label stays on the part; nothing about the match shows during practice.
+- **Migration** `supabase/migrations/20261102130000_canonical_instruments.sql` (columns, stale-name trigger,
+  `my_seat`, `part_canonical_of`, `seat_reads`, the new `can_see_annotation`): applied to the local stack, **not to
+  hosted**. After `db push`, run `cd api && uv run python scripts/backfill_canonical_instruments.py --apply` (dry run
+  without `--apply`; on hosted about 58 distinct printed part names change, the four seat names are already canonical).
+- **Checked** on the local stack, real chain minus the device (`api/experiments/e2e_night/seat_check.py --local`):
+  group "Seat check", seats "Violin II" (violin2) and "Violin I" (violin1), a group book imported from a MusicXML
+  printed "Violino I" / "Violino II" (`import_musicxml`, $0): parts stored as Violin I / Violin II; under RLS violin2's
+  stand opens "Violino II" and sees the mark for "Violino II", violin1's opens "Violino I" and does not; and in the
+  browser pane at :5174, signed in as violin2, the stand opened the book on "Violino II". On hosted the same script
+  stops at "no canonical columns" until the migration is pushed; the import and cut code on hosted's schema were
+  checked to skip the write without an error.
 
 ## Rules and decisions
 

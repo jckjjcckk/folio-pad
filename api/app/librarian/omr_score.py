@@ -22,11 +22,17 @@ from fractions import Fraction
 from pathlib import Path
 from typing import Any
 
-from music21 import converter, layout, meter, note, stream
+import copy
+
+from music21 import clef, converter, key, layout, meter, note, stream
 
 
 class BarsDoNotLineUp(RuntimeError):
-    pass
+    """The bar map and the export disagree. `movement`: the export file (1-based) that did not line up, when one did."""
+
+    def __init__(self, message: str, movement: int | None = None):
+        super().__init__(message)
+        self.movement = movement
 
 
 def movement_files(run: Path) -> list[Path]:
@@ -35,8 +41,13 @@ def movement_files(run: Path) -> list[Path]:
 
 
 def merge(doc: dict, files: list[Path]) -> tuple[stream.Score, dict[int, list[str]]]:
-    """The movements on the global bar numbers, and the bars a staff had to be filled in (number -> reasons)."""
+    """The movements on the global bar numbers, and the bars a staff had to be filled in (number -> reasons).
+
+    `doc["placeholders"]` ({number, pdf_page}, `omr_book.read_book`): the bars of a page the engine could not read, as
+    the page reading counted them; each becomes a whole-bar rest on every staff at its number, flagged, so the later
+    bars keep their numbers (2026-11-02)."""
     filled: dict[int, list[str]] = {}
+    ph = sorted(doc.get("placeholders") or [], key=lambda r: r["number"])
     groups: dict[int, list[dict]] = {}
     for m in doc["measures"]:
         groups.setdefault(m["movement"], []).append(m)
@@ -44,6 +55,7 @@ def merge(doc: dict, files: list[Path]) -> tuple[stream.Score, dict[int, list[st
         raise BarsDoNotLineUp(f"the page map has movements {sorted(groups)}, the engine exported {len(files)} files")
     out = stream.Score()
     parts: list[stream.Part] | None = None
+    at: list[int] = []                                 # per staff: the next placeholder bar to put in
     for k, path in enumerate(files, start=1):
         src_score = converter.parse(str(path))
         src = list(src_score.parts)
@@ -59,10 +71,15 @@ def merge(doc: dict, files: list[Path]) -> tuple[stream.Score, dict[int, list[st
                 if len(kept) >= 2:
                     out.insert(0, layout.StaffGroup(kept, name=g.name, symbol=g.symbol or "bracket", barTogether=g.barTogether))
         if len(src) != len(parts):
-            raise BarsDoNotLineUp(f"movement {k} has {len(src)} staves, movement 1 had {len(parts)}")
+            raise BarsDoNotLineUp(f"movement {k} has {len(src)} staves, movement 1 had {len(parts)}", movement=k)
         bars = groups[k]
+        if not at:
+            at = [0] * len(parts)
         for i, (p, s) in enumerate(zip(parts, src), start=1):
             for m, rec in zip(_line_up(list(s.getElementsByClass(stream.Measure)), bars, k), bars):
+                while at[i - 1] < len(ph) and ph[at[i - 1]]["number"] < rec["number"]:
+                    p.append(_placeholder(p, s, ph[at[i - 1]], filled))
+                    at[i - 1] += 1
                 if m is None:                      # the export left this staff's bar out: a whole-bar rest, flagged
                     m = _rest_bar(p, s)
                     filled.setdefault(rec["number"], []).append(f"staff {i}: bar missing from the export (a rest stands in)")
@@ -70,6 +87,10 @@ def merge(doc: dict, files: list[Path]) -> tuple[stream.Score, dict[int, list[st
                 p.append(m)
             for sp in s.spanners:
                 p.insert(0, sp)
+    for i, p in enumerate(parts or []):
+        while at and at[i] < len(ph):                  # the book's last pages could not be read
+            p.append(_placeholder(p, p, ph[at[i]], filled))
+            at[i] += 1
     for p in parts or []:
         out.insert(0, p)
     if parts and len(parts) == 2 and not out.getElementsByClass(layout.StaffGroup):
@@ -88,7 +109,28 @@ def _line_up(ms: list[stream.Measure], bars: list[dict], k: int) -> list[stream.
             and all(1 <= n <= len(bars) for n in nums)):
         by = dict(zip(nums, ms))
         return [by.get(rec["movement_bar"]) for rec in bars]
-    raise BarsDoNotLineUp(f"movement {k}: {len(ms)} measures in the export, {len(bars)} bars on the pages")
+    raise BarsDoNotLineUp(f"movement {k}: {len(ms)} measures in the export, {len(bars)} bars on the pages", movement=k)
+
+
+PLACEHOLDER_WHY = "page {page} could not be transcribed: a rest stands in for this bar (counted from the page reading)"
+
+
+def _placeholder(p: stream.Part, src: stream.Part, rec: dict, filled: dict[int, list[str]]) -> stream.Measure:
+    """A bar of an unreadable page: a whole-bar rest, numbered, flagged once. The staff's first bar takes the export's
+    clef, key and time, so a book whose first page could not be read still opens in the right clef."""
+    first = not p.getElementsByClass(stream.Measure)
+    m = _rest_bar(p, src)
+    if first:
+        m0 = src.getElementsByClass(stream.Measure).first()
+        for cls in (clef.Clef, key.KeySignature, meter.TimeSignature):
+            el = next(iter(m0.getElementsByClass(cls)), None) if m0 is not None else None
+            if el is not None:
+                m.insert(0, copy.deepcopy(el))
+    m.number = rec["number"]
+    why = PLACEHOLDER_WHY.format(page=rec["pdf_page"])
+    if why not in filled.setdefault(rec["number"], []):
+        filled[rec["number"]].append(why)
+    return m
 
 
 def _rest_bar(p: stream.Part, src: stream.Part) -> stream.Measure:
@@ -165,4 +207,7 @@ def flagged_bars(sc: stream.Score, doc: dict, extra: dict[int, list[str]]) -> li
         if whys:
             out.append({"number": m["number"], "page": pdf_page[m["page"]], "key": m["key"], "box": m["box"],
                         "reasons": list(dict.fromkeys(whys))})
-    return out
+    for ph in doc.get("placeholders") or []:             # an unreadable page's bars: the PDF page and the reading's box
+        whys = extra.get(ph["number"]) or [PLACEHOLDER_WHY.format(page=ph["pdf_page"])]
+        out.append({"number": ph["number"], "page": ph["pdf_page"], "key": None, "box": ph.get("box"), "reasons": list(dict.fromkeys(whys))})
+    return sorted(out, key=lambda b: b["number"])

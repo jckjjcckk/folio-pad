@@ -73,6 +73,11 @@ export type FreeAnswer = { answer: unknown }
 export const answerJob = (jobId: string, answer: ChooseStavesAnswer | FreeAnswer, token: string) =>
   request<JobRow>(`/jobs/${jobId}/answer`, token, answer)
 
+/** Continue a run that paused at its turn or cost allowance (`result.state === 'paused'`, 2026-11-02): `POST
+ *  /jobs/{id}/resume` queues the same job with `resume_from` and no answer, on the tier it started on; returns it. */
+export const resumeJob = (jobId: string, token: string) =>
+  request<JobRow>(`/jobs/${jobId}/resume`, token, {})
+
 /** Feature 005: Convert to Digital. `POST /scores/{id}/convert` queues an `omr_convert` job on a PDF book and returns
  *  its row; when it is done a `musicxml` source with `meta.transcribed_from` and the `parts` rows appear. */
 export const convertToDigital = (scoreId: string, token: string) =>

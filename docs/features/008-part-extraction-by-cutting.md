@@ -562,6 +562,30 @@ visibility on the book's own file) and export their own file as MusicXML.
 - **The part row**: a split adds a `parts` row only when the book has no part of that instrument, never with a strip
   image in `storage_path` (it made a scanned book look Digital, 010) and never moving a placed part.
 
+## A split never ends silent; parts carry a canonical name (2026-11-02)
+
+CK decided two of the E2E-night items (018, Open):
+
+- **How a split ends** (item 5). On the night a Goldberg split ended `paused` with nothing cut and no question, and the
+  iPad showed a finished split with no part. Now every return of `part_cut` passes `ended()`, which writes
+  `result.outcome` (`cut` | `question` | `paused` | `failed`) and `result.outcome_reason` on the job row and puts
+  `Ended: <outcome>: <reason>` last in the run's log. A run that finishes with no strip (every line absent, also after
+  the admin answered "absent") is not a success: `fail_split` marks its interpretation `failed` and raises
+  `JobFailure` ("Nothing was cut: no staves of the Piano were found on pages 1-2 (2 lines without them). Check the
+  instrument as the score prints it, or choose other pages."); no `part_images` source and no `parts` row are written.
+  An agent that stops (the loop's `failed`: prose instead of tools, truncated replies) fails the same way with its
+  reason, once, instead of being retried from scratch. A run stopped at its turn or cost allowance stays a parked
+  run with its reason (`outcome: paused`, "... N systems cut so far"), which the worker marks `result.state =
+  "paused"` and the admin may continue (`POST /jobs/{id}/resume`, 006, another agent's work the same day).
+  `JobFailure` (`app/librarian/__init__.py`) is a failure in the musician's words: the worker writes the sentence as
+  it is to `jobs.error` (the Parts sheet shows it), does not retry, and leaves the book as it was; `part_cut` and
+  `part_split` are side kinds (`SIDE_KINDS`), so even a crash in a split never marks the book failed. The Digital
+  split (`part_split`) fails the same way for a name not in the book. The local runner (`run.py`) ends a job as the
+  worker does. Tests: `api/tests/test_split_guard.py` (7), and the two all-absent tests in `test_part_cut.py` now
+  expect the failure.
+- **Canonical instrument names** (item 1): see 010, "Seats and parts". The cut stores `parts.canonical` for the part
+  row it adds (`store_part_canonicals`), so a seat finds the split's part.
+
 ## Open issues
 
 - Geometry on the Beethoven 9 choir pages: fixed 2026-10-28 night (recovery ported, the gutter `x0` fix,

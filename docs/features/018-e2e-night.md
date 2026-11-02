@@ -230,3 +230,85 @@ under the book its job worked on.
 | Sym 9 | 0.282 | |
 | Op. 18 | 0.008 | |
 | **Total** | **4.982** of the $12 cap (VT 0.004) | **4.004**, by mistake |
+
+## 2026-11-02 follow-ups
+
+Four of CK's decisions on the night's open items (progress 2026-11-02 ~03:45: items 2 and 6, plus the convert's
+visibility and the paused split from the backlog), built on main, not committed by this session. API suite 561 passed
+(409 before this work; other agents' tests in the same tree are counted too); web `tsc -b` clean, `npm test` green.
+
+### 1. A bad page does not fail a convert
+
+Built as fixed steps on the box and the Mac (005 "A bad page does not fail the book"), not as model turns: the convert
+is a pipeline, not `run_agent`, and every recovery Audiveris allows is a deterministic retry, so it costs no Spark call.
+On the box (`omr_box.recover_page`), a page Audiveris does not read is read again alone, then from its 300 dpi image,
+then at 400 dpi or at the resolution that fits under Audiveris's 20 M pixel limit, and left out if it still fails. On
+the Mac, a page-by-page read that will not merge is read again as one book; if that fails too, the pages with another
+staff count or with bars that do not match their export are taken out (`omr_salvage`) until the rest merges (Cappi's
+case). A page left out keeps the bars the page reading counted on it as flagged whole-bar rests, so later bars keep
+their numbers. Each page's reason and what was tried go to `result.page_log`, `result.pages_unreadable` and
+`sources.meta.unreadable_pages`; the book sheet says "Page N could not be transcribed", why, what was tried and which
+bars are rests (web, not yet seen on a screen).
+
+What the night's failures were, found on yoga with the new box script (Audiveris only, no model):
+
+| Book | Cause | Now |
+|---|---|---|
+| Sym 9 p3-6 | every page "Too large image: 49,993,750 pixels (vs 20,000,000 max)": the PDF embeds a 6250 x 7999 scan, and even the 300 dpi render is 50.8 M pixels (the page is 21 x 27 inches) | p. 5 read at 180 dpi (14 bars); pp. 3-4 "No regularly spaced lines found" and p. 6 "no recognized header clef" at that size, left out |
+| PC5 p. 4 | NullPointerException on `Measure.addInter` | fails at 300 dpi ("No startColumn found for multi-staff System#3"), 400 dpi (too large), and by hand at 250 and 200 dpi: left out, pp. 1-3 convert |
+| Cappi 1802 | staff counts that change from page to page | the odd pages are left out after the whole-book run fails (tested with fakes; not re-run on the 16 pages) |
+
+**Hosted run** (test account admin1, Hart House Quartet, local runner `local_job.py convert` on main's code, box on
+yoga). The book: Goldberg BGA pp. 1-3 with PC5 p. 4 inserted as page 4 (a real page Audiveris cannot read, with
+staves the geometry finds), `Goldberg p1-3 plus a bad page`, score `2dcdf73d-cb1e-4f59-888d-35d727aef83c`, results in
+`api/experiments/e2e_night/results/badpage1102.json`; the PDF was built in the session scratchpad from the two fixtures.
+
+| Step | Time | Cost | Result |
+|---|---|---|---|
+| import + reading (yoga) | 88 s + answer + 3 s | $0.102 | one question on p. 4 ("Which parts are on page 4?", the orchestral page in a piano book), answered "Piano"; ready, 81 bars: 28, 20, 21 and 12 a page |
+| convert (main, local, Spark) | 191 s | $0.147 | done, Digital: 81 bars = 69 transcribed + 12 rests for p. 4 (bars 70-81, flagged with the reading's boxes); 1 track, bar map 81/81, 8 landmarks, engraved in both layouts, the book still `ready` |
+| convert again (final wording) | 168 s | $0.125 | the same 81 bars; `meta.unreadable_pages` = `[{page 4, reason "the transcription engine could not read this page", detail "NullPointerException: Cannot invoke ...Measure.addInter... because "measure" is null", tried [audiveris, again alone, 300 dpi image, 400 dpi image], bars 70-81}]`; note "Digital: 81 bars, 35 to check; page 4 could not be transcribed" |
+
+The job log line: "Page 4: Audiveris could not read it (NullPointerException ...); tried audiveris, again alone, 300 dpi
+image, 400 dpi image; left out". The ladder cost the box about 66 s on that page (Audiveris 111.5 s of the box's
+121.6 s). The page-kind read sent all four pages to Audiveris (p. 4 has staves; only pages before the first page of
+music are asked about).
+
+### 2. A convert job is visible to every member
+
+`POST /scores/{id}/convert` now writes `jobs.score_id`; `omr_convert` is a side kind (`librarian.SIDE_KINDS`,
+`Job.owns_score`), so the worker never marks the book failed for it and its progress never moves the book's meter.
+`local_job.py convert` does the same. Measured on hosted during the run above: test1 and test2 (players, not the job's
+creator) read the running job under RLS (`jobs?kind=eq.omr_convert&score_id=eq.<book>`: running, 0.08, "Reading 4
+pages of music"), and the book stayed `ready` with progress 1 throughout. Realtime uses the same policy; no websocket
+event was watched. Older convert rows keep a null `score_id` (no backfill) and are still found by `payload->>score_id`.
+
+### 3. A split paused at its turn limit shows as paused
+
+The agent loop records why it paused (`AgentState.pause_reason`: turn_limit | cost_limit), and continuing a paused
+state gives it a fresh allowance from where it stopped (`allowance_from`, `continued`), its history unchanged. The
+worker marks a finished job whose result is paused and asks nothing `result.state = "paused"` with `result.pause =
+{reason, message, turns, cost_usd, resumable}` (`librarian.paused_state`); the job stays `done` (no migration).
+`POST /jobs/{id}/resume` (owner or admin, budget) queues the same kind with `resume_from` and no answer; 409 when the job
+is not paused or was continued already. The web shows the split paused (amber), "Paused after its turn allowance ·
+N systems cut", and Continue on the book sheet's tile and in the parts panel (`resumeJob` in `web/src/lib/api.ts`). A
+paused split is not a live job: a new split of the same parts may start instead. Tested with fakes only (no paused
+split was made on hosted).
+
+### 4. A parked job resumes on the tier it started on
+
+`JobContext.model_tier` is settled once per job and written to `result.model_tier` at that read. A job that resumes
+another runs on the tier pinned in its payload (`payload.model_tier`, which the answer and resume routes now copy from
+the parked job), else the tier the parked job recorded, else the profile. Both hosted converts above recorded
+`model_tier: standard`. A job parked before today has no recorded tier and falls back to the profile.
+
+### Left as it was
+
+- yoga still runs its own commit: until CK moves it, hosted imports, readings and queued splits and converts run there
+  without these changes (the run above used the local runner). The dev API on the Mac did not pin the tier on today's
+  answer (its process predates the change).
+- `librarian/run.py`'s `run` command still marks the book failed on any job failure (not touched, by the brief).
+- A paused split's interpretation stays `running` until it is continued (part_cut's own write).
+- Spend: $0.374 Meta (reading $0.102, two converts $0.272), ledger `api/experiments/e2e_night/spend.jsonl`, book
+  `badpage1102`; the ledger total is now $9.36 of its $12 cap (the night's Claude $4.00 included). The book stays on
+  admin1's shelf in Hart House Quartet.

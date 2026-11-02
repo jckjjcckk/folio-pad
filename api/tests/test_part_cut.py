@@ -14,7 +14,7 @@ import pytest
 from PIL import Image, ImageDraw
 
 from app.agent.fake import fake_client, text, tool, truncated
-from app.librarian import Job, JobContext
+from app.librarian import Job, JobContext, JobFailure
 from app.librarian.header import match_instrument, same_instrument
 from app.librarian.part_cut import part_cut
 
@@ -440,13 +440,16 @@ async def test_absent_for_every_chosen_instrument():
               tool("commit_system", {"page": 1, "system": 1, "blocks": "absent"}), tool("finish", {})]
     client, t = fake_client(script)
     job, ctx, db = world(1, {"instruments": ["Soprano", "Alto"]})
-    out = await part_cut(job, ctx, client=client)
-    assert out["systems_cut"] == 0 and out["absent"] == 1
+    # Every line absent: the split ends failed with its reason (CK 2026-11-02), never `done` with no part.
+    with pytest.raises(JobFailure, match=r"Nothing was cut: no staves of the Soprano \+ Alto were found on page 1"):
+        await part_cut(job, ctx, client=client)
     sc = ctx.result["agent"]["scratch"]
     assert sc["pages"]["1"]["proposal"] == [{"system": 1, "staves": [], "blocks": [], "per_instrument": {"Soprano": [], "Alto": []}, "status": "absent"}]
     assert sc["commits"]["1:1"] == {"staves": "absent", "blocks": [], "key": None, "verify": None}
-    derived = [r for r in db.rows["sources"] if r["kind"] == "part_images"][0]
-    assert derived["storage_paths"] == [] and derived["meta"]["systems"] == [{"page": 1, "system": 1, "staves": "absent", "blocks": [], "key": None, "bars": None}]
+    assert ctx.result["outcome"] == "failed" and sc["log"][-1].startswith("Ended: failed: Nothing was cut")
+    assert not [r for r in db.rows["sources"] if r["kind"] == "part_images"]          # no empty split source
+    interp = [r for r in db.rows["interpretations"] if r.get("engine") == "part-cut-agent"][0]
+    assert interp["status"] == "failed" and interp["summary"]["log"][-1].startswith("Ended: failed")
 
 
 @pytest.mark.asyncio
@@ -959,5 +962,6 @@ async def test_a_layout_learned_from_the_model_never_overrides_an_absent_read_an
     job, ctx, db = world(1)
     db.rows["scores"][0]["label_memory"] = m.to_dict()
     client, _ = fake_client([tool("read_header", {}), HEADER, tool("read_page", {"page": 1}), LABEL_ABSENT, commit(1, "absent"), tool("finish", {})])
-    out = await part_cut(job, ctx, client=client)
-    assert out["absent"] == 1 and out["systems_cut"] == 0
+    with pytest.raises(JobFailure, match="Nothing was cut"):      # all absent: never a finished split with no part
+        await part_cut(job, ctx, client=client)
+    assert ctx.result["agent"]["scratch"]["commits"]["1:1"]["staves"] == "absent"

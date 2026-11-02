@@ -9,6 +9,8 @@ import { useNavigate } from 'react-router'
 import { AnimatePresence, motion } from 'motion/react'
 import type { Score } from '../mock'
 import { MY_LIBRARY, deleteBook, exportName, exportStored, type AskJob } from './data'
+import { apiFailure, resumeJob } from '../lib/api'
+import { useAuth } from './auth'
 import { BottomSheet, Confirm } from './Surfaces'
 import { MiniStaff, IGroupR3, keyInDoubt, keyWords, meterInDoubt } from './r3bits'
 import { DetailsDialog } from './Details'
@@ -65,8 +67,9 @@ function Body({ score: s, state: st, share, onClose, onAsk, onConvert, convertMs
   const [sharing, setSharing] = useState(false)
   const [details, setDetails] = useState(false)
   const [confirm, setConfirm] = useState(false)
-  const [busy, setBusy] = useState<'delete' | 'export' | null>(null)
+  const [busy, setBusy] = useState<'delete' | 'export' | 'resume' | null>(null)
   const [msg, setMsg] = useState<string | null>(null)
+  const { session } = useAuth()
 
   const parts_n = s.partIds.length
   const facts = [s.bars ? `${s.bars.toLocaleString('en')} bars` : null, parts_n > 1 ? `${parts_n} parts` : null, !digital && s.pages ? `${s.pages} ${s.pages === 1 ? 'page' : 'pages'}` : null].filter(Boolean).join(' · ')
@@ -88,6 +91,12 @@ function Body({ score: s, state: st, share, onClose, onAsk, onConvert, convertMs
   const remove = async () => {
     setBusy('delete'); setMsg(null)
     try { await deleteBook(s.id); world.reload(); onClose() } catch (err) { setMsg((err as Error).message); setBusy(null) }
+  }
+  // A split paused at its allowance continues from where it stopped (2026-11-02), on the tier it started on.
+  const resume = async (jobId: string) => {
+    if (!session || busy) return
+    setBusy('resume'); setMsg(null)
+    try { await resumeJob(jobId, session.access_token); world.reload() } catch (err) { setMsg(apiFailure(err, 'Continuing the split')) } finally { setBusy(null) }
   }
   const exportBook = async () => {
     if (!exportPath) return
@@ -140,6 +149,8 @@ function Body({ score: s, state: st, share, onClose, onAsk, onConvert, convertMs
         </div>
       )}
 
+      {st.hasDigital && !!s.digitalUnreadable?.length && <UnreadableLine pages={s.digitalUnreadable} />}
+
       <div className="bs-tiles">
         <button type="button" className="bs-tile is-open" disabled={!canOpen} onClick={() => go()}>
           <span className="bs-tile-in">
@@ -152,7 +163,8 @@ function Body({ score: s, state: st, share, onClose, onAsk, onConvert, convertMs
           <IChev />
         </button>
         {st.split ? (
-          <JobTile job={st.split} wide={!convertTile} canAnswer={canEdit} onOpen={() => (st.split!.ask && canEdit ? onAsk(st.split!.ask) : setParts(true))} />
+          <JobTile job={st.split} wide={!convertTile} canAnswer={canEdit}
+            onOpen={() => (st.split!.state === 'paused' && canEdit ? void resume(st.split!.id) : st.split!.ask && canEdit ? onAsk(st.split!.ask) : setParts(true))} />
         ) : canSplit && (
           <button type="button" className={`bs-tile ${convertTile ? '' : 'is-wide'}`} onClick={() => setParts(true)} aria-haspopup="dialog">
             <ISplit />
@@ -272,7 +284,7 @@ function StateLine({ score: s, state: st, canEdit, borrowed, onAsk }: { score: S
  *  row over Realtime), and whether it waits for you. Waiting on a question, a tap answers it. */
 function JobTile({ job: j, wide, canAnswer, onOpen }: { job: LiveJob; wide: boolean; canAnswer: boolean; onOpen: () => void }) {
   const word = liveWord(j, canAnswer)
-  const asks = j.state === 'needs_review'
+  const asks = j.state === 'needs_review' || j.state === 'paused'
   return (
     <button
       type="button" className={`bs-tile is-job has-rope ${wide ? 'is-wide' : ''} ${asks ? 'is-ask' : ''}`} onClick={onOpen} aria-haspopup="dialog"
@@ -286,6 +298,33 @@ function JobTile({ job: j, wide, canAnswer, onOpen }: { job: LiveJob; wide: bool
       <span className={`bs-job-word ${asks ? 'is-ask' : ''}`}>{word}</span>
     </button>
   )
+}
+
+/** Pages Convert to Digital left out (005, 2026-11-02: a bad page no longer fails the convert): which, why, what the
+ *  librarian tried, and that their bars are rests in Digital while the PDF keeps them. */
+function UnreadableLine({ pages }: { pages: NonNullable<Score['digitalUnreadable']> }) {
+  const one = pages.length === 1 ? pages[0] : null
+  const list = pages.map(p => p.page).join(', ').replace(/, (\d+)$/, ' and $1')
+  const bars = pages.flatMap(p => p.bars)
+  const span = (xs: number[]) => (xs.length === 1 ? `Bar ${xs[0]} is a rest` : `Bars ${xs[0]}–${xs[xs.length - 1]} are rests`)
+  const tried = one ? one.tried.map(triedWords).filter(Boolean) : []
+  const why = one ? `${one.reason.charAt(0).toUpperCase()}${one.reason.slice(1)}.${tried.length ? ` Tried: ${tried.join(', ')}.` : ''} ` : ''
+  return (
+    <div className="bs-state">
+      <span className="card-dot is-ask is-inline" aria-hidden="true" />
+      <span className="bs-state-text">
+        <b>{one ? `Page ${one.page} could not be transcribed` : `Pages ${list} could not be transcribed`}</b>
+        <span>{why}{one ? (one.bars.length ? `${span(one.bars)} in Digital; the PDF has them.` : 'Digital goes on from the next page; the PDF has it.') : bars.length ? 'Their bars are rests in Digital; the PDF has them.' : 'Digital goes on without them; the PDF has them.'}</span>
+      </span>
+    </div>
+  )
+}
+
+/** What the librarian tried on a page, in words (the job's own step names are the box's: `omr_box.recover_page`). */
+function triedWords(step: string): string {
+  const dpi = /^(\d+) dpi image$/.exec(step)
+  if (dpi) return `read at ${dpi[1]} dpi`
+  return ({ 'again alone': 'read again on its own', 'audiveris page by page': 'read on its own', 'audiveris on the whole book': 'read with the whole book' } as Record<string, string>)[step] ?? ''
 }
 
 /** The (i): the book's housekeeping, which the sheet does not lead with. */

@@ -41,8 +41,8 @@ def test_pages_are_stitched_in_order_each_a_movement(tmp_path, monkeypatch):
 
     monkeypatch.setattr(omr_box.subprocess, "run", fake_run)
     monkeypatch.setattr(omr_box, "run_audiveris", fake_audiveris)
-    rc, secs, movements, tail = omr_box.parallel_pages(tmp_path / "book.pdf", 2, tmp_path, "book", [7, 8], workers=2)
-    assert rc == 0 and sorted(calls) == [1, 2]
+    rc, secs, movements, tail, report = omr_box.parallel_pages(tmp_path / "book.pdf", 2, tmp_path, "book", [7, 8], workers=2)
+    assert rc == 0 and sorted(calls) == [1, 2] and report == {"skipped": [], "recovered": []}
     assert [(m["sheet"], m["pdf_page"], m["page"], m["movement"], m["measures"]) for m in movements] == [
         (1, 7, 1, 1, 28), (2, 8, 1, 2, 4), (2, 8, 2, 3, 16)]
     assert [m["name"] for m in movements] == ["Aria", None, "Var. 1."]
@@ -54,16 +54,137 @@ def test_pages_are_stitched_in_order_each_a_movement(tmp_path, monkeypatch):
     assert json.dumps(again) == json.dumps(movements)
 
 
-def test_a_page_audiveris_fails_on_stops_the_run(tmp_path, monkeypatch):
-    monkeypatch.setattr(omr_box.subprocess, "run", lambda cmd, **kw: Path(cmd[-1]).write_bytes(b"%PDF"))
+NPE = "INFO start\nERROR java.lang.NullPointerException: staff is null\nlast line"
+TOO_LARGE = ("INFO  [book]  SheetStub 1278 | Loaded image #1 6250x7999\n"
+             "WARN  [book]                 SheetStub 411  | Too large image: 49,993,750 pixels (vs 20,000,000 max)\n"
+             "WARN  [book]                      Book 2044 | Error processing stub org.audiveris.omr.step.StepException: Sheet ignored\n")
 
-    def fake_audiveris(pdf: Path, out: Path):
-        (out / "audiveris.log").write_text("boom\nlast line")
-        return (1, 2.0) if out.name == "2" else (0, 2.0)
 
+def fake_tools(tmp_path, monkeypatch, fails, log: str = NPE):
+    """pdfseparate and pdftoppm stood in for; Audiveris writes a one-page book unless `fails(page, input)` says no
+    (then it exits 1 with an exception in its log). Returns the list of (page, input name) it was run on."""
+    runs = []
+
+    def fake_run(cmd, **kw):
+        if cmd[0] == "pdftoppm":
+            Path(cmd[-1] + ".png").write_bytes(f"png {cmd[2]}".encode())
+        else:
+            Path(cmd[-1]).write_bytes(b"%PDF")
+        return type("P", (), {"returncode": 0})()
+
+    def fake_audiveris(src: Path, out: Path):
+        page = int(out.name)
+        runs.append((page, src.name))
+        if fails(page, src.name, len([r for r in runs if r[0] == page])):
+            (out / "audiveris.log").write_text(log)
+            return 1, 2.0
+        with zipfile.ZipFile(out / f"{src.stem}.omr", "w") as z:
+            z.writestr("book.xml", book_xml([(3, True, None)]))
+            z.writestr("sheet#1/sheet#1.xml", f"<sheet page='{page}'/>")
+        (out / f"{src.stem}.mxl").write_text(f"page {page}")
+        (out / "audiveris.log").write_text("ok")
+        return 0, 2.0
+
+    monkeypatch.setattr(omr_box.subprocess, "run", fake_run)
     monkeypatch.setattr(omr_box, "run_audiveris", fake_audiveris)
-    rc, _, movements, tail = omr_box.parallel_pages(tmp_path / "book.pdf", 2, tmp_path, "book", [1, 2], workers=2)
-    assert rc != 0 and movements == [] and tail[-1] == "last line"   # page 1 left no .omr, page 2 exited 1
+    (tmp_path / "scan").mkdir(exist_ok=True)
+    return runs
+
+
+def test_a_page_audiveris_fails_on_is_tried_twice_more_then_left_out(tmp_path, monkeypatch):
+    # PC5 p. 4 (E2E night): Audiveris's NullPointerException on one page failed the whole convert. Now the page is read
+    # again alone, then from its 300 dpi image, then at 400 dpi, and left out with what was tried; the others still stitch.
+    runs = fake_tools(tmp_path, monkeypatch, lambda page, src, n: page == 2)
+    rc, _, movements, tail, report = omr_box.parallel_pages(tmp_path / "book.pdf", 3, tmp_path, "book", [4, 5, 6], workers=3)
+    assert rc == 0 and tail == []
+    assert [r for r in runs if r[0] == 2] == [(2, "book.pdf"), (2, "book.pdf"), (2, "book.png"), (2, "book.png")]
+    [skip] = report["skipped"]
+    assert skip["pdf_page"] == 5 and skip["index"] == 2 and skip["reason"] == "ERROR java.lang.NullPointerException: staff is null"
+    assert [t["step"] for t in skip["tried"]] == ["audiveris", "again alone", "300 dpi image", "400 dpi image"]
+    assert [(m["sheet"], m["pdf_page"], m["movement"]) for m in movements] == [(1, 4, 1), (3, 6, 2)]
+    assert sorted(f.name for f in tmp_path.glob("book.mvt*.mxl")) == ["book.mvt1.mxl", "book.mvt2.mxl"]
+    assert (tmp_path / "book.mvt2.mxl").read_text() == "page 3" and not (tmp_path / "book" / "sheet#2").exists()
+    log = (tmp_path / "audiveris.log").read_text()
+    assert "=== retry again alone: rc 1" in log and "=== retry 300 dpi image: rc 1" in log and "=== retry 400 dpi image: rc 1" in log
+
+
+def test_a_page_too_large_for_audiveris_is_read_from_its_300_dpi_scan(tmp_path, monkeypatch):
+    # Sym 9, the 1826 scan (E2E night): every page failed, "Too large image: 49,993,750 pixels (vs 20,000,000 max)": the
+    # PDF embeds a 6250 x 7999 scan and Audiveris reads it at that size. The 300 dpi image the box renders reads.
+    fake_tools(tmp_path, monkeypatch, lambda page, src, n: page == 1 and src.endswith(".pdf"), log=TOO_LARGE)
+    (tmp_path / "scan" / "p1.png").write_bytes(b"png 300")
+    rc, _, movements, _, report = omr_box.parallel_pages(tmp_path / "book.pdf", 2, tmp_path, "book", [1, 2], workers=2)
+    assert rc == 0 and report["skipped"] == [] and len(movements) == 2
+    [rec] = report["recovered"]
+    # a second try cannot shrink the image: straight to the 300 dpi image
+    assert rec["pdf_page"] == 1 and rec["scan_dpi"] == 300 and [t["step"] for t in rec["tried"]] == ["audiveris", "300 dpi image"]
+    assert rec["tried"][0]["why"] == "Too large image: 49,993,750 pixels (vs 20,000,000 max)"
+    assert (tmp_path / "scan" / "p1.png").read_bytes() == b"png 300"       # read from the scan itself: the frame is unchanged
+
+
+def test_a_page_still_too_large_at_300_dpi_is_read_at_the_resolution_that_fits(tmp_path, monkeypatch):
+    # The Sym 9 pages print at 21 x 27 inches: 50.8 M pixels at 300 dpi. 300 x sqrt(18 M / 50.8 M) = 178 dpi fits.
+    fake_tools(tmp_path, monkeypatch, lambda page, src, n: page == 1 and n <= 2,
+               log=TOO_LARGE.replace("49,993,750", "50,768,000"))
+    (tmp_path / "scan" / "p1.png").write_bytes(b"png 300")
+    rc, _, _, _, report = omr_box.parallel_pages(tmp_path / "book.pdf", 2, tmp_path, "book", [1, 2], workers=2)
+    [rec] = report["recovered"]
+    assert rc == 0 and rec["scan_dpi"] == 178 and [t["step"] for t in rec["tried"]] == ["audiveris", "300 dpi image", "178 dpi image"]
+    assert (tmp_path / "scan" / "p1.png").read_bytes() == b"png 178"       # that render is the page's scan now
+    assert omr_box._fit_dpi("no", 300) is None and omr_box._fit_dpi("Too large image: 72,000,000 pixels", 300) == 150
+
+
+def test_a_page_read_on_the_second_try_needs_no_image(tmp_path, monkeypatch):
+    fake_tools(tmp_path, monkeypatch, lambda page, src, n: page == 2 and n == 1)
+    rc, _, movements, _, report = omr_box.parallel_pages(tmp_path / "book.pdf", 2, tmp_path, "book", [1, 2], workers=2)
+    assert rc == 0 and len(movements) == 2 and report["recovered"][0]["tried"][-1] == {"step": "again alone", "rc": 0, "s": 2.0, "why": None}
+
+
+def test_every_page_failing_fails_the_run_with_each_reason(tmp_path, monkeypatch):
+    fake_tools(tmp_path, monkeypatch, lambda page, src, n: True)
+    rc, _, movements, tail, report = omr_box.parallel_pages(tmp_path / "book.pdf", 2, tmp_path, "book", [1, 2], workers=2)
+    assert rc == 3 and movements == [] and len(report["skipped"]) == 2
+    assert tail == ["page 1: ERROR java.lang.NullPointerException: staff is null", "page 2: ERROR java.lang.NullPointerException: staff is null"]
+
+
+def test_a_failed_whole_book_is_read_page_by_page(tmp_path, monkeypatch, capsys):
+    """Without --parallel, a whole-book run that fails is read page by page, so one bad page no longer fails the book;
+    with --whole-only (the convert's own fallback) it fails as before."""
+    import sys
+    calls = []
+    monkeypatch.setattr(omr_box, "pdf_page_count", lambda pdf: 2)
+    monkeypatch.setattr(omr_box, "render_scans", lambda pdf, n, d: d.mkdir(parents=True, exist_ok=True))
+    monkeypatch.setattr(omr_box, "cut_pdf", lambda pdf, pages, dest: None)
+
+    def per_page(book_pdf, n, out, stem, pages, workers):
+        calls.append(workers)
+        (out / f"{stem}.mvt1.mxl").write_text("page 1")       # a stitched book names its exports mvtK, even one
+        mv = [{"sheet": 1, "pdf_page": 1, "page": 1, "movement_start": True, "movement": 1, "name": None, "measures": 3}]
+        return 0, 5.0, mv, [], {"skipped": [{"pdf_page": 2}], "recovered": []}
+    monkeypatch.setattr(omr_box, "parallel_pages", per_page)
+
+    def whole(pdf, out):
+        (out / "audiveris.log").write_text("SEVERE java.lang.NullPointerException")
+        return 1, 9.0
+    monkeypatch.setattr(omr_box, "run_audiveris", whole)
+    pdf = tmp_path / "book.pdf"
+    pdf.write_bytes(b"%PDF")
+    out = tmp_path / "out"
+
+    def run(*extra):
+        monkeypatch.setattr(sys, "argv", ["omr_box.py", str(pdf), str(out), *extra])
+        try:
+            omr_box.main()
+        except SystemExit as e:
+            return e.code
+        return 0
+    (tmp_path / "out").mkdir()
+    assert run() == 0 and calls == [2]
+    rec = json.loads((out / "book_run.json").read_text())
+    assert rec["whole_failed"] == {"rc": 1, "reason": "SEVERE java.lang.NullPointerException", "audiveris_s": 9.0}
+    assert rec["skipped"] == [{"pdf_page": 2}] and rec["audiveris_s"] == 14.0 and rec["exports"] == ["book.mvt1.mxl"]
+    calls.clear()
+    assert run("--whole-only") == 3 and calls == []
 
 
 def test_a_page_java_refuses_to_sort_is_read_again_with_the_legacy_sort(tmp_path, monkeypatch):

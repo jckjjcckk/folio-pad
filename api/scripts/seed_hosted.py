@@ -7,6 +7,7 @@ players with their seats. piano@muse.test gets no ensemble: a personal library o
 the membership rows (profiles are private to their owner).
 """
 from app.db import db
+from app.librarian.instruments import store_seat_canonicals
 
 SEATS = {"admin": ("admin", "Viola", "Ada Okafor"), "violin1": ("player", "Violin I", "Lin Zhou"),
          "violin2": ("player", "Violin II", "Noor Haddad"), "cello": ("player", "Cello", "Inès Marchand")}
@@ -29,6 +30,7 @@ else:
 for k, (role, seat, name) in SEATS.items():
     d.table("members").upsert({"ensemble_id": eid, "user_id": profiles[f"{k}@muse.test"], "role": role, "part": seat, "display_name": name},
                               on_conflict="ensemble_id,user_id").execute()
+store_seat_canonicals(d, eid)   # each seat's canonical instrument name, matched against the parts' (010); skipped before 20261102130000
 roster = d.table("members").select("role,part,display_name").eq("ensemble_id", eid).order("part").execute().data
 print(NAME, eid)
 for m in roster:

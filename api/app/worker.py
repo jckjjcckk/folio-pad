@@ -16,7 +16,7 @@ from datetime import datetime, timedelta, timezone
 
 from .db import db
 from .settings import settings
-from .librarian import HANDLERS, Job, JobContext, ScoreFailure, load_handlers
+from .librarian import HANDLERS, Job, JobContext, JobFailure, ScoreFailure, load_handlers, paused_state
 
 log = logging.getLogger("folio.worker")
 POLL_S = 2.0
@@ -52,8 +52,13 @@ async def run_one(row: dict) -> None:
         if fn is None:
             raise RuntimeError(f"no handler for job kind {job.kind!r}")
         out = await fn(job, ctx)
-        result = {**ctx.result, **(out or {})}
+        result = paused_state({**ctx.result, **(out or {})})
         db().table("jobs").update({"status": "done", "progress": 1.0, "result": result, "finished_at": ctx.now()}).eq("id", job.id).execute()
+    except JobFailure as e:
+        # The job's own failure, in the musician's words (a split that cut nothing, 008): no retry, the book as it was.
+        log.warning("job %s (%s) ended without its result: %s", job.id, job.kind, e)
+        db().table("jobs").update({"status": "failed", "error": str(e), "finished_at": ctx.now(),
+                                   "result": {**ctx.result, "outcome": "failed", "outcome_reason": str(e)}}).eq("id", job.id).execute()
     except Exception as e:  # noqa: BLE001
         err = f"{type(e).__name__}: {e}"
         log.warning("job %s (%s) attempt %d failed: %s\n%s", job.id, job.kind, job.attempts, err, traceback.format_exc())
@@ -62,7 +67,7 @@ async def run_one(row: dict) -> None:
             db().table("jobs").update({"status": "queued", "error": err, "run_after": (datetime.now(timezone.utc) + delay).isoformat()}).eq("id", job.id).execute()
         else:
             db().table("jobs").update({"status": "failed", "error": err, "finished_at": ctx.now()}).eq("id", job.id).execute()
-            if job.score_id:
+            if job.owns_score:          # a convert's failure never marks the PDF book failed (SIDE_KINDS)
                 db().table("scores").update({"status": "failed", "failure_reason": failure_reason(job.kind, e)}).eq("id", job.score_id).execute()
 
 

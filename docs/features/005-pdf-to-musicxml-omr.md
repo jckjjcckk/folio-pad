@@ -1,6 +1,6 @@
 # 005 PDF to MusicXML (OMR on the Ryzen Ubuntu box)
 
-Status: working on the local stack (Convert to Digital: `POST /scores/{id}/convert`, job `omr_convert`; librarian agent v2 2026-10-28 late, measured on Goldberg p1-5 and Chopin Op. 40/1 p25; engraved pages in two layouts by MuseScore on the box, `engrave.py`); experiments on the box in `api/experiments/omr/` | Meta model: Muse Spark 1.3 sorts the leading pages, fills the front-matter form, lists text, dynamics, fingering, pedal and ornaments per system, and answers closed questions on low-grade accidentals and ornaments. Spark never touches a note.
+Status: working on the local stack; a bad page is left out instead of failing the book (2026-11-02) (Convert to Digital: `POST /scores/{id}/convert`, job `omr_convert`; librarian agent v2 2026-10-28 late, measured on Goldberg p1-5 and Chopin Op. 40/1 p25; engraved pages in two layouts by MuseScore on the box, `engrave.py`); experiments on the box in `api/experiments/omr/` | Meta model: Muse Spark 1.3 sorts the leading pages, fills the front-matter form, lists text, dynamics, fingering, pedal and ornaments per system, and answers closed questions on low-grade accidentals and ornaments. Spark never touches a note.
 
 ## Purpose
 
@@ -146,10 +146,13 @@ bars and the PDF stays the truth. The interaction is Split by instrument's: one 
 omitted). 402 over budget, 404 no such score, 403 not owner or admin, 400 "This book has no PDF to convert" (no
 `pdf` source) or "A transcription of this book is already in progress" (an `omr_convert` job queued or running).
 Returns the job row: `kind = 'omr_convert'`, `status = 'queued'`, `max_attempts = 1` (a retry would pay for Spark
-again), `payload = {score_id, source_id, pages?}` and **`jobs.score_id` null**: the worker marks a failed job's
-score `failed` and `ctx.progress` moves the score's meter, and neither may touch a ready PDF book. The browser
-finds the job with `.eq('kind', 'omr_convert').eq('payload->>score_id', id)`; RLS lets the creator read it
-(`created_by = auth.uid()`), other admins of the ensemble do not see the busy state. While it runs, the handler
+again), `payload = {score_id, source_id, pages?}` and, since 2026-11-02, **`jobs.score_id` set** (CK: a convert is
+visible to every member): RLS `jobs_select` (`can_read_score`) and the shelf's Realtime show the running job to everyone
+who can read the book, on hosted measured with test1 and test2 (players in Hart House Quartet) reading admin1's
+running convert. `omr_convert` is a side kind (`librarian.SIDE_KINDS`, `Job.owns_score`): the worker never marks the
+book `failed` for it and `ctx.progress` never moves the book's meter, so a ready PDF book stays ready while its
+conversion runs or fails. Before, `jobs.score_id` stayed null for that reason and only the starter saw the job.
+Older rows with a null `score_id` are still found by `payload->>score_id` (web `chainedBookJobs`). While it runs, the handler
 refreshes `jobs.locked_at` every minute, so the worker's 15-minute stale sweep never re-queues a long book.
 
 **Handler** (`api/app/librarian/omr_convert.py`, helpers `omr_box.py`, `omr_book.py`, `omr_spark.py`,
@@ -213,6 +216,57 @@ Beethoven quartet PDF exists in `api/fixtures/pdf/` or on the box, so chamber mu
 flight, transfer and writing a few seconds. A 10-page book: Audiveris 3.5 to 5 min, Spark about 2.5 min, about
 **6.5 to 8 minutes** in all, Spark about $0.50 to $0.60. Audiveris and Spark run one after the other (Spark needs
 Audiveris's boxes); more calls in flight is the cheap lever on the Spark half.
+
+## A bad page does not fail the book (2026-11-02, `omr_box.recover_page`, `omr_salvage.py`)
+
+CK's decision after the E2E night (018: PC5, Sym 9 and Cappi died after up to 16 minutes when Audiveris choked on one
+page): a page that fails recognition is skipped, recorded on the book with its reason and what was tried, and the rest
+still becomes Digital. Only a book with no readable page fails, naming each page and why.
+
+**On the box** (`omr_box.py`, deterministic, no model). Per page (the page-by-page read; a whole-book run that fails is
+read page by page too unless `--whole-only`), a page Audiveris did not read (non-zero exit, no book, no sheet, no music,
+an export missing) is tried again before it is given up:
+
+1. Audiveris again on the page, alone (the first pass ran beside four others); not when the image was refused as too
+   large, which a second try cannot change.
+2. The page's 300 dpi image (the scan the crops use, so the frame does not move). Audiveris reads a PDF's embedded scan
+   at its own resolution and refuses one over 20 M pixels: the 1826 Sym 9 pages are 6250 x 7999, "Too large image:
+   49,993,750 pixels (vs 20,000,000 max)", which is why Sym 9 failed whole on the E2E night.
+3. Another resolution: 400 dpi, or, when an image was refused as too large, the resolution that fits under the limit
+   (Sym 9 prints at 21 x 27 inches: 50.8 M pixels even at 300 dpi; read at 180 dpi). That image becomes the page's scan.
+
+A page that still fails is left out of the stitched book and listed in `book_run.json` `skipped` with the first pass's
+reason (the sheet's own refusal, else the innermost exception, font warnings left out) and every step's rc, seconds and
+reason. Measured on yoga (Audiveris only, no model): Sym 9 p3-6 now reads p. 5 (14 bars, at 180 dpi; pp. 3-4 "No
+regularly spaced lines found", p. 6 no recognisable clef, at the size that fits); PC5 p. 4 fails every way (first
+pass and again alone: NullPointerException on `Measure.addInter`; 300 dpi: "No startColumn found for multi-staff
+System#3"; 400 dpi: too large; by hand at 250 dpi no header clefs, at 200 dpi interline too low), so it is left out. A stitched book with one page read names its
+export `mvt1` (the old check expected `book.mxl` and refused it).
+
+**On the Mac** (`omr_convert`, `omr_salvage`). A page-by-page read that does not merge is read again as one book (as
+before); if that fails too, the page-by-page read comes back and the pages that do not fit are taken out of the run
+(`odd_pages`: another staff count than the one most of the book's bars have; `pages_of_movement` / `unmapped_pages`:
+the movement `merge` refused, or one with no bar on the map), until the rest merges (Cappi 1802's case).
+
+**Geometry-only bars.** Each page left out keeps the bars the 004 page reading placed on it (its `measure_placements`
+in the book's current interpretation, by `sources.page_order`): `omr_book.read_book(gaps=...)` leaves that many numbers
+free where the page stands and `omr_score.merge` fills them with whole-bar rests on every staff (the first bar of a
+staff takes the export's clef, key and time), flagged "page N could not be transcribed: a rest stands in for this bar
+(counted from the page reading)" with the reading's box on that PDF page, so the check screen can show the scan for
+them. Every later bar keeps its number: playback's bar map, landmarks and marks line up with the PDF. With no reading
+for the page, the bars run on from the page before, and the job log says so.
+
+**Recorded**: `result.page_log` (one line per page: what failed, what was tried, the outcome), `result.pages_unreadable`
+and the source's `meta.unreadable_pages` = `[{page, reason (plain words), detail (the engine's), tried, bars}]`,
+`meta.flags.pages_unreadable` the count, and the job note ("Digital: 81 bars, 41 to check; page 4 could not be
+transcribed"). The book sheet shows "Page 4 could not be transcribed" with the reason, what was tried, and which bars
+are rests in Digital (web `BookSheet.tsx` `UnreadableLine`, `data.tsx` `digitalUnreadableOf`).
+
+Not an agent loop: the convert is a pipeline, not `run_agent` (006). The recovery is fixed code on the box and the Mac,
+no model call, so it costs nothing and runs the same way every time; Spark's part is unchanged.
+
+Hosted run 2026-11-02 (018 "2026-11-02 follow-ups"): Goldberg BGA pp. 1-3 with PC5 p. 4 as page 4, Digital with 81
+bars (69 transcribed + 12 rests for p. 4), $0.147 for the convert.
 
 ## Librarian agent v2 (2026-10-28 late, `omr_agent.py` + `omr_enrich.py` + `omr_verify.py`)
 
@@ -491,10 +545,10 @@ compare-*.json, base/final.musicxml, slices, render, review.html) and `goldberg-
 
 In the app: `api/app/librarian/omr_convert.py` (handler, `SshBox`), `omr_box.py` (box side, stdlib, copied over
 per run), `omr_book.py` (bar map and gate), `omr_agent.py` (v2: page kinds, front-matter form, per-system text,
-closed questions, the budget per page), `omr_enrich.py` (v2 writers with dedupe), `omr_score.py` (merge, flags),
+closed questions, the budget per page), `omr_enrich.py` (v2 writers with dedupe), `omr_score.py` (merge, flags, rests for a page left out), `omr_salvage.py` (the pages of a page-by-page read that do not fit, the reading's bars per page),
 `musicxml_fix.py` (voices per staff, one tempo direction, page layout and credits), `engrave.py` (MuseScore over
 ssh, the two layouts, `.mpos` to bar boxes, the `engraving` sources); `api/app/routes/convert.py`; tests
-`api/tests/test_omr_convert.py`, `api/tests/test_omr_agent.py`, `api/tests/test_musicxml_fix.py`, `api/tests/test_engrave.py`.
+`api/tests/test_omr_convert.py` (a bad page: the last six tests), `api/tests/test_omr_box_parallel.py` (the recovery ladder), `api/tests/test_omr_agent.py`, `api/tests/test_musicxml_fix.py`, `api/tests/test_engrave.py`.
 Measured runs: `api/experiments/omr/v2_run.py`, `api/experiments/engrave/v2_render.sh`, results in `api/experiments/engrave/v2/`.
 
 ## Next steps

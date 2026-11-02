@@ -35,13 +35,19 @@ def measure_key(page: int, system: int, bar: int) -> str:
 
 
 def build_measures(sheets: list[dict[str, Any]], movements: list[dict[str, Any]] | None = None,
-                   first_number: int = 1) -> list[dict[str, Any]]:
-    """Every stack of the book in reading order with a global number (measure_map.build_measures)."""
+                   first_number: int = 1, gaps: dict[int, int] | None = None) -> list[dict[str, Any]]:
+    """Every stack of the book in reading order with a global number (measure_map.build_measures). `gaps`: PDF page ->
+    bars to leave unnumbered before the first page after it (an unreadable page whose bars the page reading counted:
+    the convert puts rests there, so the later bars keep the numbers the PDF reading gave them)."""
     mvt_of = {(m["sheet"], m["page"]): m["movement"] for m in (movements or [])}
+    pdf_of = {m["sheet"]: m.get("pdf_page", m["sheet"]) for m in (movements or [])}
+    pending = sorted((gaps or {}).items())
     out: list[dict[str, Any]] = []
     number = first_number
     movement_bar: dict[int, int] = {}
     for page_index, sheet in enumerate(sheets, start=1):
+        while pending and pending[0][0] < pdf_of.get(sheet["sheet"], sheet["sheet"]):
+            number += pending.pop(0)[1]
         w, h = sheet["width"], sheet["height"]
         systems = [(pg["page"], sy) for pg in sheet["pages"] for sy in pg["systems"]]
         systems.sort(key=lambda t: t[1]["top"])
@@ -134,9 +140,14 @@ def inters_of(sys_el: ET.Element, staff_rank: dict[int, int], stacks: dict[int, 
 
 
 def read_book(book_dir: Path, movements: list[dict], gate: float = DEFAULT_GATE,
-              per_tag: dict[str, float] | None = None, first: int = 1) -> dict:
+              per_tag: dict[str, float] | None = None, first: int = 1, gaps: dict[int, list[dict | None]] | None = None) -> dict:
     """The unzipped book (book.xml + sheet#N/sheet#N.xml) and movements.json -> the model (audiveris_model.build).
-    A sheet with no sheet#N.xml (Audiveris gave up on the page) is left out; `unreadable` lists its sheet numbers."""
+    A sheet with no sheet#N.xml (Audiveris gave up on the page) is left out; `unreadable` lists its PDF pages.
+
+    `gaps`: PDF page -> the bars the page reading placed on a page the engine could not read (their boxes, or None):
+    that many numbers are left free where the page stands, and `placeholders` lists them ({number, pdf_page, box}) for
+    `omr_score.merge` to fill with rests (CK 2026-11-02: a bad page must not fail a convert, and the bars after it keep
+    lining up with the PDF for playback and landmarks)."""
     per_tag = per_tag or {}
     book = ET.parse(book_dir / "book.xml").getroot()
     all_sheets = [int(s.get("number")) for s in book.findall("sheet")]
@@ -148,9 +159,13 @@ def read_book(book_dir: Path, movements: list[dict], gate: float = DEFAULT_GATE,
             continue                                  # a page with no bars (a title page, a blank) is no page of music
         sheets.append(geo)
         raws.append(raw)
-    measures = build_measures(sheets, movements, first)
+    gaps = {int(k): v for k, v in (gaps or {}).items() if v}
+    measures = build_measures(sheets, movements, first, {k: len(v) for k, v in gaps.items()})
+    used = {m["number"] for m in measures}
+    free = iter(n for n in range(first, first + len(measures) + sum(len(v) for v in gaps.values())) if n not in used)
+    placeholders = [{"number": next(free), "pdf_page": page, "box": box} for page, boxes in sorted(gaps.items()) for box in boxes]
     pdf_page = {m["sheet"]: m.get("pdf_page", m["sheet"]) for m in movements}
-    model: dict = {"pages": [], "systems": [], "measures": measures, "movements": [], "inters": [],
+    model: dict = {"pages": [], "systems": [], "measures": measures, "movements": [], "inters": [], "placeholders": placeholders,
                    "gate": {"default": gate, "per_tag": per_tag},
                    "unreadable": [pdf_page.get(n, n) for n in all_sheets if n not in {g["sheet"] for g in sheets}]}
     for i, geo in enumerate(sheets, start=1):
@@ -182,9 +197,10 @@ def read_book(book_dir: Path, movements: list[dict], gate: float = DEFAULT_GATE,
     return model
 
 
-def load_run(run: Path, gate: float = DEFAULT_GATE, per_tag: dict[str, float] | None = None) -> dict:
-    """A run directory as the box leaves it (omr_box.py): book/, movements.json, book_run.json."""
+def load_run(run: Path, gate: float = DEFAULT_GATE, per_tag: dict[str, float] | None = None,
+             gaps: dict[int, list[dict | None]] | None = None) -> dict:
+    """A run directory as the box leaves it (omr_box.py): book/, movements.json, book_run.json. `gaps`: see read_book."""
     movements = json.loads((run / "movements.json").read_text())
-    model = read_book(run / "book", movements, gate, per_tag)
+    model = read_book(run / "book", movements, gate, per_tag, gaps=gaps)
     model["book_run"] = json.loads((run / "book_run.json").read_text())
     return model

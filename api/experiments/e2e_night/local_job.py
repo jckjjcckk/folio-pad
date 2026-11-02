@@ -76,7 +76,9 @@ def convert(slug: str, pages: list[int] | None = None) -> dict:
     payload: dict = {"score_id": s["score_id"], "source_id": src[0]["id"]}
     if pages:
         payload["pages"] = pages
-    row = _insert_running({"kind": "omr_convert", "score_id": None, "created_by": a.uid, "max_attempts": 1, "payload": payload})
+    # As the route does since 2026-11-02: the book on the row, so every member sees the convert (omr_convert is a side
+    # kind: it still never moves the book's own status).
+    row = _insert_running({"kind": "omr_convert", "score_id": s["score_id"], "created_by": a.uid, "max_attempts": 1, "payload": payload})
     s["jobs"][row["id"]] = {"kind": row["kind"], "created_at": row["created_at"], "local": True}
     save(slug, s)
     return row

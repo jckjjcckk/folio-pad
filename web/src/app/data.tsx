@@ -63,7 +63,7 @@ export interface ChooseStaves {
 /** One wanted instrument the book's memory placed on a line (008, 006 agentic memory rule). */
 export interface RememberedPlace { instrument: string; staves: number[]; page: number | null; source: 'human' | 'model'; how: 'label' | 'layout'; label?: string | null }
 
-export type PartJobStatus = 'queued' | 'running' | 'needs_review' | 'done' | 'failed'
+export type PartJobStatus = 'queued' | 'running' | 'needs_review' | 'paused' | 'done' | 'failed'
 
 export interface PartJob {
   id: string
@@ -83,6 +83,8 @@ export interface PartJob {
   error?: string
   question?: string
   questionPayload?: ChooseStaves
+  /** Paused at its turn or cost allowance (2026-11-02): not a failure; a person can let it continue. */
+  pause?: { reason: string; message: string }
   sourceId?: string
   systemsCut?: number
   createdAt: string
@@ -163,13 +165,14 @@ const signedUrls = new Map<string, { url: string; until: number }>()
 async function load(session: Session): Promise<Omit<World, 'reload'>> {
   const uid = session.user.id
   const [mem, sc, pa, prof, jb, src, itp, bj, grp, sh] = await Promise.all([
-    supabase.from('members').select('id,role,part,ensemble_id,user_id,display_name,ensembles(id,name)'),
+    // `*`, not a column list: a stack without `part_canonical` (migration 20261102130000) still answers.
+    supabase.from('members').select('*,ensembles(id,name)'),
     supabase.from('scores').select('*').order('updated_at', { ascending: false }),
     supabase.from('parts').select('*').order('position'),
     supabase.from('profiles').select('display_name,email').eq('id', uid).maybeSingle(),
     // Narrow JSON paths: a job's result also holds the agent transcript, which nobody on the iPad reads.
     supabase.from('jobs')
-      .select('id,kind,status,progress,error,score_id,created_at,payload,note:result->>note,phase:result->phase,question:result->>question,question_payload:result->question_payload,source_id:result->>source_id,systems_cut:result->systems_cut,log:result->agent->scratch->log,agent_log:result->agent->log')
+      .select('id,kind,status,progress,error,score_id,created_at,payload,note:result->>note,phase:result->phase,question:result->>question,question_payload:result->question_payload,source_id:result->>source_id,systems_cut:result->systems_cut,log:result->agent->scratch->log,agent_log:result->agent->log,state:result->>state,pause:result->pause')
       .eq('kind', 'part_cut').order('created_at'),
     supabase.from('sources').select('id,score_id,kind,storage_paths,page_order,meta,created_at').order('created_at'),
     supabase.from('interpretations').select('id,score_id,engine,status,created_at,header:params->state->header->instruments,summary_header:summary->header->instruments,summary_parts:summary->parts,summary_question:summary->>question,unreadable:summary->unreadable_pages').order('created_at'),
@@ -196,7 +199,7 @@ async function load(session: Session): Promise<Omit<World, 'reload'>> {
 
   const members: Member[] = memberRows.map(m => ({
     id: m.id, name: m.display_name || 'A member', role: m.role === 'admin' ? 'leader' : 'player',
-    instrument: m.part ?? '', online: false,
+    instrument: m.part ?? '', instrumentCanonical: m.part_canonical ?? undefined, online: false,
   }))
   const self: Member = { id: MY_LIBRARY, name: myName, role: 'pianist', instrument: 'Piano', online: true }
   const ensembleIds = [...new Set(memberRows.map(m => m.ensemble_id as string))]
@@ -241,7 +244,7 @@ async function load(session: Session): Promise<Omit<World, 'reload'>> {
   const urlFor = (path?: string) => (path ? signedUrls.get(path)?.url ?? '' : '')
 
   const parts: Part[] = partRows.map(p => ({
-    id: p.id, scoreId: p.score_id, name: p.name, fixture: isNotation(p.storage_path) ? urlFor(p.storage_path) : '', pages: 0,
+    id: p.id, scoreId: p.score_id, name: p.name, canonical: p.canonical ?? undefined, fixture: isNotation(p.storage_path) ? urlFor(p.storage_path) : '', pages: 0,
     difficulty: (p.difficulty ?? 3) as Part['difficulty'],
   }))
   // A book is what it was first made from; splits (images or notation) are its children, not its kind.
@@ -283,7 +286,7 @@ async function load(session: Session): Promise<Omit<World, 'reload'>> {
     keyGuess: s.key_sig_guess ?? undefined, meterGuess: s.meter_guess ?? undefined, sigConfidence: s.signature_confidence ?? undefined,
     sigConfirmed: !!s.signature_confirmed, tempoText: s.tempo_text ?? undefined, coverClef: s.cover_clef ?? undefined,
     firstBar: s.first_bar ?? undefined, firstBarPage: s.first_bar_page ?? undefined, createdAt: s.created_at,
-    flaggedBars: flaggedOf(sourceRows, s.id), unreadable: unreadableOf(interpRows, s.id),
+    flaggedBars: flaggedOf(sourceRows, s.id), unreadable: unreadableOf(interpRows, s.id), digitalUnreadable: digitalUnreadableOf(sourceRows, s.id),
     answered: [...jobRows, ...bookJobRows].filter(r => r.score_id === s.id && r.payload?.resume_from).length,
     playback: s.playback?.midi && s.playback?.bar_map
       ? { midi: s.playback.midi, barMap: s.playback.bar_map, parts: s.playback.parts ?? [], madeAt: s.playback.made_at ?? undefined }
@@ -319,13 +322,16 @@ function partJobs(rows: Row[]): PartJob[] {
     .map(r => {
       const q = r.question_payload as ChooseStaves | null
       const parked = r.status === 'done' && !!r.question && q?.kind === 'choose_staves'
-      const status: PartJobStatus = parked ? 'needs_review' : r.status === 'done' && !r.source_id && !r.systems_cut ? 'failed' : r.status
+      // A run paused at its allowance made nothing yet and asked nothing: paused, not failed (2026-11-02).
+      const paused = r.status === 'done' && !parked && r.state === 'paused'
+      const status: PartJobStatus = parked ? 'needs_review' : paused ? 'paused' : r.status === 'done' && !r.source_id && !r.systems_cut ? 'failed' : r.status
       const log = [...((r.log as string[] | null) ?? []), ...((r.agent_log as string[] | null) ?? [])].map(String)
       return {
         id: r.id, scoreId: r.score_id, status, progress: Number(r.progress ?? 0),
         instruments: instrumentsOf(r.payload), pages: Array.isArray(r.payload?.pages) ? r.payload.pages : undefined,
         note: r.note ?? undefined, phase: phaseOf(r.phase), resumed: !!r.payload?.resume_from, log, error: r.error ?? (status === 'failed' && r.status === 'done' ? 'The split stopped before anything was made.' : undefined),
         question: parked ? r.question : undefined, questionPayload: parked ? q! : undefined,
+        pause: paused ? { reason: String(r.pause?.reason ?? 'turn_limit'), message: String(r.pause?.message ?? 'Paused') } : undefined,
         sourceId: r.source_id ?? undefined, systemsCut: r.systems_cut ?? undefined, createdAt: r.created_at,
       }
     })
@@ -364,6 +370,17 @@ function flaggedOf(rows: Row[], scoreId: string): FlaggedBar[] | undefined {
   return xs.filter((f: Row) => typeof f?.number === 'number').map((f: Row) => ({
     number: f.number, page: Number(f.page) || 1, box: f.box && typeof f.box.x0 === 'number' ? f.box : undefined,
     reasons: Array.isArray(f.reasons) ? f.reasons.map(String) : [],
+  }))
+}
+
+/** The pages the latest transcription left out (`meta.unreadable_pages`, 005, 2026-11-02). */
+function digitalUnreadableOf(rows: Row[], scoreId: string): Score['digitalUnreadable'] {
+  const t = rows.filter(r => r.score_id === scoreId && r.kind === 'musicxml' && r.meta?.transcribed_from).pop()
+  const xs = Array.isArray(t?.meta?.unreadable_pages) ? t!.meta.unreadable_pages : null
+  if (!xs?.length) return undefined
+  return xs.filter((u: Row) => typeof u?.page === 'number').map((u: Row) => ({
+    page: u.page, reason: String(u.reason ?? ''), tried: Array.isArray(u.tried) ? u.tried.map(String) : [],
+    bars: Array.isArray(u.bars) ? u.bars.filter((n: unknown) => typeof n === 'number') : [],
   }))
 }
 

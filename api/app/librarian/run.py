@@ -70,7 +70,7 @@ def cmd_seed(a) -> None:
 
 async def cmd_run(a) -> None:
     from ..db import db
-    from ..librarian import HANDLERS, Job, load_handlers
+    from ..librarian import HANDLERS, Job, JobFailure, load_handlers, paused_state
     from ..worker import context_for
     load_handlers()
     fn = HANDLERS.get(a.kind)
@@ -89,15 +89,23 @@ async def cmd_run(a) -> None:
                                       "payload": payload, "started_at": "now()", "locked_at": "now()"}).execute().data[0]
     ctx = context_for(job_row["id"])
     job = Job.from_row(job_row)
+    # The outcome is written as the worker writes it (app/worker.py run_one), so a local run reads like a hosted one: a
+    # paused run is marked paused, a JobFailure (a split that cut nothing, 008) fails the job with its reason and leaves
+    # the book as it was, and only a job that owns its book (`Job.owns_score`) marks the book failed.
     try:
         out = await fn(job, ctx)
-        result = {**ctx.result, **(out or {})}
+        result = paused_state({**ctx.result, **(out or {})})
         d.table("jobs").update({"status": "done", "progress": 1.0, "result": result, "finished_at": ctx.now()}).eq("id", job.id).execute()
         print(json.dumps({"job_id": job.id, "status": "done", "result": result}, indent=2, default=str))
+    except JobFailure as e:
+        d.table("jobs").update({"status": "failed", "error": str(e), "finished_at": ctx.now(),
+                                "result": {**ctx.result, "outcome": "failed", "outcome_reason": str(e)}}).eq("id", job.id).execute()
+        print(json.dumps({"job_id": job.id, "status": "failed", "outcome": "failed", "reason": str(e)}, indent=2))
     except Exception as e:  # noqa: BLE001
         err = f"{type(e).__name__}: {e}"
         d.table("jobs").update({"status": "failed", "error": err, "finished_at": ctx.now()}).eq("id", job.id).execute()
-        d.table("scores").update({"status": "failed", "failure_reason": err[:300]}).eq("id", a.score).execute()
+        if job.owns_score:
+            d.table("scores").update({"status": "failed", "failure_reason": err[:300]}).eq("id", a.score).execute()
         raise
 
 
@@ -111,8 +119,8 @@ def cmd_show(a) -> None:
     for it in interps:
         print(f"interpretation v{it['version']} {it['engine']} {it['status']} ${float(it['cost_usd']):.4f} {it['latency_ms']} ms" + (" (current)" if it["id"] == iid else ""))
         print("  summary:", json.dumps(it["summary"], indent=2, ensure_ascii=False))
-    parts = d.table("parts").select("name,position,difficulty").eq("score_id", a.score).order("position").execute().data
-    print("parts:", parts)
+    parts = d.table("parts").select("*").eq("score_id", a.score).order("position").execute().data
+    print("parts:", [{k: r.get(k) for k in ("name", "canonical", "position", "difficulty") if k in r} for r in parts])
     if iid:
         pl = d.table("measure_placements").select("page,system,confidence,flag,rehearsal_mark,box,measures(number)").eq("interpretation_id", iid).execute().data
         pl.sort(key=lambda r: r["measures"]["number"])

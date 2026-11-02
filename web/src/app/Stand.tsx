@@ -38,6 +38,7 @@ import { PlayParts, usePlayState, type PlayHead } from './PlayParts'
 import { ApiError, apiFailure, convertToDigital } from '../lib/api'
 import { liveWord, type BookState } from './book'
 import { WorkLoop } from './Rope'
+import { seatPart, splitIsSeats } from './seat'
 
 type Tool = null | 'marking' | 'cut' | 'voice'
 
@@ -152,9 +153,12 @@ export default function Stand({ score, pages, strip: stripId }: { score: Score; 
   const splitSel = split ? `split:${split.id}` : null
   // A PDF book's split (008) reads as its strips: the cut systems of the chosen instruments, with the book's bar numbers.
   const stripSplits = stripsFor(score.id).filter(x => x.kind === 'images')
-  const pstrip = stripId !== undefined ? stripSplits.find(x => x.id === stripId) ?? stripSplits[0] : undefined
+  // The seat is matched to a part on the canonical instrument names the API stored (`seat.ts`: "Violin II" reads the
+  // book's "Violino II"); a player's strips open on the seat's own split when no split is named.
+  const seatStrip = role === 'player' ? stripSplits.find(x => splitIsSeats(x.instruments, parts, persona.instrument, persona.instrumentCanonical)) : undefined
+  const pstrip = stripId !== undefined ? stripSplits.find(x => x.id === stripId) ?? seatStrip ?? stripSplits[0] : undefined
   const stripPart = pstrip && pstrip.instruments.length === 1 ? parts.find(p => p.name === pstrip.instruments[0]) ?? null : null
-  const seat = parts.find(p => p.name === persona.instrument)?.id
+  const seat = seatPart(parts, persona.instrument, persona.instrumentCanonical)?.id
   const seatName = groupId && seat ? partsById[seat]?.name ?? null : null
   const defaultPart = splitSel ?? (role === 'player' && seat && !pages ? seat : 'full')
   const [partSel, setPartSel] = useState<string>(defaultPart)

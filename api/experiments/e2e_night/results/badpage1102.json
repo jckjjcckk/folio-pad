@@ -1,0 +1,709 @@
+{
+ "slug": "badpage1102",
+ "fixture": "/private/tmp/claude-501/-Users-ckjiang-Documents-muse/28c81f27-e249-42c3-8999-a771a7455bc5/scratchpad/Goldberg_p1-3_plus_a_bad_page.pdf",
+ "score_id": "2dcdf73d-cb1e-4f59-888d-35d727aef83c",
+ "group": true,
+ "started_utc": "2026-11-02T07:52:15.038321+00:00",
+ "steps": [
+  {
+   "step": "import-request",
+   "at": "2026-11-02T02:52:16",
+   "seconds": 1.8,
+   "upload_s": 0.8,
+   "status": 200
+  },
+  {
+   "step": "question",
+   "at": "2026-11-02T02:53:43",
+   "seconds": 88.2,
+   "job": "06bba84a-e7c8-480e-9009-ab1b468d9c18",
+   "kind": "process_pages"
+  },
+  {
+   "step": "answer",
+   "at": "2026-11-02T02:53:58",
+   "seconds": 0.6,
+   "job": "06bba84a-e7c8-480e-9009-ab1b468d9c18",
+   "status": 200,
+   "human_wait_s": 14.9
+  },
+  {
+   "step": "reading",
+   "at": "2026-11-02T02:54:01",
+   "seconds": 3.1,
+   "status": "ready",
+   "failure": null,
+   "pages": 4,
+   "title": "Goldberg p1-3 plus a bad page",
+   "key": "G major",
+   "meter": "3/4",
+   "questions": 1,
+   "cost": 0.102,
+   "job_errors": [],
+   "yoga": []
+  },
+  {
+   "step": "local:convert",
+   "at": "2026-11-02T02:57:29",
+   "seconds": 191.1,
+   "job": "66a11804-09f3-4cb3-aee3-372620cf2d0b",
+   "final": "done",
+   "error": null,
+   "attempts": 1,
+   "started_at": "2026-11-02T07:54:18.687318+00:00",
+   "finished_at": "2026-11-02T07:57:28.879704+00:00",
+   "cost": 0.1471,
+   "chain_cost": 0.1471,
+   "result": {
+    "bars": 81,
+    "note": "Digital: 81 bars, 41 to check; page 4 could not be transcribed",
+    "cover": null,
+    "edits": {
+     "A": 0,
+     "dup": 0,
+     "flag": 0,
+     "front": 1,
+     "words": 17,
+     "tuplet": 1,
+     "dynamic": 17,
+     "hairpin": 16
+    },
+    "pages": [
+     1,
+     2,
+     3,
+     4
+    ],
+    "verify": {
+     "asked": 18,
+     "missing": {
+      "10": "cresc. moved from m9 to m10 and f in m11 omitted",
+      "15": "Transcription adds tr. in m.15 not present in scan.",
+      "19": "cresc. is in m19 in original but placed in m18 in transcription"
+     },
+     "skipped": null,
+     "systems": 18,
+     "render_s": 6.4,
+     "reverted": {
+      "9": "cresc. moved from m9 to m10 and f in m11 omitted",
+      "11": "cresc. moved from m9 to m10 and f in m11 omitted",
+      "18": "cresc. is in m19 in original but placed in m18 in transcription",
+      "31": "Measures 31-32 text does not match: f vs p discrepancy.",
+      "32": "Measures 31-32 text does not match: f vs p discrepancy.",
+      "41": "forte marking in m.41 missing in transcription",
+      "49": "mf present in original m.49 is missing in transcription"
+     }
+    },
+    "seconds": 190.1,
+    "timings": {
+     "box_s": 121.4,
+     "pull_s": 0.7,
+     "kinds_s": 2.9,
+     "spark_s": 26.2,
+     "write_s": 24.3,
+     "render_s": 7.8,
+     "upload_s": 0.9,
+     "verify_s": 21.4,
+     "engrave_s": 13.4,
+     "audiveris_s": 111.4
+    },
+    "cost_usd": 0.1471,
+    "page_log": [
+     "Page 4: Audiveris could not read it (NullPointerException: Cannot invoke \"org.audiveris.omr.sheet.rhythm.Measure.addInter(org.audiveris.omr.sig.inter.Inter)\" because \"measure\" is null); tried audiveris, again alone, 300 dpi image, 400 dpi image; left out"
+    ],
+    "playback": {
+     "ok": true,
+     "bars": 81,
+     "tracks": 1,
+     "seconds": 0.79,
+     "midi_bytes": 8796
+    },
+    "engraving": {
+     "ok": true,
+     "layouts": {
+      "display": {
+       "bars": 81,
+       "pages": 4,
+       "seconds": 4.3,
+       "source_id": "01ff67c9-3ad3-4298-a17d-60f76e7b2c2e"
+      },
+      "original": {
+       "bars": 81,
+       "pages": 4,
+       "seconds": 4.1,
+       "source_id": "84ad53ed-832f-4ecc-aaf5-24bc8813e60d"
+      }
+     },
+     "seconds": 13.4
+    },
+    "source_id": "74027733-07ac-4c58-b3dd-d84185c99015",
+    "model_tier": "standard",
+    "page_kinds": [
+     [
+      1,
+      "music"
+     ],
+     [
+      2,
+      "music"
+     ],
+     [
+      3,
+      "music"
+     ],
+     [
+      4,
+      "music"
+     ]
+    ],
+    "instruments": [
+     "Piano"
+    ],
+    "spark_calls": 38,
+    "flagged_bars": [
+     2,
+     3,
+     7,
+     9,
+     10,
+     11,
+     13,
+     14,
+     15,
+     16,
+     18,
+     19,
+     23,
+     25,
+     31,
+     32,
+     33,
+     36,
+     37,
+     39,
+     40,
+     41,
+     45,
+     49,
+     52,
+     53,
+     54,
+     56,
+     66,
+     70,
+     71,
+     72,
+     73,
+     74,
+     75,
+     76,
+     77,
+     78,
+     79,
+     80,
+     81
+    ],
+    "front_matter": {
+     "opus": null,
+     "read": true,
+     "title": "Aria con Variazioni.",
+     "editor": null,
+     "composer": "J. S. Bach.",
+     "metronome": {
+      "bpm": 72,
+      "unit": "quarter"
+     },
+     "dedication": null,
+     "tempo_heading": "Andante espressivo.",
+     "movement_or_number": "Aria."
+    },
+    "cost_per_page": {
+     "1": 0.0506,
+     "2": 0.0531,
+     "3": 0.0434
+    },
+    "spark_skipped": 0,
+    "pages_unreadable": [
+     {
+      "bars": [
+       70,
+       71,
+       72,
+       73,
+       74,
+       75,
+       76,
+       77,
+       78,
+       79,
+       80,
+       81
+      ],
+      "page": 4,
+      "tried": [
+       "audiveris",
+       "again alone",
+       "300 dpi image",
+       "400 dpi image"
+      ],
+      "reason": "the engine could not read it (NullPointerException: Cannot invoke \"org.audiveris.omr.sheet.rhythm.Measure.addInter(org.audiveris.omr.sig.inter.Inter)\" because \"measure\" is null)"
+     }
+    ]
+   },
+   "yoga": []
+  },
+  {
+   "step": "check",
+   "at": "2026-11-02T02:57:45",
+   "seconds": 1.0,
+   "measures": 81,
+   "parts": [
+    "Piano"
+   ],
+   "pages": 4,
+   "landmarks": 8,
+   "label_memory": 3,
+   "midi_part_tracks": 1,
+   "bar_map_missing": 0
+  },
+  {
+   "step": "check",
+   "at": "2026-11-02T02:57:51",
+   "seconds": 0.5,
+   "measures": 81,
+   "parts": [
+    "Piano"
+   ],
+   "pages": 4,
+   "landmarks": 8,
+   "label_memory": 3,
+   "midi_part_tracks": 1,
+   "bar_map_missing": 0
+  },
+  {
+   "step": "local:convert",
+   "at": "2026-11-02T03:02:24",
+   "seconds": 167.7,
+   "job": "53c5eeda-06cb-4d8f-bc7b-0403c8d47f88",
+   "final": "done",
+   "error": null,
+   "attempts": 1,
+   "started_at": "2026-11-02T07:59:36.73695+00:00",
+   "finished_at": "2026-11-02T08:02:22.98447+00:00",
+   "cost": 0.1249,
+   "chain_cost": 0.272,
+   "result": {
+    "bars": 81,
+    "note": "Digital: 81 bars, 35 to check; page 4 could not be transcribed",
+    "cover": null,
+    "edits": {
+     "A": 0,
+     "dup": 0,
+     "flag": 0,
+     "front": 1,
+     "words": 17,
+     "tuplet": 1,
+     "dynamic": 20,
+     "hairpin": 16
+    },
+    "pages": [
+     1,
+     2,
+     3,
+     4
+    ],
+    "verify": {
+     "asked": 18,
+     "missing": {
+      "15": "Added tr. in m.15 not in original"
+     },
+     "skipped": null,
+     "systems": 18,
+     "render_s": 6.3,
+     "reverted": {
+      "35": "Measure 35 omits the 'dim.' present in the original third measure.",
+      "41": "forte marking present in scan is missing in transcription"
+     }
+    },
+    "seconds": 166.0,
+    "timings": {
+     "box_s": 121.6,
+     "pull_s": 0.7,
+     "kinds_s": 2.2,
+     "spark_s": 9.4,
+     "write_s": 19.6,
+     "render_s": 7.8,
+     "upload_s": 0.9,
+     "verify_s": 17.0,
+     "engrave_s": 11.5,
+     "audiveris_s": 111.5
+    },
+    "cost_usd": 0.1249,
+    "page_log": [
+     "Page 4: Audiveris could not read it (NullPointerException: Cannot invoke \"org.audiveris.omr.sheet.rhythm.Measure.addInter(org.audiveris.omr.sig.inter.Inter)\" because \"measure\" is null); tried audiveris, again alone, 300 dpi image, 400 dpi image; left out"
+    ],
+    "playback": {
+     "ok": true,
+     "bars": 81,
+     "tracks": 1,
+     "seconds": 0.87,
+     "midi_bytes": 8796
+    },
+    "engraving": {
+     "ok": true,
+     "layouts": {
+      "display": {
+       "bars": 81,
+       "pages": 4,
+       "seconds": 4.2,
+       "source_id": "01ff67c9-3ad3-4298-a17d-60f76e7b2c2e"
+      },
+      "original": {
+       "bars": 81,
+       "pages": 4,
+       "seconds": 3.8,
+       "source_id": "84ad53ed-832f-4ecc-aaf5-24bc8813e60d"
+      }
+     },
+     "seconds": 11.5
+    },
+    "source_id": "74027733-07ac-4c58-b3dd-d84185c99015",
+    "model_tier": "standard",
+    "page_kinds": [
+     [
+      1,
+      "music"
+     ],
+     [
+      2,
+      "music"
+     ],
+     [
+      3,
+      "music"
+     ],
+     [
+      4,
+      "music"
+     ]
+    ],
+    "instruments": [
+     "Piano"
+    ],
+    "spark_calls": 38,
+    "flagged_bars": [
+     2,
+     3,
+     7,
+     13,
+     14,
+     15,
+     16,
+     19,
+     23,
+     25,
+     33,
+     35,
+     36,
+     37,
+     39,
+     40,
+     41,
+     45,
+     52,
+     53,
+     54,
+     56,
+     66,
+     70,
+     71,
+     72,
+     73,
+     74,
+     75,
+     76,
+     77,
+     78,
+     79,
+     80,
+     81
+    ],
+    "front_matter": {
+     "opus": null,
+     "read": true,
+     "title": "Aria con Variazioni.",
+     "editor": null,
+     "composer": "J. S. Bach.",
+     "metronome": {
+      "bpm": 72,
+      "unit": "quarter"
+     },
+     "dedication": null,
+     "tempo_heading": "Andante espressivo.",
+     "movement_or_number": "Aria."
+    },
+    "cost_per_page": {
+     "1": 0.0404,
+     "2": 0.0435,
+     "3": 0.041
+    },
+    "spark_skipped": 0,
+    "pages_unreadable": [
+     {
+      "bars": [
+       70,
+       71,
+       72,
+       73,
+       74,
+       75,
+       76,
+       77,
+       78,
+       79,
+       80,
+       81
+      ],
+      "page": 4,
+      "tried": [
+       "audiveris",
+       "again alone",
+       "300 dpi image",
+       "400 dpi image"
+      ],
+      "detail": "NullPointerException: Cannot invoke \"org.audiveris.omr.sheet.rhythm.Measure.addInter(org.audiveris.omr.sig.inter.Inter)\" because \"measure\" is null",
+      "reason": "the transcription engine could not read this page"
+     }
+    ]
+   },
+   "yoga": []
+  }
+ ],
+ "questions": [
+  {
+   "job": "06bba84a-e7c8-480e-9009-ab1b468d9c18",
+   "kind": "process_pages",
+   "question": "Which parts are on page 4, top to bottom? Spark reads system 1 as Flute, Oboe, Clarinet I, Clarinet II, Bassoon, Horn, Trumpet, Timpani, Violin I, Violin II, Viola, Cello and Bass with staves [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], but it has 10 staves.",
+   "asked_at": "2026-11-02T02:53:43",
+   "page": 4,
+   "answer": {
+    "answer": [
+     "Piano"
+    ]
+   },
+   "answered_at": "2026-11-02T02:53:58",
+   "status": 200,
+   "follow_up": "7bb885ea-5544-4dbe-b5ed-a7f8f021ca4a"
+  }
+ ],
+ "jobs": {
+  "0838fe66-1ce8-4232-a2a0-366ba86327ac": {
+   "kind": "import_pdf",
+   "created_at": "2026-11-02T07:52:16.502372+00:00",
+   "status": "done"
+  },
+  "06bba84a-e7c8-480e-9009-ab1b468d9c18": {
+   "kind": "process_pages",
+   "created_at": "2026-11-02T07:52:21.670828+00:00",
+   "status": "done"
+  },
+  "7bb885ea-5544-4dbe-b5ed-a7f8f021ca4a": {
+   "kind": "process_pages",
+   "created_at": "2026-11-02T07:53:58.661393+00:00",
+   "status": "done"
+  },
+  "66a11804-09f3-4cb3-aee3-372620cf2d0b": {
+   "kind": "omr_convert",
+   "created_at": "2026-11-02T07:54:18.719277+00:00",
+   "local": true
+  },
+  "53c5eeda-06cb-4d8f-bc7b-0403c8d47f88": {
+   "kind": "omr_convert",
+   "created_at": "2026-11-02T07:59:36.769703+00:00",
+   "local": true
+  }
+ },
+ "import": {
+  "source_id": "be8e9e3a-9223-4656-bfd0-6d5f11a3d96b",
+  "job_id": "0838fe66-1ce8-4232-a2a0-366ba86327ac",
+  "kind": "import_pdf"
+ },
+ "t_import": 1793605934.825096,
+ "page_paths": [
+  "2dcdf73d-cb1e-4f59-888d-35d727aef83c/pages/1.png",
+  "2dcdf73d-cb1e-4f59-888d-35d727aef83c/pages/2.png",
+  "2dcdf73d-cb1e-4f59-888d-35d727aef83c/pages/3.png",
+  "2dcdf73d-cb1e-4f59-888d-35d727aef83c/pages/4.png"
+ ],
+ "human_wait_s": 14.9,
+ "score": {
+  "id": "2dcdf73d-cb1e-4f59-888d-35d727aef83c",
+  "status": "ready",
+  "progress": 1,
+  "failure_reason": null,
+  "title": "Goldberg p1-3 plus a bad page",
+  "composer": "J. S. Bach",
+  "pages": 4,
+  "key_sig": "G major",
+  "meter": "3/4"
+ },
+ "check": {
+  "title": "Goldberg p1-3 plus a bad page",
+  "composer": "J. S. Bach",
+  "key": "G major",
+  "meter": "3/4",
+  "pages": 4,
+  "parts": [
+   "Piano"
+  ],
+  "measures": 81,
+  "bar_first": 1,
+  "bar_last": 81,
+  "landmarks": {
+   "n": 8,
+   "sample": [
+    {
+     "bar": 1,
+     "kind": "tempo",
+     "label": "Andante espressivo.",
+     "source": "musicxml",
+     "bar_after": null
+    },
+    {
+     "bar": 16,
+     "kind": "repeat",
+     "label": "end repeat",
+     "source": "musicxml",
+     "bar_after": 17
+    },
+    {
+     "bar": 17,
+     "kind": "repeat",
+     "label": "start repeat",
+     "source": "musicxml",
+     "bar_after": null
+    },
+    {
+     "bar": 32,
+     "kind": "repeat",
+     "label": "end repeat",
+     "source": "musicxml",
+     "bar_after": 33
+    },
+    {
+     "bar": 48,
+     "kind": "repeat",
+     "label": "end repeat",
+     "source": "musicxml",
+     "bar_after": 49
+    },
+    {
+     "bar": 49,
+     "kind": "repeat",
+     "label": "start repeat",
+     "source": "musicxml",
+     "bar_after": null
+    }
+   ],
+   "sources": [
+    "musicxml"
+   ]
+  },
+  "label_memory": {
+   "n": 3,
+   "raw": "{\"entries\": {\"aria\": {\"at\": \"2026-11-02T07:53:59.949247+00:00\", \"page\": 1, \"part\": \"Aria\", \"label\": \"Aria.\", \"job_id\": null, \"origin\": \"header\", \"source\": \"model\", \"staves\": null}}, \"layouts\": {\"2\": {\"parts\": {\"Piano\": {\"at\": \"2026-11-02T07:52:47.319841+00:00\", \"page\": 1, \"job_id\": \"06bba84a-e7c8-480e-9009-ab1b468d9c18\", \"origin\": \"page\", \"source\": \"model\", \"system\": 1, \"positions\": [1, 2]}}, \"labels\": [], \"staves\": 2}}, \"updated_at\": \"2026-11-02T07:53:59.998076+00:00\"}"
+  },
+  "bars_per_page": {
+   "1": {
+    "n": 28,
+    "first": 1,
+    "last": 28
+   },
+   "2": {
+    "n": 20,
+    "first": 29,
+    "last": 48
+   },
+   "3": {
+    "n": 21,
+    "first": 49,
+    "last": 69
+   },
+   "4": {
+    "n": 12,
+    "first": 70,
+    "last": 81
+   }
+  },
+  "playback_row": {
+   "bars": 81,
+   "midi": "2dcdf73d-cb1e-4f59-888d-35d727aef83c/playback/score.mid",
+   "parts": [
+    "Piano"
+   ],
+   "bar_map": "2dcdf73d-cb1e-4f59-888d-35d727aef83c/playback/bars.json",
+   "made_at": "2026-11-02T07:57:15.363366+00:00",
+   "source_id": "74027733-07ac-4c58-b3dd-d84185c99015"
+  },
+  "midi_status": 200,
+  "bars_status": 200,
+  "midi_format": 1,
+  "midi_tracks": [
+   [
+    null,
+    0
+   ],
+   [
+    "Piano",
+    1001
+   ]
+  ],
+  "midi_part_tracks": 1,
+  "bars_json": {
+   "parts": [
+    "Piano"
+   ],
+   "n": 81,
+   "first": 1,
+   "last": 81,
+   "tempos": [
+    {
+     "bar": 1,
+     "at": 0.0,
+     "qpm": 72.0,
+     "bpm": 72.0,
+     "beat": "quarter",
+     "text": null,
+     "marked": true
+    }
+   ],
+   "meters": 2
+  },
+  "bar_map_missing": [],
+  "bar_map_missing_n": 0,
+  "bar_map_extra_n": 0,
+  "bar_map_extra": [],
+  "sources": [
+   [
+    "pdf",
+    false,
+    false
+   ],
+   [
+    "musicxml",
+    true,
+    false
+   ],
+   [
+    "engraving",
+    false,
+    false
+   ],
+   [
+    "engraving",
+    false,
+    false
+   ]
+  ]
+ }
+}

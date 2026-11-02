@@ -11,6 +11,11 @@ after seeing the result), appends the tool results, and persists the state. The 
 Resume: pass the previous `state` and an `answer`; the answer becomes the next user message and the loop
 continues with the same history. Nothing changed → no model call, the state comes back as it was.
 
+Continue a paused run: pass its `state` (status `paused`, `pause_reason` turn_limit | cost_limit) with or without an
+answer; it gets a fresh allowance of `max_turns` turns and `max_cost_usd` from where it stopped (`allowance_from`),
+because a person chose to let it go on (2026-11-02: a pause is not a failure). The history is sent as it was: a run
+pauses only after its tool results, so the transcript already ends on a user turn.
+
 The loop never touches the database: `persist(state_dict)` and `charge(Charge)` are callbacks, so handlers
 decide where state lives (the job row, an interpretation) and tests run without a database or a network.
 """
@@ -53,6 +58,9 @@ class AgentState:
     result: dict[str, Any] = field(default_factory=dict)
     log: list[str] = field(default_factory=list)
     scratch: dict[str, Any] = field(default_factory=dict)   # tools keep working data here
+    pause_reason: str | None = None  # turn_limit | cost_limit, when status is paused
+    allowance_from: dict[str, Any] = field(default_factory=dict)   # {turn, cost_usd} a continued run's limits count from
+    continued: int = 0               # how many times a paused run was continued
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -102,6 +110,11 @@ async def run_agent(
     st = state or AgentState()
     if st.status == "needs_review" and answer is None:
         return st                                    # nothing changed, no model call
+    if st.status == "paused":                        # continued by a person: a fresh allowance from here
+        st.allowance_from = {"turn": st.turn, "cost_usd": st.cost_usd}
+        st.continued += 1
+        st.log.append(f"Continued after a pause ({st.pause_reason or 'limit'}) at turn {st.turn}: {max_turns} more turns allowed")
+        st.pause_reason = None
     if answer is not None:
         st.messages.append({"role": "user", "content": answer})
         st.status, st.question, st.question_payload = "running", None, {}
@@ -125,13 +138,17 @@ async def run_agent(
             if hasattr(out, "__await__"):
                 await out
 
+    turn0 = int(st.allowance_from.get("turn") or 0)
+    cost0 = float(st.allowance_from.get("cost_usd") or 0.0)
     while True:
-        if st.turn >= max_turns or st.cost_usd >= max_cost_usd:
+        turns, spent = st.turn - turn0, st.cost_usd - cost0
+        if turns >= max_turns or spent >= max_cost_usd:
             st.status = "paused"
-            st.log.append(f"Paused: {'turn' if st.turn >= max_turns else 'cost'} limit reached")
+            st.pause_reason = "turn_limit" if turns >= max_turns else "cost_limit"
+            st.log.append(f"Paused: {'turn' if turns >= max_turns else 'cost'} limit reached")
             await save()
             return st
-        last_turn = st.turn == max_turns - 1
+        last_turn = turns == max_turns - 1
         msgs = list(st.messages)
         if last_turn and isinstance(msgs[-1].get("content"), list):
             msgs[-1] = {**msgs[-1], "content": [*msgs[-1]["content"], {"type": "text", "text": LAST_TURN_NUDGE}]}

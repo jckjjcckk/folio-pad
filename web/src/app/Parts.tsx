@@ -5,7 +5,7 @@
 import { useState, type FormEvent } from 'react'
 import { Link } from 'react-router'
 import type { Score } from '../mock'
-import { ApiError, apiFailure, cutParts } from '../lib/api'
+import { ApiError, apiFailure, cutParts, resumeJob } from '../lib/api'
 import { useAuth } from './auth'
 import { exportName, exportStored, partLabel, type PartJob, type PartStrip } from './data'
 import { fmtDateTime, useStore } from './store'
@@ -122,8 +122,8 @@ function PickerForm({ score, onClose }: { score: Score; onClose: () => void }) {
   )
 }
 
-const jobRope: Partial<Record<PartJob['status'], RopeState>> = { queued: 'working', running: 'working', needs_review: 'asking', failed: 'failed' }
-const stateWord: Record<PartJob['status'], string> = { queued: 'Queued', running: 'Working', needs_review: 'Waiting for you', done: 'Done', failed: 'Stopped' }
+const jobRope: Partial<Record<PartJob['status'], RopeState>> = { queued: 'working', running: 'working', needs_review: 'asking', paused: 'asking', failed: 'failed' }
+const stateWord: Record<PartJob['status'], string> = { queued: 'Queued', running: 'Working', needs_review: 'Waiting for you', paused: 'Paused', done: 'Done', failed: 'Stopped' }
 
 /** A finished split. PDF: its strip of systems. Digital: read it with only these instruments, or export it. */
 function SplitRow({ score, split, twins }: { score: Score; split: PartStrip; twins: boolean }) {
@@ -167,6 +167,33 @@ function SplitRow({ score, split, twins }: { score: Score; split: PartStrip; twi
         <Link className="pt-open" to={`/score/${score.id}?split=${split.id}`}>Read <IChevronRight size={18} /></Link>
       </span>
     </li>
+  )
+}
+
+/** Continue a split that paused at its turn or cost allowance (2026-11-02): the same run picks up where it stopped. */
+export function ContinueButton({ jobId, className = 'btn btn-solid is-small' }: { jobId: string; className?: string }) {
+  const { session } = useAuth()
+  const { world } = useStore()
+  const [busy, setBusy] = useState(false)
+  const [msg, setMsg] = useState<string | null>(null)
+  const go = async () => {
+    if (!session) return
+    setBusy(true); setMsg(null)
+    try {
+      await resumeJob(jobId, session.access_token)
+      world.reload()
+    } catch (e) {
+      if (e instanceof ApiError && e.status === 409) { world.reload(); return }
+      setMsg(apiFailure(e, 'Continuing the split'))
+    } finally {
+      setBusy(false)
+    }
+  }
+  return (
+    <>
+      <button type="button" className={className} disabled={busy} onClick={() => void go()}>{busy ? 'Continuing' : 'Continue'}</button>
+      {msg && <p className="r3-msg" role="alert">{msg}</p>}
+    </>
   )
 }
 
@@ -217,6 +244,12 @@ export function PartsPanel({ score }: { score: Score }) {
               )}
               {j.status === 'queued' && <span className="pt-note">{j.resumed ? 'Your answer is in. Picking up from it.' : `Starting${j.pages ? `, ${j.pages.length} pages` : ''}.`}</span>}
               {j.status === 'failed' && <span className="pt-fail">{j.error ?? 'The split stopped.'}</span>}
+              {j.status === 'paused' && (
+                <div className="pt-q">
+                  <p>{j.pause?.message ?? 'Paused'}{j.systemsCut ? `, ${j.systemsCut} ${j.systemsCut === 1 ? 'system' : 'systems'} cut so far` : ''}. Continue picks up where it stopped.</p>
+                  {canEdit && <ContinueButton jobId={j.id} />}
+                </div>
+              )}
               {j.status === 'needs_review' && (
                 <div className="pt-q">
                   <p>{j.question?.split('?')[0]}?</p>

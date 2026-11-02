@@ -22,8 +22,9 @@ def convert(score_id: str, user: BudgetedUser, body: ConvertBody | None = None) 
     no `pdf` source; 409 `{message, job_id, kind, status}` while a transcription of it is queued, running or parked.
     Returns the `omr_convert` job row.
 
-    The job keeps the score in `payload.score_id` and leaves `jobs.score_id` empty, so a failed or running conversion
-    never moves the PDF book's own status or meter (the browser finds it by kind and `payload->>score_id`).
+    The job carries the book in `jobs.score_id` (2026-11-02, CK: every member who can read the book sees the running
+    convert, through RLS `jobs_select` and the shelf's Realtime) and in `payload.score_id`; `omr_convert` is a side kind
+    (`librarian.SIDE_KINDS`), so a failed or running conversion still never moves the PDF book's own status or meter.
     `max_attempts` is 1: a retry would pay for the Spark passes again."""
     assert_can_edit(user, score_id)
     sources = db().table("sources").select("id,kind,created_at").eq("score_id", score_id).eq("kind", "pdf").order("created_at").execute().data or []
@@ -35,4 +36,4 @@ def convert(score_id: str, user: BudgetedUser, body: ConvertBody | None = None) 
     pages = sorted({int(n) for n in (body.pages if body else None) or [] if int(n) >= 1})
     if pages:
         payload["pages"] = pages
-    return insert_job({"kind": "omr_convert", "status": "queued", "score_id": None, "created_by": user.id, "max_attempts": 1, "payload": payload})
+    return insert_job({"kind": "omr_convert", "status": "queued", "score_id": score_id, "created_by": user.id, "max_attempts": 1, "payload": payload})

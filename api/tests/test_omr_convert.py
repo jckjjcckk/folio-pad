@@ -472,7 +472,7 @@ def test_route_queues_one_convert_job(client):
     r = client(db).post(f"/scores/{SCORE}/convert", json={"pages": [3, 1, 2, 1]})
     assert r.status_code == 200, r.text
     j = r.json()
-    assert j["kind"] == "omr_convert" and j["score_id"] is None and j["created_by"] == "u1" and j["max_attempts"] == 1
+    assert j["kind"] == "omr_convert" and j["score_id"] == SCORE and j["created_by"] == "u1" and j["max_attempts"] == 1
     assert j["payload"] == {"score_id": SCORE, "source_id": "pdf1", "pages": [1, 2, 3]}
     r = client(db).post(f"/scores/{SCORE}/convert")                     # one conversion at a time: 409 naming the live one
     assert r.status_code == 409 and r.json()["detail"] == {"message": "This book is already being converted to Digital.", "job_id": j["id"],
@@ -595,3 +595,165 @@ async def test_a_stitched_book_that_does_not_line_up_is_read_again_whole():
     out, ctx = await run(db, box)
     assert out["bars"] == 2 and "parallel_fallback" in ctx.result
     assert box.events[1:] == ["transcribe job-1 parallel=None", "transcribe job-1-whole parallel=0"]
+
+
+# ---------------------------------------------------------------------------------------------------- a bad page (2026-11-02)
+
+def stitched_book(xml_by_sheet: dict[int, str]) -> str:
+    """A page-by-page book: one sheet per page read, each a movement of its own, two bars a page."""
+    sheets = "".join(f'<sheet number="{n}"><page id="1" movement-start="true" delta-measure-id="2"/></sheet>' for n in xml_by_sheet)
+    return f"<book>{sheets}</book>"
+
+
+ONE_STAFF = MUSICXML.replace("<staves>2</staves>", "").replace('<clef number="2"><sign>F</sign><line>4</line></clef>', "")
+ONE_STAFF = re.sub(r"<backup>.*?</backup>\s*<note>.*?<staff>2</staff></note>", "", ONE_STAFF, flags=re.S)
+ONE_STAFF = re.sub(r"<backup>.*?</backup>", "", ONE_STAFF, flags=re.S).replace(PEDAL.format(t="start"), "").replace(PEDAL.format(t="stop"), "")
+ONE_STAFF = re.sub(r'<direction placement="below"><direction-type><words>07\'880.</words></direction-type><staff>2</staff></direction>', "", ONE_STAFF)
+
+
+class PageBox(FakeBox):
+    """A page-by-page read of PDF pages `pages`: `exports` maps each page read (its index in the set) to its export;
+    `skipped` lists what the box left out. `whole`: what a whole-book run does (an exception to raise, or None for the
+    same book again)."""
+
+    def __init__(self, exports: dict[int, str], skipped: list[dict] | None = None, whole: Exception | None = None):
+        super().__init__()
+        self.exports, self.skipped, self.whole = exports, skipped or [], whole
+
+    async def transcribe(self, run_id: str, pdf: bytes, pages, dest: Path, uploaded: float | None = None, parallel: int | None = None) -> dict:
+        self.runs.append((run_id, pages, parallel))
+        if parallel == 0 and self.whole is not None:
+            raise self.whole
+        xml = stitched_book(self.exports)
+        (dest / "book").mkdir(parents=True)
+        (dest / "book" / "book.xml").write_text(xml)
+        for k, (i, export) in enumerate(sorted(self.exports.items()), start=1):
+            (dest / "book" / f"sheet#{i}").mkdir()
+            (dest / "book" / f"sheet#{i}" / f"sheet#{i}.xml").write_text(SHEET_XML)
+            (dest / f"book.mvt{k}.mxl").write_bytes(mxl(export))
+        (dest / "movements.json").write_text(json.dumps(detected_movements(xml.encode(), pages)))
+        (dest / "scan").mkdir()
+        for i in range(1, len(pages) + 1):
+            Image.new("L", (1000, 1400), 255).save(dest / "scan" / f"p{i}.png")
+        run = {"pdf_pages": pages, "pdf_page_count": len(pages), "audiveris_s": 30.0, "render_s": 1.0, "box_s": 33.0,
+               "parallel": 5, "skipped": self.skipped, "recovered": []}
+        (dest / "book_run.json").write_text(json.dumps(run))
+        return run
+
+
+class AnyBarsMessages(FakeMessages):
+    """The fake model of the tests above, for a book whose bars are numbered past an unreadable first page."""
+
+    async def create(self, **kw):
+        msgs = kw["messages"]
+        parts = msgs[0]["content"]
+        if isinstance(parts, list) and parts and "text" in parts[-1]:
+            fixed = re.sub(r"measures \d+\.\.\d+", "measures 1..2", parts[-1]["text"])
+            kw = {**kw, "messages": [{**msgs[0], "content": [*parts[:-1], {**parts[-1], "text": fixed}]}, *msgs[1:]]}
+        return await super().create(**kw)
+
+
+def with_reading(db: StoreDB, bars_on: dict[int, int]) -> StoreDB:
+    """The book's 004 page reading: `bars_on[pdf page]` bars placed on that page (one system)."""
+    db.rows["scores"][0]["current_interpretation_id"] = "read1"
+    db.rows["sources"][0]["page_order"] = [1, 2, 3]
+    db.rows["measure_placements"] = [{"interpretation_id": "read1", "measure_id": f"m{pg}-{j}", "page": pg, "system": 1,
+                                      "box": {"x0": 0.1 + 0.2 * j, "y0": 0.2, "x1": 0.3 + 0.2 * j, "y1": 0.4}}
+                                     for pg, n in bars_on.items() for j in range(n)]
+    db.rows["measure_placements"].append({"interpretation_id": "read1", "measure_id": "lost", "page": 1, "system": None, "box": {}})
+    return db
+
+
+async def test_a_page_the_box_could_not_read_is_left_out_and_its_bars_stay_as_rests():
+    """PC5 p. 4 (E2E night): one page Audiveris could not read failed the whole convert. Now the box tries it again and
+    leaves it out; the book still becomes Digital, the page is recorded with what was tried, and the bars the page
+    reading counted on it are rests, so every later bar keeps its number (playback and landmarks line up)."""
+    skipped = [{"pdf_page": 1, "index": 1, "reason": "NullPointerException", "tried": [
+        {"step": "audiveris", "rc": 1}, {"step": "again alone", "rc": 1}, {"step": "400 dpi image", "rc": 1}]}]
+    db = with_reading(pdf_book(), {1: 3, 2: 2})
+    box = PageBox({2: MUSICXML}, skipped=skipped)
+    client = SimpleNamespace(messages=AnyBarsMessages())
+    out, ctx = await run(db, box, client, pdf=FakePdf(count=2, staves={1: True, 2: True}))
+    assert box.runs == [("job-1", [1, 2], None)] and out["page_kinds"] == [(1, "music"), (2, "music")]
+    assert out["bars"] == 5 and [b for b in out["flagged_bars"] if b <= 3] == [1, 2, 3]
+    [page] = out["pages_unreadable"]
+    assert page == {"page": 1, "reason": "the transcription engine could not read this page", "detail": "NullPointerException",
+                    "tried": ["audiveris", "again alone", "400 dpi image"], "bars": [1, 2, 3]}
+    assert any(line.startswith("Page 1: Audiveris could not read it (NullPointerException); tried audiveris, again alone, 400 dpi image")
+               for line in out["page_log"])
+    assert ctx.result["note"].startswith("Digital: 5 bars,") and "page 1 could not be transcribed" in ctx.result["note"]
+    meta = next(r for r in db.rows["sources"] if r["id"] == out["source_id"])["meta"]
+    assert meta["flags"]["pages_unreadable"] == 1 and meta["unreadable_pages"] == [page]
+    rests = {b["number"]: b for b in meta["flagged_bars"] if b["number"] <= 3}
+    assert rests[1]["page"] == 1 and rests[1]["box"] == {"x0": 0.1, "y0": 0.2, "x1": 0.3, "y1": 0.4} and rests[3]["key"] is None
+    assert rests[2]["reasons"] == ["page 1 could not be transcribed: a rest stands in for this bar (counted from the page reading)"]
+    back = converter.parse(db.storage.files[digital_path(SCORE)], format="musicxml")
+    upper, lower = back.parts
+    assert [m.number for m in upper.getElementsByClass(stream.Measure)] == [1, 2, 3, 4, 5]
+    assert [m.number for m in lower.getElementsByClass(stream.Measure)] == [1, 2, 3, 4, 5]
+    assert all(r.isRest for m in (1, 2, 3) for r in upper.measure(m).recurse().notesAndRests)
+    assert lower.measure(1).getElementsByClass("Clef")[0].sign == "F"                 # the rest bars keep the export's clef
+    assert [p.nameWithOctave for n in upper.measure(4).recurse().notes for p in n.pitches][:1] == ["G4"]
+    assert sorted(m["number"] for m in db.rows["measures"]) == [1, 2, 3, 4, 5]
+    assert out["playback"]["bars"] == 5
+
+
+async def test_a_page_with_no_reading_is_left_out_and_the_bars_run_on():
+    skipped = [{"pdf_page": 2, "index": 2, "reason": "no music found on the page", "tried": [{"step": "audiveris", "rc": 0}]}]
+    db = pdf_book()                                                   # no page reading: nothing to count the page's bars
+    out, _ = await run(db, PageBox({1: MUSICXML}, skipped=skipped), pdf=FakePdf(count=2, staves={1: True, 2: True}))
+    assert out["bars"] == 2 and out["pages_unreadable"][0]["page"] == 2 and out["pages_unreadable"][0]["bars"] == []
+    assert any("numbered on from the page before" in line for line in out["page_log"])
+
+
+async def test_a_page_read_with_other_staves_is_left_out_when_the_whole_book_fails_too():
+    """Cappi 1802 (E2E night): pages read one by one came back with different staff counts, the whole-book run failed
+    too, and the convert failed after 16 minutes. Now the odd page is left out and the rest becomes Digital."""
+    db = with_reading(pdf_book(), {1: 2, 2: 2})
+    from app.librarian.omr_convert import EngineFailed
+    box = PageBox({1: MUSICXML, 2: ONE_STAFF}, whole=EngineFailed("The transcription engine could not read this PDF"))
+    out, ctx = await run(db, box, pdf=FakePdf(count=2, staves={1: True, 2: True}))
+    assert [r[2] for r in box.runs] == [None, 0]                      # page by page, then the whole book (refused)
+    assert "parallel_fallback" in ctx.result and out["bars"] == 4
+    [page] = out["pages_unreadable"]
+    assert page["page"] == 2 and page["reason"] == "the transcription engine read 1 staves on this page where the rest of the book has 2"
+    assert page["bars"] == [3, 4] and page["tried"] == ["audiveris page by page", "audiveris on the whole book"]
+    log = "\n".join(out["page_log"])
+    assert "the book read again as one" in log and "The book read as one failed too" in log and "Page 2: the transcription engine read 1 staves" in log
+    back = converter.parse(db.storage.files[digital_path(SCORE)], format="musicxml")
+    assert len(back.parts) == 2 and [m.number for m in back.parts[0].getElementsByClass(stream.Measure)] == [1, 2, 3, 4]
+
+
+async def test_when_no_page_can_be_read_the_convert_fails_with_each_page_and_why():
+    """Every page's export holds a bar more than the page map: each is left out in turn, nothing is left, and the job
+    fails naming each page and why."""
+    from app.librarian.omr_convert import EngineFailed
+    three = MUSICXML.replace("</part>", '<measure number="3"><note><rest measure="yes"/><duration>18</duration><voice>1</voice><staff>1</staff></note></measure></part>')
+    box = PageBox({1: three, 2: three}, whole=EngineFailed("no"))
+    with pytest.raises(EngineFailed, match=r"No page of this PDF could be transcribed \(page 1: the transcription engine's bars on this page "
+                                           r"do not line up.*; page 2: the transcription engine's bars"):
+        await run(pdf_book(), box, pdf=FakePdf(count=2, staves={1: True, 2: True}))
+
+
+def test_the_box_says_which_pages_it_could_not_read():
+    from app.librarian.omr_convert import _box_error
+    msg = _box_error(3, {"skipped": [{"pdf_page": 3, "reason": "NullPointerException"}, {"pdf_page": 4, "reason": "no staves"}]})
+    assert msg == "The transcription engine could not read any page of this PDF (page 3: NullPointerException; page 4: no staves)"
+    assert _box_error(3, {}) == "The transcription engine could not read this PDF"
+
+
+async def test_the_whole_book_fallback_asks_the_box_for_the_whole_book_only(tmp_path, monkeypatch):
+    seen = []
+
+    async def fake_ssh(self, command, stdin=None, timeout=60):
+        seen.append(command)
+        return 3, b'{"error": "audiveris exited 1"}\n', b""
+    monkeypatch.setattr(SshBox, "ssh", fake_ssh)
+    monkeypatch.setattr(SshBox, "cleanup", lambda self, run_id: __import__("asyncio").sleep(0))
+    with pytest.raises(Exception):
+        await SshBox(host="omr").transcribe("job-1", b"%PDF", [1, 2], tmp_path, uploaded=0.1, parallel=0)
+    assert seen[0].endswith("--whole-only")
+    seen.clear()
+    with pytest.raises(Exception):
+        await SshBox(host="omr").transcribe("job-1", b"%PDF", [1, 2], tmp_path, uploaded=0.1, parallel=5)
+    assert "--parallel 5" in seen[0] and "--whole-only" not in seen[0]
