@@ -171,8 +171,9 @@ Each number is from the feature doc named, with its sample size and date. Most a
 
 ## Licence and credits
 
-Copyright 2026 CK Jiang. All rights reserved. The source is published for judging in the Meta Global AI Developer
-Hackathon and may be read and run for evaluation; no other rights are granted (`LICENSE`).
+Copyright 2026 CK Jiang. Folio is free software under the GNU Affero General Public License, version 3 or later
+(`LICENSE`): use it, read it, change it, and share your changes under the same terms, including when you run it as a
+service.
 
 Folio runs alongside these tools, each under its own licence:
 
