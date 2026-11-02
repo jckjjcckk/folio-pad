@@ -45,7 +45,7 @@ from anthropic import AsyncAnthropic   # the SDK client for Meta's Messages-comp
 
 from ..llm import _client as default_client
 from . import Job, JobContext, ScoreFailure, handler
-from . import label_memory, landmarks
+from . import bar_numbers, label_memory, landmarks
 from .label_memory import LabelMemory
 from .cut import page_measures
 from .labels import PageLabels, canon_part, doubtful_names, label_page, match_part, read_header
@@ -60,6 +60,10 @@ CONCURRENCY = 4       # label calls in flight in the second wave (Meta allows 15
 # minimal read carry trust "low"; the voice facts leave out their double bars (004-speed-eval: minimal invented 3-4).
 PAGE_EFFORT = "minimal"
 FALLBACK_EFFORT = "low"
+# CK's decision 3 (2026-11-02): the bar count stays geometric; one more small Spark call per page (effort minimal, beside the
+# label call) reads the printed bar numbers, and the count is checked against them (`bar_numbers`): agreement confirms it, a
+# confirmed consistent offset re-bases the book, a disagreement doubts the systems it lies in. Never an override.
+READ_PRINTED = True
 log = logging.getLogger("folio.process_pages")
 
 
@@ -421,7 +425,10 @@ async def process_pages(job: Job, ctx: JobContext, *, client: AsyncAnthropic | N
         if not geo_d["measures"]:
             state["pages"][str(i)] = {"unreadable": True, "geometry": geo_d, "labels": None, "parts": [], "ambiguous": None, "pending": True}
         else:
-            labels = await label_page(ctx, png, geo_d, effort=effort, known=known)
+            if READ_PRINTED:
+                labels, numbers = await asyncio.gather(label_page(ctx, png, geo_d, effort=effort, known=known), read_numbers(png, geo_d, i))
+            else:
+                labels, numbers = await label_page(ctx, png, geo_d, effort=effort, known=known), None
             state["cost_usd"] = float(Decimal(str(state["cost_usd"])) + labels.cost_usd)
             read_at, why = effort, []
             if effort != FALLBACK_EFFORT and (why := page_doubts(labels, geo_d["systems"], known, header, mem)):
@@ -430,10 +437,29 @@ async def process_pages(job: Job, ctx: JobContext, *, client: AsyncAnthropic | N
                 state["cost_usd"] = float(Decimal(str(state["cost_usd"])) + labels.cost_usd)
                 read_at = FALLBACK_EFFORT
             state["pages"][str(i)] = {"unreadable": False, "geometry": geo_d, "labels": labels.as_dict(), "parts": None, "ambiguous": None, "pending": True,
-                                      "effort": read_at, **({"fallback": why} if why else {})}
+                                      "effort": read_at, **({"fallback": why} if why else {}), **({"numbers": numbers} if numbers is not None else {})}
         save_state()
         done = sum(1 for p in state["pages"].values() if not p.get("ambiguous"))
         await ctx.progress(0.05 + 0.75 * done / n_pages, f"Read {done} of {n_pages} pages")
+
+    async def read_numbers(png: bytes, geo_d: dict[str, Any], i: int) -> dict[str, Any]:
+        """The page's printed bar numbers (`bar_numbers.read_printed`, effort minimal), never failing the page. A page whose
+        readings do not fit its own count is read again at low (the `page_doubts` path); what still disagrees is doubted
+        when the whole book is compared."""
+        try:
+            rec = await bar_numbers.read_printed(ctx, png, geo_d, effort=bar_numbers.EFFORT)
+            state["cost_usd"] = float(Decimal(str(state["cost_usd"])) + Decimal(str(rec["cost_usd"])))
+            if "error" not in rec and (why := bar_numbers.page_disagrees(geo_d, rec["readings"], i)):
+                state["log"].append(f"Page {i}: the printed bar numbers read at {bar_numbers.EFFORT} disagree with the count "
+                                    f"({'; '.join(why)}); read again at {bar_numbers.FALLBACK_EFFORT}")
+                again = await bar_numbers.read_printed(ctx, png, geo_d, effort=bar_numbers.FALLBACK_EFFORT)
+                state["cost_usd"] = float(Decimal(str(state["cost_usd"])) + Decimal(str(again["cost_usd"])))
+                if "error" not in again:
+                    rec = {**again, "fallback": why, "first_cost_usd": rec["cost_usd"], "first_readings": rec["readings"]}
+            return rec
+        except Exception as e:  # noqa: BLE001  (the check is optional: a failed read leaves the page unchecked)
+            log.warning("process_pages %s: page %d printed bar numbers not read: %s: %s", score_id, i, type(e).__name__, e)
+            return {"error": f"{type(e).__name__}: {e}"[:200], "readings": [], "cost_usd": 0.0}
 
     def assign_in_order() -> int | None:
         """Assign the parts of every read page, in page order, up to the first page not read yet. Returns the page that asks."""
@@ -543,6 +569,12 @@ async def process_pages(job: Job, ctx: JobContext, *, client: AsyncAnthropic | N
     first = first_labels.first_measure_number if first_labels.confidence in ("high", "medium") else 1
     if first_labels.is_pickup:
         first = 0
+    # The printed bar numbers check the count (CK's decision 3): the count stays the truth; a confirmed consistent offset
+    # re-bases the book unless the admin set the first bar in Details; a disagreement doubts the systems it lies in.
+    printed = check_printed(state, pages_read, first, admin_first_bar(ctx, score_id))
+    if printed and printed["offset_applied"]:
+        first += printed["offset"]
+    doubted = {(d["page"], d["system"]) for d in (printed or {}).get("doubts", [])}
     n = first
     placements: list[dict[str, Any]] = []
     page_marks: list[dict[str, Any]] = []      # 013 v4e: printed landmarks, at the bar geometry gives their box
@@ -561,6 +593,9 @@ async def process_pages(job: Job, ctx: JobContext, *, client: AsyncAnthropic | N
             if m["provisional"] in labels.doubtful:
                 conf = downgrade(conf)
                 flag = (flag + "; " if flag else "") + f"Spark: {labels.doubtful[m['provisional']]}"
+            if (pno, m["system"]) in doubted:
+                conf = "medium" if conf == "high" else conf
+                flag = (flag + "; " if flag else "") + "the printed bar numbers disagree with the count in this system"
             placements.append({"number": n, "page": pno, "system": m["system"], "box": m["box"], "confidence": conf, "flag": flag,
                                "rehearsal_mark": labels.rehearsal_marks.get(m["provisional"])})
             number_of[m["provisional"]] = n
@@ -629,6 +664,7 @@ async def process_pages(job: Job, ctx: JobContext, *, client: AsyncAnthropic | N
         "flagged": {"pages_unreadable": unreadable, "bars_doubtful": doubtful},
         "unreadable_pages": unreadable_pages(state),
         "landmarks": len(page_marks),
+        "bar_numbers": printed_summary(printed),
         "models": {"geometry": "opencv", "labels": next((PageLabels.from_dict(state["pages"][k]["labels"]).model for k in pages_read), None)},
         "log": state["log"],
     }
@@ -653,6 +689,62 @@ async def process_pages(job: Job, ctx: JobContext, *, client: AsyncAnthropic | N
     await ctx.progress(1.0, "Ready")
     return {**ctx.result, "interpretation_id": interp_id, "version": version, "pages": n_pages, "measures": len(placements), "parts": part_names,
             "doubtful": doubtful, "cost_usd": state["cost_usd"], "seconds": round(time.time() - t0, 1)}
+
+
+def admin_first_bar(ctx: JobContext, score_id: str) -> int | None:
+    """The first bar the admin set in Details (`scores.first_bar`), which a printed offset never overrides."""
+    try:
+        row = ctx.db.table("scores").select("first_bar").eq("id", score_id).single().execute().data or {}
+    except Exception:  # noqa: BLE001  (a stack without the column)
+        return None
+    v = row.get("first_bar")
+    return int(v) if v is not None else None
+
+
+def check_printed(state: dict[str, Any], pages_read: list[str], first: int, admin_first: int | None) -> dict[str, Any] | None:
+    """Compare the pages' printed bar numbers with the count that starts at `first` (`bar_numbers.verify_book`), log what
+    it found, and decide whether a consistent offset re-bases the book: only when it is confirmed (the readings that open
+    the book agree on it over two systems), the admin has not set the first bar, and the book would not start below 0.
+    None when no page was checked (READ_PRINTED off, or a reading made before the check existed)."""
+    pages = [(int(k), state["pages"][k]["geometry"], state["pages"][k].get("numbers")) for k in pages_read]
+    if not any(rec is not None for _, _, rec in pages):
+        return None
+    number_of: dict[tuple[int, int], int] = {}
+    n = first
+    for pno, geo, _ in pages:
+        for m in geo["measures"]:
+            number_of[(pno, m["provisional"])] = n
+            n += 1
+    res = bar_numbers.verify_book(pages, number_of)
+    off = res["offset"]
+    res["offset_applied"] = bool(res["offset_confirmed"] and off and admin_first is None and first + off >= 0)
+    lg = state["log"]
+    if res["status"] == "none":
+        lg.append(f"No printed bar numbers read on {res['pages_checked']} pages; the bars are counted from the page")
+    else:
+        lg.append(f"Printed bar numbers: {res['used']} read on {res['pages_checked']} pages"
+                  + (f", {len(res['ignored'])} left out" if res["ignored"] else ""))
+        for r in res["restarts"]:
+            lg.append(f"Page {r['page']}: the printed numbering starts again at bar {r['printed']} (a new movement or variation); compared on its own")
+        if res["offset_confirmed"] and not off:
+            lg.append("The printed bar numbers confirm the count at the start of the book")
+        elif res["offset_applied"]:
+            lg.append(f"The printed bar numbers run {off:+d} from the count at the start of the book; numbered from bar {first + off} as printed")
+        elif res["offset_confirmed"]:
+            lg.append(f"The printed bar numbers run {off:+d} from the count at the start of the book; "
+                      + ("the first bar set in Details holds" if admin_first is not None else "kept the count"))
+        for d in res["doubts"]:
+            lg.append(f"Page {d['page']} system {d['system']}: the printed bar numbers disagree with the count ({d['why']}); kept the count, bars doubted")
+    return res
+
+
+def printed_summary(res: dict[str, Any] | None) -> dict[str, Any]:
+    """`summary.bar_numbers`: where the count comes from (always the page) and what the printed numbers said of it."""
+    if res is None:
+        return {"counted": "page", "status": "unchecked"}
+    return {"counted": "page", "status": res["status"], "read": res["read"], "used": res["used"], "offset": res["offset"],
+            "offset_applied": res["offset_applied"], "restarts": res["restarts"], "pages_checked": res["pages_checked"],
+            "doubted": [{k: d[k] for k in ("page", "system", "why")} for d in res["doubts"]], "cost_usd": res["cost_usd"]}
 
 
 def sp_staves(geo_d: dict[str, Any], index: int) -> int:

@@ -275,6 +275,62 @@ Measured (one run each, `experiments/pageread_speed` variant E and `experiments/
 The 004-speed-eval failure the guard is for (Rach p3 "Horn", "Horn") is caught by the duplicate rule and by the park
 check; its other minimal failure (B9's soprano called "Coro Alto" while every staff is named) is not.
 
+## Printed bar numbers check the count (2026-11-02, CK's decision 3; branch)
+
+CK: bar counts stay geometric and the book says so ("Bars counted from the page" on the book sheet and in Details); a
+Spark read of the printed bar numbers checks the count and never overrides it. Cappi 1802 was "ready at 107 of 329"
+because its barlines do not join the staves (the geometry finds one bar per system) and nothing checked the count; it
+prints no bar numbers, so the check cannot help it, and the sheet now says the bars are counted from the page.
+
+- **The read** (`api/app/librarian/bar_numbers.py`, Muse Spark 1.3): one more call per page, effort minimal (chat
+  completions, `ctx.complete`), in flight beside the label call on the same annotated page (`labels.annotated_png`).
+  Spark lists every printed bar number with the blue box of the bar it numbers and a confidence; it is told what is not a
+  bar number (page and plate numbers, a piece number, fingering including "52" / "435", tuplets, rehearsal letters) and
+  never to count or work a number out. Output 60 to 750 tokens; a failed read leaves the page unchecked, never failed.
+- **The comparison** (pure, `bar_numbers.compare`): for every reading, printed minus counted. Agreement confirms the
+  count. A **consistent offset** re-bases the book only when the readings that open the book agree on it over at least
+  two systems, the admin has not set the first bar in Details (`scores.first_bar`), and the book would not start below
+  0. A **change** of the difference between two readings doubts every system between them (a missed or extra barline, a
+  box that swallowed bars); one box carrying two printed numbers doubts its system. A printed number lower than the one
+  before starts a new run (a movement or variation numbered from 1 again), never a doubt. Low-confidence readings are
+  left out; a single reading whose difference disagrees with both neighbours (which agree) is a misread and ignored.
+- **The doubted path** (as `page_doubts`): a page whose readings disagree with its own boxes is read again at low first
+  (`page_disagrees`); what still disagrees across the book is logged per system ("Page 2 system 5: the printed bar
+  numbers disagree with the count (printed bar 35 … to bar 38 … is 3 bars; the count found 4); kept the count, bars
+  doubted"), and that system's bars drop from high to medium with a flag, so they count in `bars_doubtful`.
+- **Records**: `params.state.pages[n].numbers` (readings, effort, fallback, cost), `summary.bar_numbers` {counted:
+  "page", status agrees | offset | doubted | none | unconfirmed | unchecked, read, used, offset, offset_applied, restarts,
+  doubted [{page, system, why}], pages_checked, cost_usd}. `process_pages.READ_PRINTED` switches it off (the test suite
+  does, `conftest.py`; `test_bar_numbers.py` turns it on).
+
+Measured (`api/experiments/bar_numbers/measure.py`, the production read and fallback, pages at the import route's 150 dpi
+with `cut.page_measures`; truth keyed by eye from the annotated pages; final prompt, runs 2 and 3; run 1 had the same
+results except the minimal read of Peters p. 4 also took a "435" fingering for a bar number):
+
+| Fixture (pages) | Printed numbers (truth) | Read right, final | Minimal read alone | Invented | Book check | Count errors found / false doubts | Cost a page | Call (median) |
+|---|---|---|---|---|---|---|---|---|
+| Cappi 1802 (pp. 2-4) | none | - | - | 0 | none | - (geometry 1 bar a system, not checkable) | $0.0063 | 4.3 s |
+| Goldberg BGA (pp. 1-3) | none (fingering only) | - | - | 1 ("52" fingering, p. 3, both runs) | unconfirmed (one reading: no effect) | 0 / 0 | $0.0053 | 3.6 s |
+| Beethoven 9 Breitkopf (pp. 172-174) | none (page 168, plate 2322) | - | - | 0 | none | 0 / 0 | $0.0062 | 3.7 s |
+| Chopin op. 26 Ekier (pp. 13-16) | 19, at system starts | 19/19 | 19/19 | 0 | doubted: offset 0 confirmed | 2/2 (p. 14 s5 a key-signature box counted, p. 15 s5 three bars in one box) / 0 | $0.0052 | 2.7 s |
+| Goldberg Peters (pp. 1-4, a poor scan) | 17, boxed, at system starts; Var. 1 from 1 | 17/17 | 16/17 (p. 3 "13" read 18) | 0 | doubted: offset 0 confirmed, 1 restart | 10 of 13 wrong systems (p. 2 one box for 16 bars, p. 3 s5 17 boxes for 4 bars, p. 4 s1-8; s9-11 follow the last number) / 0 | $0.0111 (3 pages read again at low) | 5.1 s |
+
+36/36 printed numbers right after the fallback, 35/36 at minimal alone; 1 number invented in 17 pages (a fingering, alone
+on its book, so it changes nothing); 0 false disagreements; every count error that a later printed number can see was
+found. Cost $0.005 to 0.006 a page (the page image, about 3,000 to 4,400 input tokens, is most of it), $0.011 on a page
+read again at low; a call takes 2.3 to 6.8 s at minimal, beside the label call (median 7.4 s), so a page that agrees adds
+no wall time; a page read again adds about 5 to 7 s.
+
+End to end (`import_e2e.py`, `import_pdf` then `process_pages` with real Spark on an in-memory store, Ekier pp. 14-16 as a
+3-page PDF that opens at bar 20): 49 bars numbered 20 to 68 (the label read already gave 20, high, and the printed numbers
+confirmed it), both count errors doubted with the log lines above, 8 calls, $0.063, 29.4 s. Spend for this work: $0.300
+Meta (runs 1-3 $0.237, end to end $0.063); results in `api/experiments/bar_numbers/results/`.
+
+Open: the label read's own `first_measure_number` (high or medium) still sets the first bar without the check (it was
+right here); a printed number after the last one on a page cannot check the bars after it (Peters p. 4 s9-11); two
+invented readings on one book could make a false doubt (none seen); the read costs about 40 % of a page read (folding it
+into the label prompt would save the second image, at the cost of changing the evaluated label prompt).
+
 ## Records
 
 From the grounding README, now in the schema (feature 001 migration):

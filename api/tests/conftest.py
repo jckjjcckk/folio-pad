@@ -12,6 +12,14 @@ def _no_box(monkeypatch):
 
 
 @pytest.fixture(autouse=True)
+def _no_printed_read(monkeypatch):
+    """Page reading's printed-bar-number check (one more Spark call per page, `bar_numbers`) is off: the tests that
+    script the label calls by index do not script it. `test_bar_numbers.py` turns it on."""
+    from app.librarian import process_pages
+    monkeypatch.setattr(process_pages, "READ_PRINTED", False)
+
+
+@pytest.fixture(autouse=True)
 def _no_chat_network(monkeypatch):
     """The chat-completions branch (effort minimal) never reaches Meta from a test: a test that wants it hands
     `llm._chat_transport` its own fake transport."""
