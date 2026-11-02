@@ -33,6 +33,10 @@ def price(model: str, input_tokens: int, output_tokens: int) -> Decimal:
     return _price(model, input_tokens, output_tokens)
 
 SPARK = "muse-spark-1.3"
+SPARK_12 = "muse-spark-1.2"
+# Meta lists one Standard-mode Spark price for 1.3, 1.2 and 1.1 (dev.meta.ai/docs/pricing-rate-limits, read 2026-11-01).
+PRICES.setdefault(SPARK_12, (Decimal("1.25"), Decimal("4.25")))
+PRICES.setdefault("muse-spark-1.2-contributor", (Decimal("0.10"), Decimal("0.20")))
 CLAUDE_MODELS = ("claude-haiku-5-5", "claude-sonnet-5-5")
 
 
@@ -85,21 +89,30 @@ async def ask(model: str, system: str, prompt: str, image: bytes, media_type: st
               retries: int = 1, require: str | None = None, call=None) -> Answer:
     """`call` replaces the SDK call in tests: an async function (kwargs) -> response-like object."""
     provider = provider_of(model)
+    real = call is None  # tests inject `call`; only a real call goes to chat completions on minimal
     if call is None:
         call = client(provider).messages.create
     content = [{"type": "image", "source": {"type": "base64", "media_type": media_type, "data": base64.b64encode(image).decode()}},
                {"type": "text", "text": prompt}]
     total, attempts, parsed, text, first_fail, refusal = 0.0, [], None, "", False, False
     t0 = time.perf_counter()
+    use_chat = effort == "minimal" and provider == "meta" and real
+    if effort == "minimal" and provider != "meta":
+        effort = "low"
     for attempt in range(retries + 1):
-        res = await call(model=model, max_tokens=max_tokens, system=system, messages=[{"role": "user", "content": content}],
-                         output_config={"effort": effort})
+        if use_chat:
+            res = await _chat(model, system, prompt, image, media_type, effort=effort, max_tokens=max_tokens)
+        else:
+            res = await call(model=model, max_tokens=max_tokens, system=system, messages=[{"role": "user", "content": content}],
+                             output_config={"effort": effort})
         u = res.usage
         cost = float(price(model, u.input_tokens, u.output_tokens))
         total += cost
         text = "".join(getattr(b, "text", "") for b in res.content if getattr(b, "type", "") == "text")
         stop = getattr(res, "stop_reason", None)
-        rec = {"input_tokens": u.input_tokens, "output_tokens": u.output_tokens, "cost_usd": round(cost, 6), "stop_reason": stop}
+        rec = {"input_tokens": u.input_tokens, "output_tokens": u.output_tokens, "cost_usd": round(cost, 6), "stop_reason": stop,
+               "api": "chat" if use_chat else "messages", "reasoning_tokens": getattr(u, "reasoning_tokens", None),
+               "model_returned": getattr(res, "model", None), "call_s": getattr(res, "seconds", None)}
         if stop == "refusal":
             refusal = True
             rec["parse"] = "refusal"
@@ -127,6 +140,50 @@ async def ask(model: str, system: str, prompt: str, image: bytes, media_type: st
                   attempts=attempts, json_fail_first=first_fail, refusal=refusal)
 
 
+class _Obj:
+    def __init__(self, **kw):
+        self.__dict__.update(kw)
+
+
+async def _chat(model: str, system: str, prompt: str, image: bytes, media_type: str, *, effort: str, max_tokens: int):
+    """Effort "minimal" on Meta goes to /v1/chat/completions, as app.llm.chat does in the product (Messages refuses
+    minimal). Returns a Messages-shaped object so `ask` treats both the same; one retry on 429/5xx/transport."""
+    import asyncio
+
+    import httpx
+
+    load_env()
+    url = os.environ.get("META_API_BASE_URL", "https://api.meta.ai/v1").rstrip("/") + "/chat/completions"
+    b64 = base64.b64encode(image).decode()
+    body = {"model": model, "reasoning_effort": effort, "max_completion_tokens": max(max_tokens, 1024),
+            "messages": [{"role": "system", "content": system},
+                         {"role": "user", "content": [{"type": "image_url", "image_url": {"url": f"data:{media_type};base64,{b64}"}},
+                                                      {"type": "text", "text": prompt}]}]}
+    headers = {"Authorization": f"Bearer {os.environ['META_API_KEY']}"}
+    for attempt in range(2):
+        t0 = time.perf_counter()
+        try:
+            async with httpx.AsyncClient(timeout=300) as c:
+                r = await c.post(url, json=body, headers=headers)
+            if r.status_code == 200:
+                d = r.json()
+                ch = (d.get("choices") or [{}])[0]
+                u = d.get("usage") or {}
+                fin = ch.get("finish_reason")
+                return _Obj(content=[_Obj(type="text", text=(ch.get("message") or {}).get("content") or "")],
+                            stop_reason="max_tokens" if fin == "length" else fin, model=d.get("model"),
+                            seconds=round(time.perf_counter() - t0, 2),
+                            usage=_Obj(input_tokens=int(u.get("prompt_tokens") or 0), output_tokens=int(u.get("completion_tokens") or 0),
+                                       reasoning_tokens=(u.get("completion_tokens_details") or {}).get("reasoning_tokens")))
+            if not (r.status_code == 429 or r.status_code >= 500) or attempt:
+                raise RuntimeError(f"chat completions HTTP {r.status_code}: {r.text[:300]!r}")
+        except httpx.TransportError:
+            if attempt:
+                raise
+        await asyncio.sleep(1.0)
+    raise RuntimeError("chat completions failed")
+
+
 # ---------------------------------------------------------------- estimates (dry run and the budget guard)
 
 # Output tokens per call at effort low, from the reference runs (005, 008: Spark reasons 2-7k tokens at low)
@@ -144,5 +201,5 @@ def estimate_usd(model: str, task: str, effort: str, image_px: tuple[int, int]) 
         img = min(4784, int(w * s * h * s / 750))
     else:
         img = 1500
-    out = OUT_LOW[provider][task] * (2.0 if effort == "medium" else 1.0)
+    out = OUT_LOW[provider][task] * {"minimal": 0.6, "medium": 2.0}.get(effort, 1.0)
     return float(price(model, img + PROMPT_TOKENS[task], int(out)))

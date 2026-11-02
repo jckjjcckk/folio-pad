@@ -67,7 +67,7 @@ def load_grid(path: str | Path) -> Grid:
         if r not in C.RESOLUTIONS and r != "pdf":  # "pdf": the engine rasterises the PDF page itself
             raise ValueError(f"unknown OMR input {r!r}")
     for e in g.efforts:
-        if e not in ("low", "medium", "high"):
+        if e not in ("minimal", "low", "medium", "high"):
             raise ValueError(f"unknown effort {e!r}")
     if any(models.provider_of(m) == "meta" for m in g.models) and g.max_tokens < SPARK_MIN_TOKENS:
         raise ValueError(f"max_tokens {g.max_tokens} < {SPARK_MIN_TOKENS}: Spark's JSON needs the 8k budget")
@@ -98,7 +98,7 @@ class Call:
         return (self.task, self.model, self.effort, self.res)
 
 
-EFFORT_RANK = {"low": 0, "medium": 1, "high": 2, "-": 0}
+EFFORT_RANK = {"minimal": -1, "low": 0, "medium": 1, "high": 2, "-": 0}
 
 
 def expand(grid: Grid, corpus: C.Corpus) -> list[Call]:
