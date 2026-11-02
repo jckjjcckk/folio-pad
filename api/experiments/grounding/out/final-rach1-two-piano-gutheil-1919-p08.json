@@ -1,0 +1,522 @@
+{
+  "page": "rach1-two-piano-gutheil-1919-p08",
+  "engine": "opencv-geometry + muse-spark-1.3 labels",
+  "effort": "low",
+  "latency_s": 19.1,
+  "usage": {
+    "input_tokens": 3740,
+    "input_tokens_details": {
+      "cached_tokens": 0
+    },
+    "output_tokens": 3033,
+    "output_tokens_details": {
+      "reasoning_tokens": 2800
+    },
+    "total_tokens": 6773
+  },
+  "cost_usd": 0.0176,
+  "cv_skew_deg": 0.3000000000000016,
+  "labels": {
+    "first_measure_number": 4,
+    "is_pickup": false,
+    "confidence": "medium",
+    "systems": [
+      {
+        "index": 1,
+        "parts": [
+          "Piano I",
+          "Piano II"
+        ],
+        "staves_per_part": [
+          2,
+          2
+        ]
+      },
+      {
+        "index": 2,
+        "parts": [
+          "Piano I",
+          "Piano II"
+        ],
+        "staves_per_part": [
+          2,
+          2
+        ]
+      },
+      {
+        "index": 3,
+        "parts": [
+          "Piano I",
+          "Piano II"
+        ],
+        "staves_per_part": [
+          2,
+          2
+        ]
+      },
+      {
+        "index": 4,
+        "parts": [
+          "Piano I",
+          "Piano II"
+        ],
+        "staves_per_part": [
+          2,
+          2
+        ]
+      }
+    ],
+    "rehearsal_marks": [
+      {
+        "mark": "7",
+        "provisional_measure": 4
+      }
+    ],
+    "doubtful_measures": [
+      {
+        "provisional_measure": 9,
+        "reason": "very narrow sliver at right edge containing only clefs/barline, start of next measure, not a complete measure"
+      }
+    ],
+    "title": "",
+    "composer": ""
+  },
+  "raw_text": "{\"first_measure_number\": 4, \"is_pickup\": false, \"confidence\": \"medium\", \"systems\": [{\"index\": 1, \"parts\": [\"Piano I\", \"Piano II\"], \"staves_per_part\": [2, 2]}, {\"index\": 2, \"parts\": [\"Piano I\", \"Piano II\"], \"staves_per_part\": [2, 2]}, {\"index\": 3, \"parts\": [\"Piano I\", \"Piano II\"], \"staves_per_part\": [2, 2]}, {\"index\": 4, \"parts\": [\"Piano I\", \"Piano II\"], \"staves_per_part\": [2, 2]}], \"rehearsal_marks\": [{\"mark\": \"7\", \"provisional_measure\": 4}], \"doubtful_measures\": [{\"provisional_measure\": 9, \"reason\": \"very narrow sliver at right edge containing only clefs/barline, start of next measure, not a complete measure\"}], \"title\": \"\", \"composer\": \"\"}",
+  "systems": [
+    {
+      "index": 1,
+      "box": {
+        "x0": 81,
+        "y0": 357,
+        "x1": 1312,
+        "y1": 511
+      },
+      "staves": 2,
+      "barlines": [
+        [
+          81,
+          83
+        ],
+        [
+          745,
+          748
+        ],
+        [
+          1309,
+          1312
+        ]
+      ],
+      "n_measures": 2,
+      "parts": [
+        "Piano I",
+        "Piano II"
+      ]
+    },
+    {
+      "index": 2,
+      "box": {
+        "x0": 81,
+        "y0": 566,
+        "x1": 1312,
+        "y1": 967
+      },
+      "staves": 4,
+      "barlines": [
+        [
+          82,
+          84
+        ],
+        [
+          773,
+          775
+        ],
+        [
+          1309,
+          1312
+        ]
+      ],
+      "n_measures": 2,
+      "parts": [
+        "Piano I",
+        "Piano II"
+      ]
+    },
+    {
+      "index": 3,
+      "box": {
+        "x0": 77,
+        "y0": 1015,
+        "x1": 1312,
+        "y1": 1381
+      },
+      "staves": 4,
+      "barlines": [
+        [
+          81,
+          83
+        ],
+        [
+          734,
+          736
+        ],
+        [
+          1309,
+          1312
+        ]
+      ],
+      "n_measures": 2,
+      "parts": [
+        "Piano I",
+        "Piano II"
+      ]
+    },
+    {
+      "index": 4,
+      "box": {
+        "x0": 78,
+        "y0": 1431,
+        "x1": 1310,
+        "y1": 1777
+      },
+      "staves": 4,
+      "barlines": [
+        [
+          79,
+          80
+        ],
+        [
+          871,
+          874
+        ],
+        [
+          1274,
+          1277
+        ]
+      ],
+      "n_measures": 3,
+      "parts": [
+        "Piano I",
+        "Piano II"
+      ]
+    }
+  ],
+  "measures": [
+    {
+      "number": 4,
+      "system": 1,
+      "box": {
+        "x0": 81,
+        "y0": 357,
+        "x1": 748,
+        "y1": 511
+      },
+      "uncertain": false
+    },
+    {
+      "number": 5,
+      "system": 1,
+      "box": {
+        "x0": 745,
+        "y0": 357,
+        "x1": 1312,
+        "y1": 511
+      },
+      "uncertain": false
+    },
+    {
+      "number": 6,
+      "system": 2,
+      "box": {
+        "x0": 81,
+        "y0": 566,
+        "x1": 775,
+        "y1": 967
+      },
+      "uncertain": false
+    },
+    {
+      "number": 7,
+      "system": 2,
+      "box": {
+        "x0": 773,
+        "y0": 566,
+        "x1": 1312,
+        "y1": 967
+      },
+      "uncertain": false
+    },
+    {
+      "number": 8,
+      "system": 3,
+      "box": {
+        "x0": 77,
+        "y0": 1015,
+        "x1": 736,
+        "y1": 1381
+      },
+      "uncertain": false
+    },
+    {
+      "number": 9,
+      "system": 3,
+      "box": {
+        "x0": 734,
+        "y0": 1015,
+        "x1": 1312,
+        "y1": 1381
+      },
+      "uncertain": false
+    },
+    {
+      "number": 10,
+      "system": 4,
+      "box": {
+        "x0": 78,
+        "y0": 1431,
+        "x1": 874,
+        "y1": 1777
+      },
+      "uncertain": false
+    },
+    {
+      "number": 11,
+      "system": 4,
+      "box": {
+        "x0": 871,
+        "y0": 1431,
+        "x1": 1277,
+        "y1": 1777
+      },
+      "uncertain": false
+    },
+    {
+      "number": 12,
+      "system": 4,
+      "box": {
+        "x0": 1274,
+        "y0": 1431,
+        "x1": 1310,
+        "y1": 1777
+      },
+      "uncertain": true
+    }
+  ],
+  "records": [
+    {
+      "measure_number": 4,
+      "page": 1,
+      "system": 1,
+      "part": [
+        "Piano I",
+        "Piano II"
+      ],
+      "box": {
+        "x0": 81,
+        "y0": 357,
+        "x1": 748,
+        "y1": 511
+      },
+      "box_norm": {
+        "x0": 0.0579,
+        "y0": 0.1893,
+        "x1": 0.5343,
+        "y1": 0.2709
+      },
+      "confidence": "high",
+      "flag": null,
+      "rehearsal_mark": null
+    },
+    {
+      "measure_number": 5,
+      "page": 1,
+      "system": 1,
+      "part": [
+        "Piano I",
+        "Piano II"
+      ],
+      "box": {
+        "x0": 745,
+        "y0": 357,
+        "x1": 1312,
+        "y1": 511
+      },
+      "box_norm": {
+        "x0": 0.5321,
+        "y0": 0.1893,
+        "x1": 0.9371,
+        "y1": 0.2709
+      },
+      "confidence": "high",
+      "flag": null,
+      "rehearsal_mark": null
+    },
+    {
+      "measure_number": 6,
+      "page": 1,
+      "system": 2,
+      "part": [
+        "Piano I",
+        "Piano II"
+      ],
+      "box": {
+        "x0": 81,
+        "y0": 566,
+        "x1": 775,
+        "y1": 967
+      },
+      "box_norm": {
+        "x0": 0.0579,
+        "y0": 0.3001,
+        "x1": 0.5536,
+        "y1": 0.5127
+      },
+      "confidence": "high",
+      "flag": null,
+      "rehearsal_mark": null
+    },
+    {
+      "measure_number": 7,
+      "page": 1,
+      "system": 2,
+      "part": [
+        "Piano I",
+        "Piano II"
+      ],
+      "box": {
+        "x0": 773,
+        "y0": 566,
+        "x1": 1312,
+        "y1": 967
+      },
+      "box_norm": {
+        "x0": 0.5521,
+        "y0": 0.3001,
+        "x1": 0.9371,
+        "y1": 0.5127
+      },
+      "confidence": "high",
+      "flag": null,
+      "rehearsal_mark": "7"
+    },
+    {
+      "measure_number": 8,
+      "page": 1,
+      "system": 3,
+      "part": [
+        "Piano I",
+        "Piano II"
+      ],
+      "box": {
+        "x0": 77,
+        "y0": 1015,
+        "x1": 736,
+        "y1": 1381
+      },
+      "box_norm": {
+        "x0": 0.055,
+        "y0": 0.5382,
+        "x1": 0.5257,
+        "y1": 0.7322
+      },
+      "confidence": "high",
+      "flag": null,
+      "rehearsal_mark": null
+    },
+    {
+      "measure_number": 9,
+      "page": 1,
+      "system": 3,
+      "part": [
+        "Piano I",
+        "Piano II"
+      ],
+      "box": {
+        "x0": 734,
+        "y0": 1015,
+        "x1": 1312,
+        "y1": 1381
+      },
+      "box_norm": {
+        "x0": 0.5243,
+        "y0": 0.5382,
+        "x1": 0.9371,
+        "y1": 0.7322
+      },
+      "confidence": "high",
+      "flag": null,
+      "rehearsal_mark": null
+    },
+    {
+      "measure_number": 10,
+      "page": 1,
+      "system": 4,
+      "part": [
+        "Piano I",
+        "Piano II"
+      ],
+      "box": {
+        "x0": 78,
+        "y0": 1431,
+        "x1": 874,
+        "y1": 1777
+      },
+      "box_norm": {
+        "x0": 0.0557,
+        "y0": 0.7587,
+        "x1": 0.6243,
+        "y1": 0.9422
+      },
+      "confidence": "high",
+      "flag": null,
+      "rehearsal_mark": null
+    },
+    {
+      "measure_number": 11,
+      "page": 1,
+      "system": 4,
+      "part": [
+        "Piano I",
+        "Piano II"
+      ],
+      "box": {
+        "x0": 871,
+        "y0": 1431,
+        "x1": 1277,
+        "y1": 1777
+      },
+      "box_norm": {
+        "x0": 0.6221,
+        "y0": 0.7587,
+        "x1": 0.9121,
+        "y1": 0.9422
+      },
+      "confidence": "high",
+      "flag": null,
+      "rehearsal_mark": null
+    },
+    {
+      "measure_number": 12,
+      "page": 1,
+      "system": 4,
+      "part": [
+        "Piano I",
+        "Piano II"
+      ],
+      "box": {
+        "x0": 1274,
+        "y0": 1431,
+        "x1": 1310,
+        "y1": 1777
+      },
+      "box_norm": {
+        "x0": 0.91,
+        "y0": 0.7587,
+        "x1": 0.9357,
+        "y1": 0.9422
+      },
+      "confidence": "low",
+      "flag": "very narrow sliver at right edge containing only clefs/barline, start of next measure, not a complete measure",
+      "rehearsal_mark": null
+    }
+  ]
+}

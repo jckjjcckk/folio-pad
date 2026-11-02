@@ -227,3 +227,13 @@ keeps every annotation; the client resolves the current interpretation's placeme
 measure that an older interpretation had and the new one lacks keeps its row and gets `confidence = low` with
 `flag = "not found in v{n}"` rather than disappearing. `interpretations.summary.flagged` feeds the information
 box counts; `measure_placements.flag` feeds the per-bar badge.
+
+## Gallery (2026-10-27, later the same day)
+
+`out/gallery.html` links a tappable overlay for 16 pages: the two test pages plus 14 more cut from every fixture PDF
+(orchestral full scores in three editions, the 1741 Schmid facsimile, the Peters urtext, the brass-quintet arrangement,
+the two-piano reduction, two more BGA variations). Pipeline unchanged: `fallback_cv.py` → `label_with_spark.py` →
+`build_overlay.py` → `build_gallery.py`; about $0.18 of Spark for the 14 pages. Serve `api/experiments/grounding`
+over HTTP and open `out/gallery.html`. Honest failures are in the gallery too: the facsimile and the Muzyka full
+score collapse to one box, and the Gutheil full-score pages find only 6–7 bars, because the grouping assumes grand
+staves and pages with 17–29 staves are split into pseudo-systems.
