@@ -6,7 +6,7 @@ import type { Session } from '@supabase/supabase-js'
 import { supabase } from '../lib/supabase'
 import { deliverFile } from '../lib/native'
 import { newId } from './presence'
-import type { DigitalLayout, Engraving, Ensemble, FlaggedBar, Member, Membership, Part, Score } from '../mock'
+import type { BarCheck, DigitalLayout, Engraving, Ensemble, FlaggedBar, Member, Membership, Part, Score } from '../mock'
 
 export interface Account { id: string; name: string; email: string; memberships: Membership[] }
 export interface World {
@@ -171,7 +171,7 @@ async function load(session: Session): Promise<Omit<World, 'reload'>> {
       .select('id,kind,status,progress,error,score_id,created_at,payload,note:result->>note,phase:result->phase,question:result->>question,question_payload:result->question_payload,source_id:result->>source_id,systems_cut:result->systems_cut,log:result->agent->scratch->log,agent_log:result->agent->log')
       .eq('kind', 'part_cut').order('created_at'),
     supabase.from('sources').select('id,score_id,kind,storage_paths,page_order,meta,created_at').order('created_at'),
-    supabase.from('interpretations').select('id,score_id,engine,status,created_at,header:params->state->header->instruments,summary_header:summary->header->instruments,summary_parts:summary->parts,summary_question:summary->>question,unreadable:summary->unreadable_pages').order('created_at'),
+    supabase.from('interpretations').select('id,score_id,engine,status,created_at,header:params->state->header->instruments,summary_header:summary->header->instruments,summary_parts:summary->parts,summary_question:summary->>question,unreadable:summary->unreadable_pages,bar_numbers:summary->bar_numbers').order('created_at'),
     supabase.from('jobs')
       .select('id,kind,status,progress,error,score_id,created_at,payload,note:result->>note,question:result->>question,question_payload:result->question_payload')
       .neq('kind', 'part_cut').order('created_at'),
@@ -282,7 +282,7 @@ async function load(session: Session): Promise<Omit<World, 'reload'>> {
     keyGuess: s.key_sig_guess ?? undefined, meterGuess: s.meter_guess ?? undefined, sigConfidence: s.signature_confidence ?? undefined,
     sigConfirmed: !!s.signature_confirmed, tempoText: s.tempo_text ?? undefined, coverClef: s.cover_clef ?? undefined,
     firstBar: s.first_bar ?? undefined, firstBarPage: s.first_bar_page ?? undefined, createdAt: s.created_at,
-    flaggedBars: flaggedOf(sourceRows, s.id), unreadable: unreadableOf(interpRows, s.id),
+    flaggedBars: flaggedOf(sourceRows, s.id), unreadable: unreadableOf(interpRows, s.id), barCheck: barCheckOf(interpRows, s.id),
     answered: [...jobRows, ...bookJobRows].filter(r => r.score_id === s.id && r.payload?.resume_from).length,
     playback: s.playback?.midi && s.playback?.bar_map
       ? { midi: s.playback.midi, barMap: s.playback.bar_map, parts: s.playback.parts ?? [], madeAt: s.playback.made_at ?? undefined }
@@ -364,6 +364,18 @@ function flaggedOf(rows: Row[], scoreId: string): FlaggedBar[] | undefined {
     number: f.number, page: Number(f.page) || 1, box: f.box && typeof f.box.x0 === 'number' ? f.box : undefined,
     reasons: Array.isArray(f.reasons) ? f.reasons.map(String) : [],
   }))
+}
+
+/** What the latest reading's check against the printed bar numbers said (`summary.bar_numbers`, 004). */
+function barCheckOf(rows: Row[], scoreId: string): BarCheck | undefined {
+  const latest = rows.filter(r => r.score_id === scoreId && r.engine !== PART_CUT_ENGINE).pop()
+  const b = latest?.bar_numbers
+  if (!b || typeof b !== 'object' || typeof b.status !== 'string') return undefined
+  const known: BarCheck['status'][] = ['agrees', 'offset', 'doubted', 'none', 'unconfirmed', 'unchecked']
+  return {
+    status: known.includes(b.status) ? b.status : 'unchecked', offsetApplied: !!b.offset_applied,
+    doubtedSystems: Array.isArray(b.doubted) ? b.doubted.length : 0,
+  }
 }
 
 /** The pages the latest reading found no staves on (`summary.unreadable_pages`, 004). */

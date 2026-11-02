@@ -16,7 +16,7 @@ import { PartsPanel } from './Parts'
 import { ShareSheet } from './Groups'
 import { placeOf, IStand } from './layout'
 import { EASE_OUT } from './Sheet'
-import { liveWord, type BookShare, type BookState, type LiveJob } from './book'
+import { barCountLine, liveWord, type BookShare, type BookState, type LiveJob } from './book'
 import { Rope } from './Rope'
 import { fmtDateTime, useStore } from './store'
 
@@ -70,7 +70,8 @@ function Body({ score: s, state: st, share, onClose, onAsk, onConvert, convertMs
 
   const parts_n = s.partIds.length
   const facts = [s.bars ? `${s.bars.toLocaleString('en')} bars` : null, parts_n > 1 ? `${parts_n} parts` : null, !digital && s.pages ? `${s.pages} ${s.pages === 1 ? 'page' : 'pages'}` : null].filter(Boolean).join(' · ')
-  const canOpen = ready && (!!s.pageSource || !!s.engravings?.length || !!s.fixture)
+  const countLine = ready ? barCountLine(s) : null
+  const canOpen = ready &&(!!s.pageSource || !!s.engravings?.length || !!s.fixture)
   const openWhy = s.status === 'processing' ? 'Opens when the reading finishes' : s.status === 'failed' ? 'The pages could not be read' : s.status === 'ordering' ? 'The pages wait for their order' : 'Not read yet'
   const canConvert = canEdit && st.hasPdf && !st.hasDigital && ready && !st.busy && !st.asking && !st.convert
   const canSplit = !borrowed && canEdit && (!digital || (ready && parts_n > 1))
@@ -106,6 +107,7 @@ function Body({ score: s, state: st, share, onClose, onAsk, onConvert, convertMs
             {st.kinds.map(k => <span key={k} className="r3-tag">{kindWord[k]}</span>)}
             <Dates score={s} digital={digital} />
           </div>
+          {countLine && <span className="bs-by bs-count">{countLine}</span>}
           {share.sharedHere && share.sharedBy && <span className="bs-by">{borrowed ? `Shared by ${share.sharedBy} from their own library` : 'Shared by you from your library'}</span>}
         </div>
         {canEdit ? (
