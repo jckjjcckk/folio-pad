@@ -1,4 +1,6 @@
-"""Groups (feature 001) against the LOCAL Supabase stack: join codes and the create / join / leave / delete RPCs.
+"""Groups (feature 001) against the LOCAL Supabase stack: join codes and the create / join / leave / delete RPCs, and
+since 2026-11-02 the API's join (`POST /ensembles/join`, with its guess limit) and delete-with-files
+(`DELETE /ensembles/{id}`), run in-process with the API's database client pointed at the local stack.
 
 Follows `scripts/smoke_local.py`: keys from `supabase status`, never `api/.env`, so this cannot touch the hosted
 project. Three throwaway accounts (groups-a/b/c@muse.test, fresh password each run) are made with the service-role
@@ -10,10 +12,17 @@ from __future__ import annotations
 import json
 import secrets
 import subprocess
+from decimal import Decimal
 from pathlib import Path
+from types import SimpleNamespace
 
 import httpx
 import pytest
+from fastapi.testclient import TestClient
+
+from app.auth import User, current_user
+from app.main import app
+from app.routes import ensembles as ens
 
 ROOT = Path(__file__).resolve().parents[2]
 PREFIX = "pytest groups"
@@ -70,6 +79,40 @@ def stack():
     cleanup()
 
 
+@pytest.fixture
+def api(stack, monkeypatch):
+    """`api(who, method, path, ...)`: the API's group routes as one of the people, against the LOCAL stack only (the
+    route's database client, settings and the signed-in user are all replaced; nothing reads api/.env)."""
+    from supabase import create_client
+    svc, people, ids = stack
+    local = create_client(STATUS["API_URL"], STATUS["SECRET_KEY"])
+    monkeypatch.setattr(ens, "db", lambda: local)
+    monkeypatch.setattr(ens, "settings", SimpleNamespace(supabase_url=STATUS["API_URL"], supabase_secret_key=STATUS["SECRET_KEY"]))
+    ens.user_limiter.reset()
+    ens.ip_limiter.reset()
+    who: dict[str, str] = {}
+    app.dependency_overrides[current_user] = lambda: User(ids[who["name"]], None, None, Decimal("5"), Decimal("0"))
+    client = TestClient(app)
+
+    def call(name: str, method: str, path: str, **kw) -> httpx.Response:
+        who["name"] = name
+        return client.request(method, path, headers={"Authorization": people[name].headers["Authorization"]}, **kw)
+    yield call
+    app.dependency_overrides.clear()
+    ens.user_limiter.reset()
+    ens.ip_limiter.reset()
+
+
+def join(api, name: str, code: str) -> httpx.Response:
+    return api(name, "POST", "/ensembles/join", json={"code": code})
+
+
+def api_refused(r: httpx.Response, hint: str) -> str:
+    assert r.status_code == 400, r.text
+    assert r.json()["detail"]["hint"] == hint, r.text
+    return r.json()["detail"]["message"]
+
+
 def rpc(client: httpx.Client, fn: str, **args) -> httpx.Response:
     return client.post(f"/rest/v1/rpc/{fn}", json=args)
 
@@ -86,7 +129,7 @@ def refused(r: httpx.Response, hint: str) -> str:
     return body["message"]
 
 
-def test_create_join_leave_delete(stack):
+def test_create_join_leave_delete(stack, api):
     svc, p, ids = stack
     # create: the caller becomes admin; the code is 8 digits and the admin can read it
     r = rpc(p["a"], "create_ensemble", name=f"  {PREFIX} quartet ")
@@ -98,16 +141,19 @@ def test_create_join_leave_delete(stack):
     assert p["a"].get("/rest/v1/ensembles", params={"select": "join_code", "id": f"eq.{eid}"}).json() == [{"join_code": code}]
     assert p["c"].get("/rest/v1/ensembles", params={"select": "join_code", "id": f"eq.{eid}"}).json() == []      # a stranger sees nothing
 
-    # join: player, idempotent, spaces and a dash forgiven; a member reads the code too
-    r = rpc(p["b"], "join_ensemble", code=f"{code[:4]} {code[4:]}")
-    assert r.status_code == 200 and r.json() == eid
-    assert rpc(p["b"], "join_ensemble", code=f"{code[:4]}-{code[4:]}").json() == eid
+    # join (through the API since 20261102120000): player, idempotent, spaces and a dash forgiven; a member reads the code
+    r = join(api, "b", f"{code[:4]} {code[4:]}")
+    assert r.status_code == 200 and r.json() == {"ensemble_id": eid}
+    assert join(api, "b", f"{code[:4]}-{code[4:]}").json() == {"ensemble_id": eid}
     assert members(svc, eid) == {ids["a"]: "admin", ids["b"]: "player"}
     assert p["b"].get("/rest/v1/ensembles", params={"select": "join_code", "id": f"eq.{eid}"}).json() == [{"join_code": code}]
-    assert rpc(p["a"], "join_ensemble", code=code).json() == eid and members(svc, eid)[ids["a"]] == "admin"   # an admin stays admin
+    assert join(api, "a", code).json() == {"ensemble_id": eid} and members(svc, eid)[ids["a"]] == "admin"   # an admin stays admin
     unknown = "00000000" if code != "00000000" else "00000001"
-    assert refused(rpc(p["c"], "join_ensemble", code=unknown), "unknown_code") == f"No group has the code {unknown}. Check the digits with the group's admin."
-    assert refused(rpc(p["c"], "join_ensemble", code="1234"), "bad_code") == "A join code is 8 digits."
+    assert api_refused(join(api, "c", unknown), "unknown_code") == f"No group has the code {unknown}. Check the digits with the group's admin."
+    assert api_refused(join(api, "c", "1234"), "bad_code") == "A join code is 8 digits."
+    assert ids["c"] not in members(svc, eid)
+    # the direct path is closed: a signed-in person cannot call join_ensemble around the limit
+    assert rpc(p["c"], "join_ensemble", code=code).status_code in (401, 403, 404)
     assert ids["c"] not in members(svc, eid)
 
     # leave: the last admin cannot, by the RPC or by deleting or demoting their own row directly
@@ -121,13 +167,13 @@ def test_create_join_leave_delete(stack):
     assert members(svc, eid) == {ids["a"]: "admin"}
     assert refused(rpc(p["b"], "leave_ensemble", ensemble=eid), "not_member") == "You are not in this group."
     # with a second admin, the first may leave
-    rpc(p["b"], "join_ensemble", code=code)
+    join(api, "b", code)
     assert p["a"].patch("/rest/v1/members", params={"ensemble_id": f"eq.{eid}", "user_id": f"eq.{ids['b']}"}, json={"role": "admin"}).status_code in (200, 204)
     assert rpc(p["a"], "leave_ensemble", ensemble=eid).status_code in (200, 204)
     assert members(svc, eid) == {ids["b"]: "admin"}
 
     # delete: admin only; cascades through members and scores
-    rpc(p["c"], "join_ensemble", code=code)
+    join(api, "c", code)
     score = svc.post("/rest/v1/scores", headers={"Prefer": "return=representation"},
                      json={"ensemble_id": eid, "title": f"{PREFIX} score", "created_by": ids["b"]}).json()[0]
     assert refused(rpc(p["c"], "delete_ensemble", ensemble=eid), "not_admin") == "Only an admin can delete this group."
@@ -167,3 +213,56 @@ def test_codes_are_spread_out(stack):
     svc, p, _ = stack
     codes = [rpc(p["c"], "create_ensemble", name=f"{PREFIX} spread {i}").json()["join_code"] for i in range(12)]
     assert len(set(codes)) == 12 and len({c[0] for c in codes}) > 3      # leading zeros kept, no fixed prefix
+
+
+def test_join_guess_limit_on_the_local_stack(stack, api):
+    svc, p, ids = stack
+    e = rpc(p["a"], "create_ensemble", name=f"{PREFIX} limit").json()
+    wrong = "00000000" if e["join_code"] != "00000000" else "00000001"
+    for _ in range(10):
+        assert join(api, "c", wrong).status_code == 400
+    r = join(api, "c", e["join_code"])
+    assert r.status_code == 429 and int(r.headers["Retry-After"]) > 500
+    assert ids["c"] not in members(svc, e["id"])
+    assert join(api, "b", e["join_code"]).status_code == 200          # another account is not held up
+
+
+def test_delete_through_the_api_removes_the_groups_files(stack, api):
+    """A group's own book's files go with the group; a personal book shared with it by reference keeps its files."""
+    svc, p, ids = stack
+    e = rpc(p["a"], "create_ensemble", name=f"{PREFIX} files").json()
+    eid = e["id"]
+    group_book = svc.post("/rest/v1/scores", headers={"Prefer": "return=representation"},
+                          json={"ensemble_id": eid, "title": f"{PREFIX} group book", "created_by": ids["a"]}).json()[0]["id"]
+    own_book = svc.post("/rest/v1/scores", headers={"Prefer": "return=representation"},
+                        json={"owner_user_id": ids["a"], "title": f"{PREFIX} own book", "created_by": ids["a"]}).json()[0]["id"]
+    for key in (f"{group_book}/source.pdf", f"{group_book}/pages/1.png", f"{own_book}/source.pdf"):
+        r = svc.post(f"/storage/v1/object/scores/{key}", content=b"%PDF-1.4 test", headers={"Content-Type": "application/pdf", "x-upsert": "true"})
+        assert r.status_code == 200, r.text
+    assert rpc(p["a"], "share_score", score=own_book, ensemble=eid).status_code == 200
+
+    def keys(prefix: str) -> set[str]:
+        out = set()
+        for it in svc.post("/storage/v1/object/list/scores", json={"prefix": prefix, "limit": 100}).json():
+            if it.get("id") is None:
+                out |= keys(f"{prefix}/{it['name']}")
+            else:
+                out.add(f"{prefix}/{it['name']}")
+        return out
+    try:
+        assert join(api, "b", e["join_code"]).status_code == 200
+        assert api("b", "DELETE", f"/ensembles/{eid}").json()["detail"]["hint"] == "not_admin"
+        dry = api("a", "DELETE", f"/ensembles/{eid}", params={"dry_run": "true"}).json()
+        assert set(dry["objects"]) == {f"{group_book}/source.pdf", f"{group_book}/pages/1.png"} and dry["shared_books_kept"] == 1
+        assert keys(group_book) == set(dry["objects"])                  # the dry run removed nothing
+        done = api("a", "DELETE", f"/ensembles/{eid}")
+        assert done.status_code == 200, done.text
+        assert done.json()["removed"] == 2 and done.json()["failed"] == []
+        assert svc.get("/rest/v1/ensembles", params={"id": f"eq.{eid}"}).json() == []
+        assert svc.get("/rest/v1/scores", params={"id": f"eq.{group_book}"}).json() == []
+        assert keys(group_book) == set()
+        assert keys(own_book) == {f"{own_book}/source.pdf"}            # shared by reference: the owner's file stays
+        assert svc.get("/rest/v1/scores", params={"id": f"eq.{own_book}"}).json() != []
+    finally:
+        svc.delete("/rest/v1/scores", params={"id": f"eq.{own_book}"})
+        svc.request("DELETE", "/storage/v1/object/scores", json={"prefixes": [f"{own_book}/source.pdf", f"{group_book}/source.pdf", f"{group_book}/pages/1.png"]})

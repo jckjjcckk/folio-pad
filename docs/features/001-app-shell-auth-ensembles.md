@@ -246,6 +246,37 @@ dialog shows the current group's join code with Copy, members with roles, Delete
 members), other groups as rows, Join with a code and Create a group, with the existing RPCs; each destructive
 action asks once in one message box. In landscape the shelf has four columns and sheets are centred at 820 px.
 
+## Join limit and deleting a group with its files (2026-11-02)
+
+Both were in `docs/backlog.md`. Code: `api/app/routes/ensembles.py`; tests `api/tests/test_ensembles.py` (fakes) and
+`api/tests/test_groups_local.py` (local stack); web `joinGroup` / `deleteGroup` in `web/src/app/data.tsx`.
+
+- **Join through the API.** `POST /ensembles/join {code}` joins as a player with the service role, step for step as
+  `join_ensemble` and with its sentences and hints. Wrong codes (malformed or unknown) count in two sliding windows:
+  10 per account and 30 per address in 10 minutes. At the limit every attempt, even the right code, gets 429 with
+  `Retry-After` and "Too many join codes tried. Wait 10 minutes and try again." (hint `too_many_attempts`). A right
+  code never counts, so a whole orchestra can join from one rehearsal Wi-Fi. The address is `cf-connecting-ip`
+  (Cloudflare Tunnel), else the first `x-forwarded-for` hop, else the socket; on an API reached without Cloudflare the
+  header can be forged, and the per-account limit still holds.
+- **In-process limiter.** The count lives in the API process's memory: right for one process (yoga's stable API). A
+  restart forgets it; a second process keeps its own count. More than one process needs the count in Postgres.
+- **The direct path.** Migration `20261102120000_join_through_api.sql` revokes `join_ensemble` from `authenticated`, so
+  the RPC cannot be called around the limit. Applied locally only. Order for hosted: yoga serves the route, the web
+  Worker is rebuilt, then `supabase db push`. Until then the browser can still call the RPC directly, and the web app
+  falls back to it only when the API answers 404 without a hint (an API that predates the route).
+- **Delete with the files.** `DELETE /ensembles/{id}` (admins; 403 `not_admin`, 404 `not_found`) lists every object
+  under each of the group's own books' folders (`{score_id}/...`, recursively, paged), deletes the group through
+  `delete_ensemble` as the caller (the RPC's admin check has the last word), then removes the listed objects with the
+  service role in chunks of 100. A failed chunk is reported in `failed`, not raised: the rows are already gone.
+  Books shared with the group by reference are personal books: their rows and files stay (`shared_books_kept`).
+  `?dry_run=true` answers the same list and deletes nothing. Deleting through the RPC directly still leaves files.
+- **Checked on hosted (2026-11-02, Mac API from this checkout on :8011, `WORKER=0`, test accounts tier-a/tier-b).**
+  A group with one group book (`chopin-op40-1-p25.pdf` uploaded) and one shared personal book. B joined with the
+  right code (200), then 10 wrong codes (10 × 400), then the right code: 429, `Retry-After: 599`; A was not held up
+  (200). B's delete 403 `not_admin`; A's dry run listed 1 object, `shared_books_kept: 1`, and the file stayed; A's
+  delete 200, `removed: 1`, `failed: []`; the group, its book and the file were gone; the shared personal book and its
+  file stayed (then removed by hand, the agent's own test book). No model calls.
+
 ## Rules and decisions
 
 - Secrets only in `api/.env`; the browser gets only `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`,
@@ -262,8 +293,8 @@ action asks once in one message box. In landscape the shelf has four columns and
   `members.display_name`, which is empty on the local seed ("a member"). The cover foot overlaps a part badge and the
   tag at 834 px portrait (seen on the Beethoven's "Vn II"; not caused by sharing).
 - Groups: the migration is local only; the UI is built but not yet run signed in (create, join, leave, delete on the
-  local stack). Join codes have no attempt limit: 10^8 codes, so guessing one takes millions of signed-in calls, but
-  a rate limit would close it. The admin cannot yet give a member a part or make them admin from the sheet.
+  local stack). Join codes are limited through the API since 2026-11-02 (section above); the revoke migration is
+  not on hosted yet. The admin cannot yet give a member a part or make them admin from the sheet.
 - `auth.tsx` still says "the ensemble's admin" on the sign-in card (left alone by CK's rule: no auth changes).
 
 - Not checked on a real iPad yet (CK runs `touch.md`). Not checked on the hosted project from the UI (CK

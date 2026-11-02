@@ -6,7 +6,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .routes import convert, jobs, llm, me, scores, voice
+from .routes import convert, ensembles, jobs, llm, me, scores, voice
 from .settings import settings
 
 logging.basicConfig(level=logging.INFO)
@@ -50,6 +50,7 @@ app.include_router(scores.router)
 app.include_router(jobs.router)
 app.include_router(convert.router)
 app.include_router(voice.router)
+app.include_router(ensembles.router)
 
 
 @app.get("/health")

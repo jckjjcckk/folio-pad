@@ -4,6 +4,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { Session } from '@supabase/supabase-js'
 import { supabase } from '../lib/supabase'
+import { apiBase } from '../lib/api'
 import { deliverFile } from '../lib/native'
 import { newId } from './presence'
 import type { DigitalLayout, Engraving, Ensemble, FlaggedBar, Member, Membership, Part, Score } from '../mock'
@@ -542,8 +543,36 @@ export async function createGroup(name: string): Promise<NewGroup> {
   return { id: row.id, name: row.name ?? name, joinCode: row.join_code ?? undefined }
 }
 
-/** `join_ensemble(code)` returns the group's id; an unknown code comes back as the RPC's own sentence. */
+/** A group call through the API: `null` when the API predates the route (404), so the caller can use the old RPC;
+ *  a refusal throws the API's own sentence (`detail.message`, as the RPCs word them), else `fallback`. */
+async function groupApi(path: string, method: 'POST' | 'DELETE', fallback: string, body?: unknown): Promise<Record<string, unknown> | null> {
+  const token = (await supabase.auth.getSession()).data.session?.access_token
+  if (!token) throw new Error('Sign in first.')
+  let res: Response
+  try {
+    res = await fetch(`${apiBase}${path}`, {
+      method, headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: body === undefined ? undefined : JSON.stringify(body),
+    })
+  } catch {
+    throw new Error(fallback)
+  }
+  if (res.status === 404 && !(await res.clone().json().catch(() => ({})))?.detail?.hint) return null
+  if (!res.ok) {
+    const detail = (await res.json().catch(() => ({})))?.detail
+    throw new Error(typeof detail?.message === 'string' ? detail.message : typeof detail === 'string' ? detail : fallback)
+  }
+  return res.json()
+}
+
+/** Join by code through the API (`POST /ensembles/join`), which limits wrong codes: 10 per account and 30 per address
+ *  in 10 minutes, then "Too many join codes tried…". An API without the route falls back to the `join_ensemble` RPC. */
 export async function joinGroup(code: string): Promise<string> {
+  const viaApi = await groupApi('/ensembles/join', 'POST', 'That code did not open a group. Check the eight digits and try again.', { code })
+  if (viaApi) {
+    if (typeof viaApi.ensemble_id !== 'string') throw new Error('That code did not open a group. Check the eight digits and try again.')
+    return viaApi.ensemble_id
+  }
   const { data, error } = await supabase.rpc('join_ensemble', { code })
   if (error) throw new Error(groupError(error, 'That code did not open a group. Check the eight digits and try again.'))
   const id = typeof data === 'string' ? data : (Array.isArray(data) ? data[0] : data)?.id
@@ -557,8 +586,12 @@ export async function leaveGroup(id: string): Promise<void> {
   if (error) throw new Error(groupError(error, 'You could not leave the group just now. Try again in a moment.'))
 }
 
-/** `delete_ensemble(ensemble)`: admins only; the group's books go with it. */
+/** Delete a group through the API (`DELETE /ensembles/{id}`): admins only; the group's books go with it, and so do their
+ *  files in Storage. Books shared with the group from someone's library stay theirs. An API without the route falls
+ *  back to the `delete_ensemble` RPC (rows only, files left behind). */
 export async function deleteGroup(id: string): Promise<void> {
+  const fallback = 'The group could not be deleted just now. Try again in a moment.'
+  if (await groupApi(`/ensembles/${encodeURIComponent(id)}`, 'DELETE', fallback)) return
   const { error } = await supabase.rpc('delete_ensemble', { ensemble: id })
   if (error) throw new Error(groupError(error, 'The group could not be deleted just now. Try again in a moment.'))
 }

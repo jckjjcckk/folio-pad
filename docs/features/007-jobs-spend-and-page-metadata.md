@@ -105,6 +105,28 @@ need: models used and their roles, cost and latency per call, geometry counts (s
 recovered staves), flags (doubtful bars, unreadable, needs_review question), and the log lines for that page.
 Today this is spread between `summary`, `params.state` and `usage_events`. Not designed beyond this note.
 
+## Model tier on hosted, end to end (2026-11-02)
+
+`profiles.model_tier` (migration `20261101090000`, on hosted since 2026-11-01), `api/app/tiers.py`, `GET`/`PATCH /me`.
+Checked against the stable API on yoga (`folio-api-stable.jckjjcckk.com`, 7296c79) as two test accounts made with the
+service role (`tier-a@muse.test`, `tier-b@muse.test`; session by `generate_link` + `verify`, no password):
+
+| Step | Result |
+|---|---|
+| `GET /me` | 200, `model_tier: standard`, `model: muse-spark-1.3` |
+| `PATCH /me {"model_tier":"contributor"}` | 200, `muse-spark-1.3-contributor` |
+| `POST /llm/probe` | 200, "ok"; `usage_events` a6b5ce79: model `muse-spark-1.3-contributor`, 15 in / 231 out, $0.000048 |
+| `PATCH /me {"model_tier":"standard"}`, probe again | 200; `usage_events` 0b3d97c6: model `muse-spark-1.3`, 15 in / 58 out, $0.000265 |
+| `PATCH /me {"model_tier":"free"}` | 422 (`literal_error`) |
+| `PATCH /me` with `budget_usd: 999` | 200, budget still 10.0 (the body has one field) |
+| `PATCH /me?id=<B>` | changes only the caller's own tier; B stayed `standard` |
+| A's token straight to PostgREST: `PATCH profiles?id=eq.<B> {model_tier}` | 200, `[]`: no row (RLS) |
+| A's own `budget_usd` / `spent_usd` | 403, 42501 permission denied (column grant is `model_tier` only) |
+| A's own `model_tier` directly / with `free` | 200 / 400 (`profiles_model_tier_check`) |
+
+Spend $0.000313 (two probes). Both accounts left on `standard`. The web toggle was not checked in a browser: signing
+in to the hosted app means typing a password into the hosted sign-in, which agents do not do.
+
 ## Rules and decisions
 
 - The database is the queue and the truth; Realtime is notification. In-process background tasks are not
