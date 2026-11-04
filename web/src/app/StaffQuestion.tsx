@@ -8,6 +8,9 @@
  *    rest dimmed, the librarian's guess already chosen; tap the staves that are the part (tap again to let go), or say it
  *    is not on this line. A musician's words only (CK, 2026-10-31): no staff numbers, no blocks, no model; what refused
  *    the cut stays behind a small "Why am I asked?" for the admin who wants it.
+ *  - Does bar N match the page (demo-video branch only, `omr_convert` `match_bar`): the scan's crop of the bar beside the
+ *    reading's engraved crop of the same bar, and two answers: the reading is right, or keep the bar on the list to check.
+ *    The convert never rewrites the bar either way.
  *  - Either says "remembered from page N" where the book's memory supplied a value (an earlier answer, or a read):
  *    the line's remembered instruments under the staves question's title, and an "As on page N" choice on the parts
  *    question when the book knows the page's shape (`remembered.ts`). */
@@ -23,6 +26,17 @@ import { useStore } from './store'
 import { fromPage, layoutFor, layoutLabels, rememberedLine, type Layout } from './remembered'
 
 const isStaves = (q: unknown): q is ChooseStaves => !!q && typeof q === 'object' && (q as ChooseStaves).kind === 'choose_staves'
+const isBar = (q: unknown): q is MatchBar => !!q && typeof q === 'object' && (q as MatchBar).kind === 'match_bar'
+
+/** A box as fractions of its page. */
+interface Frac { x0: number; y0: number; x1: number; y1: number }
+/** The convert's question on one bar (demo-video branch): the scan and the reading, each a page and the bar's box on it. */
+interface MatchBar {
+  kind: 'match_bar'; bar: number; page: number
+  scan: { key: string; px: [number, number]; box: Frac }
+  reading: { key: string; page_mm: [number, number]; box: Frac }
+  detail?: string
+}
 
 /** The reader's question on a page (`process_pages`): the parts it read, the parts it knows so far. */
 interface PageParts { page?: number; spark_parts?: string[]; known_parts?: string[]; system_staves?: number[]; interpretation_id?: string; header_parts?: string[]; remembered?: Layout[] }
@@ -40,12 +54,14 @@ export function StaffQuestion({ job, open, onClose }: { job: AskJob | null; open
   const { world } = useStore()
   const q = job?.questionPayload ?? null
   const staves = isStaves(q) ? q : null
+  const bar = isBar(q) ? q : null
   const score = world.scores.find(s => s.id === job?.scoreId) ?? null
-  const label = staves ? `Which staves are the ${staves.instrument}'s on this line?` : `Which parts are on page ${(q as PageParts | null)?.page ?? ''}?`
+  const label = staves ? `Which staves are the ${staves.instrument}'s on this line?` : bar ? `Does bar ${bar.bar} match the page?` : `Which parts are on page ${(q as PageParts | null)?.page ?? ''}?`
   return (
     <Dialog open={open && !!job && !!q} onClose={onClose} label={label} className="ask">
       {job && staves && <StavesBody key={job.id} job={job} q={staves} score={score} onClose={onClose} />}
-      {job && q && !staves && <PartsBody key={job.id} job={job} q={q as PageParts} score={score} onClose={onClose} />}
+      {job && bar && <BarBody key={job.id} job={job} q={bar} score={score} onClose={onClose} />}
+      {job && q && !staves && !bar && <PartsBody key={job.id} job={job} q={q as PageParts} score={score} onClose={onClose} />}
     </Dialog>
   )
 }
@@ -294,6 +310,67 @@ function StavesBody({ job, q, score, onClose }: { job: AskJob; q: ChooseStaves; 
         <button type="button" className="r3-btn is-line is-big" disabled={!!busy} onClick={() => void send('absent')}>{busy === 'absent' ? 'Sending' : `The ${instrument} isn’t on this line`}</button>
         <button type="button" className="r3-btn is-solid is-big" disabled={!chosen.length || !!busy} onClick={() => void send(chosen)}>
           {busy === 'staves' ? 'Sending' : chosen.length > 1 ? 'Use these staves' : 'Use this staff'} <ICheck />
+        </button>
+      </div>
+    </>
+  )
+}
+
+/** One bar cut out of a page image: the box (fractions of the page) fills the frame, the page's own proportions kept. */
+function BarCrop({ path, w, h, box, label }: { path: string; w: number; h: number; box: Frac; label: string }) {
+  const url = useSigned(path)
+  const bw = box.x1 - box.x0, bh = box.y1 - box.y0
+  const ratio = (bw * w) / (bh * h)
+  // Grown by its own width-to-height ratio, so the two crops side by side stand at the same height.
+  return (
+    <figure className="ask-bar" style={{ flex: `${ratio.toFixed(3)} 1 0` }}>
+      <figcaption>{label}</figcaption>
+      <div className="ask-bar-crop" style={{ aspectRatio: `${ratio.toFixed(3)}` }}>
+        {url
+          ? <img src={url} alt="" draggable={false} decoding="async" style={{ width: `${100 / bw}%`, left: `${(-box.x0 / bw) * 100}%`, top: `${(-box.y0 / bh) * 100}%` }} />
+          : <span className="ask-thumb-wait">Loading</span>}
+      </div>
+    </figure>
+  )
+}
+
+function BarBody({ job, q, score, onClose }: { job: AskJob; q: MatchBar; score: Score | null; onClose: () => void }) {
+  const { session } = useAuth()
+  const { world } = useStore()
+  const [busy, setBusy] = useState<'reading' | 'check' | null>(null)
+  const [msg, setMsg] = useState<string | null>(null)
+  const send = async (answer: 'reading' | 'check') => {
+    if (!session) return
+    setBusy(answer); setMsg(null)
+    try {
+      await answerJob(job.id, { answer }, session.access_token)
+      world.reload()
+      onClose()
+    } catch (e) {
+      setMsg(apiFailure(e, 'Answering the librarian'))
+    } finally {
+      setBusy(null)
+    }
+  }
+  return (
+    <>
+      <AskHead where={`converting to Digital · page ${q.page}${pagesOf(score) ? ` of ${pagesOf(score)}` : ''}, bar ${q.bar}`} onLater={onClose} />
+      <div className="ask-title">
+        <h2>Does bar {q.bar} match the page?</h2>
+        <span>{q.detail ?? 'What the librarian read and what the page prints differ here.'}</span>
+      </div>
+      <div className="ask-body is-bar">
+        <BarCrop path={q.scan.key} w={q.scan.px[0]} h={q.scan.px[1]} box={q.scan.box} label="On the page" />
+        <BarCrop path={q.reading.key} w={q.reading.page_mm[0]} h={q.reading.page_mm[1]} box={q.reading.box} label="What the librarian read" />
+      </div>
+      <div className="ask-body is-bar-note">
+        <span className="ask-note">Nothing is rewritten either way. A bar kept to check stays on the Check list, with the page beside it.</span>
+        {msg && <p className="r3-msg" role="alert">{msg}</p>}
+      </div>
+      <div className="ask-foot">
+        <button type="button" className="r3-btn is-line is-big" disabled={!!busy} onClick={() => void send('check')}>{busy === 'check' ? 'Sending' : 'Keep it to check'}</button>
+        <button type="button" className="r3-btn is-solid is-big" disabled={!!busy} onClick={() => void send('reading')}>
+          {busy === 'reading' ? 'Sending' : 'The reading is right'} <ICheck />
         </button>
       </div>
     </>
