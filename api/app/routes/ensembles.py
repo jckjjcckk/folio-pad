@@ -189,7 +189,7 @@ def remove_objects(storage: Any, paths: list[str], chunk: int = 100) -> tuple[in
             storage.from_(BUCKET).remove(part)
             removed += len(part)
         except Exception as e:  # noqa: BLE001
-            log.warning("group delete: %d storage objects not removed: %s", len(part), e)
+            log.warning("delete: %d storage objects not removed: %s", len(part), e)
             failed += part
     return removed, failed
 

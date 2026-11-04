@@ -8,7 +8,11 @@ Honest list, kept so the submission can say what Folio does not do yet.
   yet (after yoga serves the route). Codes still never expire. Feature 001.
 - **Done 2026-11-02: deleting a group removes its files.** `DELETE /ensembles/{id}` removes the files of the group's
   own books after the rows go; books shared by reference stay with their owner; `?dry_run=true` lists what would go.
-  Deleting through the RPC directly, or deleting one book, still leaves its files. Feature 001.
+  Deleting through the RPC directly still leaves its files. Feature 001.
+- **Done 2026-11-04: deleting one book removes its files.** The book sheet deletes through `DELETE /scores/{id}`,
+  which checks the owner (or the group's admin), refuses with 409 while a job is queued or running on the book, deletes
+  the row and then every file under `{score_id}/`; `?dry_run=true` lists what would go. Deploy order: the API (yoga)
+  before the web build, since the new web calls the route. Feature 001.
 - **C-clef misreads when splitting a single choir voice.** Cutting one voice alone (Soprano without Alto) makes
   the recheck ask about alto/tenor C clefs about three times in five pages; pairs of voices cut cleanly. Fix later:
   trust by-order labels on a full system, or a glyph-level clef reader (feature 008).

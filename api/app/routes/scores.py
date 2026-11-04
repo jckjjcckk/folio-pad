@@ -13,7 +13,8 @@ from ..librarian import HANDLERS, load_handlers
 from ..librarian.signature import canonical_key, canonical_meter
 from ..spend import BudgetedUser
 from ..worker import run_one
-from .live_jobs import insert_job, parts_key, refuse_if_live
+from .ensembles import list_folder, refuse, remove_objects
+from .live_jobs import WORDS, _score_of, insert_job, parts_key, refuse_if_live
 
 router = APIRouter()
 
@@ -212,3 +213,45 @@ def split_now(score_id: str, instruments: list[str], user: User) -> dict:
         load_handlers()
     asyncio.run(run_one(row))   # a sync route runs in a worker thread: no event loop here, so this is safe
     return db().table("jobs").select("*").eq("id", row["id"]).single().execute().data
+
+
+# ---------------------------------------------------------------- delete one book, with its files
+
+def running_job(score_id: str) -> dict | None:
+    """A job queued or running on the book, of any kind: its worker may still write under the book's folder, so a
+    delete now would leave those files behind. A job parked on a question is not running and does not hold a delete
+    up (its row goes with the book)."""
+    rows = db().table("jobs").select("id,kind,status,score_id,payload,created_at").in_("status", ["queued", "running"]).execute().data or []
+    rows = [r for r in rows if _score_of(r) == score_id]
+    return max(rows, key=lambda r: r.get("created_at") or "") if rows else None
+
+
+@router.delete("/scores/{score_id}")
+def delete_score(score_id: str, user: CurrentUser, dry_run: bool = False) -> dict:
+    """Delete a book (its owner, or its group's admin, as the `scores_delete` policy has it) and every file under its
+    folder (`{score_id}/...`: source, pages, parts, digital, engraved, playback, voice). Refused with 409 while a job
+    is queued or running on it. The files are listed first, the row is deleted with the service role (children
+    cascade), then the files are removed in chunks; a chunk that fails is reported, not raised, since the row is gone
+    by then. `dry_run=true` checks the caller and returns what would go, deleting nothing."""
+    client = db()
+    s = client.table("scores").select("id,title,owner_user_id,ensemble_id").eq("id", score_id).limit(1).execute().data
+    if not s:
+        raise refuse(404, "This book no longer exists.", "not_found")
+    s = s[0]
+    allowed = s["owner_user_id"] == user.id
+    if not allowed and s["ensemble_id"]:
+        m = client.table("members").select("role").eq("ensemble_id", s["ensemble_id"]).eq("user_id", user.id).limit(1).execute().data
+        allowed = bool(m) and m[0]["role"] == "admin"
+    if not allowed:
+        raise refuse(403, "Only its owner, or the group's admin, can delete this book.", "not_owner")
+    if (j := running_job(score_id)) is not None:
+        doing = WORDS.get(j["kind"], "A job is under way on this book")
+        raise HTTPException(409, {"message": f"{doing}. Delete the book once that has finished.", "hint": "job_live",
+                                  "job_id": j["id"], "kind": j["kind"], "status": j.get("status")})
+    paths = list_folder(client.storage, score_id)
+    out = {"score_id": score_id, "title": s.get("title"), "dry_run": dry_run, "objects": paths}
+    if dry_run:
+        return out
+    client.table("scores").delete().eq("id", score_id).execute()
+    removed, failed = remove_objects(client.storage, paths)
+    return {**out, "removed": removed, "failed": failed}

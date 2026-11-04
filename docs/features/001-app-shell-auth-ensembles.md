@@ -241,7 +241,9 @@ Groups; `/group` opens the Groups dialog) and **Stand** (the last book, `folio.b
 book to read). A card opens the Book sheet over the dimmed shelf: identity (rename inline, dates under the (i)),
 Open on the stand with "Continues at bar N, page P", Split by instrument, Convert to Digital with an estimate
 (40 s a page), Share with a group, Export MusicXML / Rename / Delete book…. Rename and delete use the scores
-table policies (`renameBook`, `deleteBook` in `data.tsx`); deleting leaves the storage files behind. The Groups
+table policies (`renameBook`, `deleteBook` in `data.tsx`). Since 2026-11-04 `deleteBook` goes through
+`DELETE /scores/{id}`, which removes the book's storage files too and refuses with 409 while a job runs on it (deploy
+the API before the web build). The Groups
 dialog shows the current group's join code with Copy, members with roles, Delete group… (Leave group… for
 members), other groups as rows, Join with a code and Create a group, with the existing RPCs; each destructive
 action asks once in one message box. In landscape the shelf has four columns and sheets are centred at 820 px.

@@ -634,10 +634,9 @@ export async function renameBook(scoreId: string, title: string): Promise<void> 
   if (error) throw new Error(error.message)
 }
 
-/** Delete a book and everything hanging from it (owner or admin: the scores delete policy; children cascade). The
- *  stored files stay in the bucket. */
+/** Delete a book through the API (`DELETE /scores/{id}`): its owner, or its group's admin. Everything hanging from
+ *  it goes (children cascade), and so do its files in Storage. Refused while a job is queued or running on it. */
 export async function deleteBook(scoreId: string): Promise<void> {
-  const { error, count } = await supabase.from('scores').delete({ count: 'exact' }).eq('id', scoreId)
-  if (error) throw new Error(error.message)
-  if (count === 0) throw new Error('Only its owner, or the group\'s admin, can delete this book.')
+  const fallback = 'The book could not be deleted just now. Try again in a moment.'
+  if (!(await groupApi(`/scores/${encodeURIComponent(scoreId)}`, 'DELETE', fallback))) throw new Error(fallback)
 }
