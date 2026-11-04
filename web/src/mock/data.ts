@@ -115,6 +115,10 @@ export interface Score {
   /** Pages Convert to Digital could not transcribe and left out (005, 2026-11-02): the PDF page, why, what was tried,
    *  and the bar numbers that stand in for it as rests. */
   digitalUnreadable?: { page: number; reason: string; tried: string[]; bars: number[] }[]
+  /** How the latest reading's bar count was checked against the bar numbers printed on the pages (`summary.bar_numbers`,
+   *  004): the count is always the page's own (geometry); the check says whether the printed numbers agree, set the first
+   *  bar (a confirmed offset), or doubt some systems. Absent for a reading made before the check. */
+  barCheck?: BarCheck
   /** Questions on this book already answered (jobs carrying `resume_from`). */
   answered?: number
   /** Play the parts (014): the book's MIDI (one track per part) and bar map in the bucket (`scores.playback`). Only
@@ -123,6 +127,8 @@ export interface Score {
 }
 
 export interface Playback { midi: string; barMap: string; parts: string[]; madeAt?: string }
+
+export interface BarCheck { status: 'agrees' | 'offset' | 'doubted' | 'none' | 'unconfirmed' | 'unchecked'; offsetApplied: boolean; doubtedSystems: number }
 
 export type CoverClef = 'treble' | 'bass' | 'alto' | 'grand'
 

@@ -10,6 +10,7 @@ import { Dialog } from './Surfaces'
 import { IdentityStaff } from './Identity'
 import { keyName, parseKey, parseMeter } from './keysig'
 import { keyInDoubt } from './r3bits'
+import { barCountLine } from './book'
 import { useStore } from './store'
 
 type Mode = 'major' | 'minor'
@@ -93,7 +94,7 @@ function Body({ s, onClose }: { s: Score; onClose: () => void }) {
 
   const summary = [keySig ? keyName(keySig) : 'Key not set', met ? `${met.top}/${met.bottom}` : null, bpm ? `♩ = ${bpm}` : null].filter(Boolean).join(' · ')
   const made = s.createdAt ? new Date(s.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : null
-  const madeLine = [made ? `${s.book === 'pdf' ? 'Read from the scan' : 'Imported'} on ${made}` : null, s.pages && s.book === 'pdf' ? `${s.pages} ${s.pages === 1 ? 'page' : 'pages'}` : null, s.bars ? `${s.bars} bars` : null].filter(Boolean).join(' · ')
+  const madeLine = [made ? `${s.book === 'pdf' ? 'Read from the scan' : 'Imported'} on ${made}` : null, s.pages && s.book === 'pdf' ? `${s.pages} ${s.pages === 1 ? 'page' : 'pages'}` : null, s.bars ? `${s.bars} bars${barCountLine(s) ? ' counted from the page' : ''}` : null].filter(Boolean).join(' · ')
 
   return (
     <>

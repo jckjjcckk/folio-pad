@@ -151,3 +151,18 @@ export function bookShare(s: Score, shares: ScoreShare[], owners: Record<string,
     sharedWith: mine ? all.map(x => x.ensembleId) : [],
   }
 }
+
+/** CK's decision 3 (2026-11-02): a scanned book's bar count is counted from the page (geometry finds the barlines; the
+ *  printed bar numbers are only a check), and the book says so, with what the check found (`summary.bar_numbers`, 004).
+ *  Null for a book whose bars come from notation (imported, or converted to Digital). "Line" is the app's word for a system. */
+export function barCountLine(s: Score): string | null {
+  if (!s.bars || s.book !== 'pdf' || s.kinds?.includes('digital')) return null
+  const c = s.barCheck
+  if (c?.status === 'agrees') return 'Bars counted from the page, checked against the printed bar numbers'
+  if (c?.status === 'offset' && c.offsetApplied) return 'Bars counted from the page, numbered as printed'
+  if (c?.status === 'doubted') {
+    const n = c.doubtedSystems
+    return `Bars counted from the page; ${n} ${n === 1 ? 'line disagrees' : 'lines disagree'} with the printed bar numbers`
+  }
+  return 'Bars counted from the page'
+}

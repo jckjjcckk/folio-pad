@@ -1,0 +1,1215 @@
+{
+ "run": "run1",
+ "model": "muse-spark-1.3",
+ "fixtures": {
+  "cappi": {
+   "pages": [
+    {
+     "page": 2,
+     "bars_counted": 5,
+     "systems": 5,
+     "effort": "minimal",
+     "fallback": null,
+     "readings": [],
+     "first_readings": null,
+     "dropped": [],
+     "error": null,
+     "truth": 0,
+     "right": 0,
+     "wrong_box": 0,
+     "invented": 0,
+     "missed": 0,
+     "low": 0,
+     "cost_usd": 0.00560325,
+     "seconds": 4.16
+    },
+    {
+     "page": 3,
+     "bars_counted": 5,
+     "systems": 5,
+     "effort": "minimal",
+     "fallback": null,
+     "readings": [],
+     "first_readings": null,
+     "dropped": [],
+     "error": null,
+     "truth": 0,
+     "right": 0,
+     "wrong_box": 0,
+     "invented": 0,
+     "missed": 0,
+     "low": 0,
+     "cost_usd": 0.006075,
+     "seconds": 4.74
+    },
+    {
+     "page": 4,
+     "bars_counted": 4,
+     "systems": 4,
+     "effort": "minimal",
+     "fallback": null,
+     "readings": [],
+     "first_readings": null,
+     "dropped": [],
+     "error": null,
+     "truth": 0,
+     "right": 0,
+     "wrong_box": 0,
+     "invented": 0,
+     "missed": 0,
+     "low": 0,
+     "cost_usd": 0.005616,
+     "seconds": 2.73
+    }
+   ],
+   "wall_s": 6.0,
+   "calls": [
+    {
+     "effort": "minimal",
+     "api": "chat",
+     "model": "muse-spark-1.3",
+     "in": 4078,
+     "out": 122,
+     "cost_usd": 0.005616,
+     "seconds": 2.73,
+     "text": "{\"bar_numbers\": [], \"none_printed\": true}"
+    },
+    {
+     "effort": "minimal",
+     "api": "chat",
+     "model": "muse-spark-1.3",
+     "in": 4078,
+     "out": 119,
+     "cost_usd": 0.00560325,
+     "seconds": 4.16,
+     "text": "{\"bar_numbers\": [], \"none_printed\": true}"
+    },
+    {
+     "effort": "minimal",
+     "api": "chat",
+     "model": "muse-spark-1.3",
+     "in": 4078,
+     "out": 230,
+     "cost_usd": 0.006075,
+     "seconds": 4.74,
+     "text": "{\"bar_numbers\": [], \"none_printed\": true}"
+    }
+   ],
+   "book": {
+    "status": "none",
+    "offset": null,
+    "offset_confirmed": false,
+    "restarts": [],
+    "used": 0,
+    "read": 0,
+    "cost_usd": 0.01729425
+   },
+   "doubts": [],
+   "ignored": [],
+   "true_doubts": [],
+   "false_doubts": [],
+   "missed_errors": []
+  },
+  "goldberg-bga": {
+   "pages": [
+    {
+     "page": 1,
+     "bars_counted": 28,
+     "systems": 6,
+     "effort": "minimal",
+     "fallback": null,
+     "readings": [],
+     "first_readings": null,
+     "dropped": [],
+     "error": null,
+     "truth": 0,
+     "right": 0,
+     "wrong_box": 0,
+     "invented": 0,
+     "missed": 0,
+     "low": 0,
+     "cost_usd": 0.007013,
+     "seconds": 6.8
+    },
+    {
+     "page": 2,
+     "bars_counted": 20,
+     "systems": 6,
+     "effort": "minimal",
+     "fallback": null,
+     "readings": [],
+     "first_readings": null,
+     "dropped": [],
+     "error": null,
+     "truth": 0,
+     "right": 0,
+     "wrong_box": 0,
+     "invented": 0,
+     "missed": 0,
+     "low": 0,
+     "cost_usd": 0.00439925,
+     "seconds": 2.28
+    },
+    {
+     "page": 3,
+     "bars_counted": 21,
+     "systems": 6,
+     "effort": "minimal",
+     "fallback": null,
+     "readings": [
+      {
+       "number": 52,
+       "box": 19,
+       "confidence": "high"
+      }
+     ],
+     "first_readings": null,
+     "dropped": [],
+     "error": null,
+     "truth": 0,
+     "right": 0,
+     "wrong_box": 0,
+     "invented": 1,
+     "missed": 0,
+     "low": 0,
+     "cost_usd": 0.0050665,
+     "seconds": 4.93
+    }
+   ],
+   "wall_s": 7.0,
+   "calls": [
+    {
+     "effort": "minimal",
+     "api": "chat",
+     "model": "muse-spark-1.3",
+     "in": 3074,
+     "out": 131,
+     "cost_usd": 0.00439925,
+     "seconds": 2.28,
+     "text": "{\"bar_numbers\": [], \"none_printed\": true}"
+    },
+    {
+     "effort": "minimal",
+     "api": "chat",
+     "model": "muse-spark-1.3",
+     "in": 3074,
+     "out": 288,
+     "cost_usd": 0.0050665,
+     "seconds": 4.93,
+     "text": "{\"bar_numbers\": [{\"number\": 52, \"box\": 19, \"confidence\": \"high\"}], \"none_printed\": false}"
+    },
+    {
+     "effort": "minimal",
+     "api": "chat",
+     "model": "muse-spark-1.3",
+     "in": 3074,
+     "out": 746,
+     "cost_usd": 0.007013,
+     "seconds": 6.8,
+     "text": "{\"bar_numbers\": [], \"none_printed\": true}"
+    }
+   ],
+   "book": {
+    "status": "unconfirmed",
+    "offset": -15,
+    "offset_confirmed": false,
+    "restarts": [],
+    "used": 1,
+    "read": 1,
+    "cost_usd": 0.01647875
+   },
+   "doubts": [],
+   "ignored": [],
+   "true_doubts": [],
+   "false_doubts": [],
+   "missed_errors": []
+  },
+  "beethoven9": {
+   "pages": [
+    {
+     "page": 1,
+     "bars_counted": 9,
+     "systems": 1,
+     "effort": "minimal",
+     "fallback": null,
+     "readings": [],
+     "first_readings": null,
+     "dropped": [],
+     "error": null,
+     "truth": 0,
+     "right": 0,
+     "wrong_box": 0,
+     "invented": 0,
+     "missed": 0,
+     "low": 0,
+     "cost_usd": 0.00614675,
+     "seconds": 5.34
+    },
+    {
+     "page": 2,
+     "bars_counted": 5,
+     "systems": 1,
+     "effort": "minimal",
+     "fallback": null,
+     "readings": [],
+     "first_readings": null,
+     "dropped": [],
+     "error": null,
+     "truth": 0,
+     "right": 0,
+     "wrong_box": 0,
+     "invented": 0,
+     "missed": 0,
+     "low": 0,
+     "cost_usd": 0.00641875,
+     "seconds": 5.0
+    },
+    {
+     "page": 3,
+     "bars_counted": 9,
+     "systems": 1,
+     "effort": "minimal",
+     "fallback": null,
+     "readings": [],
+     "first_readings": null,
+     "dropped": [],
+     "error": null,
+     "truth": 0,
+     "right": 0,
+     "wrong_box": 0,
+     "invented": 0,
+     "missed": 0,
+     "low": 0,
+     "cost_usd": 0.0065165,
+     "seconds": 4.38
+    }
+   ],
+   "wall_s": 7.2,
+   "calls": [
+    {
+     "effort": "minimal",
+     "api": "chat",
+     "model": "muse-spark-1.3",
+     "in": 4438,
+     "out": 141,
+     "cost_usd": 0.00614675,
+     "seconds": 5.34,
+     "text": "{\"bar_numbers\": [], \"none_printed\": true}"
+    },
+    {
+     "effort": "minimal",
+     "api": "chat",
+     "model": "muse-spark-1.3",
+     "in": 4438,
+     "out": 205,
+     "cost_usd": 0.00641875,
+     "seconds": 5.0,
+     "text": "{\"bar_numbers\": [], \"none_printed\": true}"
+    },
+    {
+     "effort": "minimal",
+     "api": "chat",
+     "model": "muse-spark-1.3",
+     "in": 4438,
+     "out": 228,
+     "cost_usd": 0.0065165,
+     "seconds": 4.37,
+     "text": "{\"bar_numbers\": [], \"none_printed\": true}"
+    }
+   ],
+   "book": {
+    "status": "none",
+    "offset": null,
+    "offset_confirmed": false,
+    "restarts": [],
+    "used": 0,
+    "read": 0,
+    "cost_usd": 0.019082
+   },
+   "doubts": [],
+   "ignored": [],
+   "true_doubts": [],
+   "false_doubts": [],
+   "missed_errors": []
+  },
+  "chopin-ekier": {
+   "pages": [
+    {
+     "page": 1,
+     "bars_counted": 19,
+     "systems": 5,
+     "effort": "minimal",
+     "fallback": null,
+     "readings": [
+      {
+       "number": 5,
+       "box": 5,
+       "confidence": "high"
+      },
+      {
+       "number": 9,
+       "box": 9,
+       "confidence": "high"
+      },
+      {
+       "number": 13,
+       "box": 13,
+       "confidence": "high"
+      },
+      {
+       "number": 17,
+       "box": 17,
+       "confidence": "high"
+      }
+     ],
+     "first_readings": null,
+     "dropped": [],
+     "error": null,
+     "truth": 4,
+     "right": 4,
+     "wrong_box": 0,
+     "invented": 0,
+     "missed": 0,
+     "low": 0,
+     "cost_usd": 0.00530825,
+     "seconds": 3.1
+    },
+    {
+     "page": 2,
+     "bars_counted": 19,
+     "systems": 5,
+     "effort": "minimal",
+     "fallback": null,
+     "readings": [
+      {
+       "number": 20,
+       "box": 1,
+       "confidence": "high"
+      },
+      {
+       "number": 24,
+       "box": 5,
+       "confidence": "high"
+      },
+      {
+       "number": 28,
+       "box": 9,
+       "confidence": "high"
+      },
+      {
+       "number": 32,
+       "box": 13,
+       "confidence": "high"
+      },
+      {
+       "number": 35,
+       "box": 16,
+       "confidence": "high"
+      }
+     ],
+     "first_readings": null,
+     "dropped": [],
+     "error": null,
+     "truth": 5,
+     "right": 5,
+     "wrong_box": 0,
+     "invented": 0,
+     "missed": 0,
+     "low": 0,
+     "cost_usd": 0.00489175,
+     "seconds": 2.72
+    },
+    {
+     "page": 3,
+     "bars_counted": 14,
+     "systems": 5,
+     "effort": "minimal",
+     "fallback": null,
+     "readings": [
+      {
+       "number": 38,
+       "box": 1,
+       "confidence": "high"
+      },
+      {
+       "number": 42,
+       "box": 5,
+       "confidence": "high"
+      },
+      {
+       "number": 45,
+       "box": 8,
+       "confidence": "high"
+      },
+      {
+       "number": 48,
+       "box": 11,
+       "confidence": "high"
+      },
+      {
+       "number": 51,
+       "box": 14,
+       "confidence": "high"
+      }
+     ],
+     "first_readings": null,
+     "dropped": [],
+     "error": null,
+     "truth": 5,
+     "right": 5,
+     "wrong_box": 0,
+     "invented": 0,
+     "missed": 0,
+     "low": 0,
+     "cost_usd": 0.005423,
+     "seconds": 3.39
+    },
+    {
+     "page": 4,
+     "bars_counted": 16,
+     "systems": 5,
+     "effort": "minimal",
+     "fallback": null,
+     "readings": [
+      {
+       "number": 54,
+       "box": 1,
+       "confidence": "high"
+      },
+      {
+       "number": 57,
+       "box": 4,
+       "confidence": "high"
+      },
+      {
+       "number": 60,
+       "box": 7,
+       "confidence": "high"
+      },
+      {
+       "number": 63,
+       "box": 10,
+       "confidence": "high"
+      },
+      {
+       "number": 66,
+       "box": 13,
+       "confidence": "high"
+      }
+     ],
+     "first_readings": null,
+     "dropped": [],
+     "error": null,
+     "truth": 5,
+     "right": 5,
+     "wrong_box": 0,
+     "invented": 0,
+     "missed": 0,
+     "low": 0,
+     "cost_usd": 0.00499375,
+     "seconds": 2.67
+    }
+   ],
+   "wall_s": 3.8,
+   "calls": [
+    {
+     "effort": "minimal",
+     "api": "chat",
+     "model": "muse-spark-1.3",
+     "in": 3196,
+     "out": 211,
+     "cost_usd": 0.00489175,
+     "seconds": 2.72,
+     "text": "{\"bar_numbers\": [{\"number\": 20, \"box\": 1, \"confidence\": \"high\"}, {\"number\": 24, \"box\": 5, \"confidence\": \"high\"}, {\"number\": 28, \"box\": 9, \"confidence\": \"high\"}, {\"number\": 32, \"box\": 13, \"confidence\": \"high\"}, {\"number\": 35, \"box\": 16, \"confidence\": \"high\"}], \"none_printed\": false}"
+    },
+    {
+     "effort": "minimal",
+     "api": "chat",
+     "model": "muse-spark-1.3",
+     "in": 3196,
+     "out": 309,
+     "cost_usd": 0.00530825,
+     "seconds": 3.09,
+     "text": "{\"bar_numbers\": [{\"number\": 5, \"box\": 5, \"confidence\": \"high\"}, {\"number\": 9, \"box\": 9, \"confidence\": \"high\"}, {\"number\": 13, \"box\": 13, \"confidence\": \"high\"}, {\"number\": 17, \"box\": 17, \"confidence\": \"high\"}], \"none_printed\": false}"
+    },
+    {
+     "effort": "minimal",
+     "api": "chat",
+     "model": "muse-spark-1.3",
+     "in": 3196,
+     "out": 235,
+     "cost_usd": 0.00499375,
+     "seconds": 2.67,
+     "text": "{\"bar_numbers\": [{\"number\": 54, \"box\": 1, \"confidence\": \"high\"}, {\"number\": 57, \"box\": 4, \"confidence\": \"high\"}, {\"number\": 60, \"box\": 7, \"confidence\": \"high\"}, {\"number\": 63, \"box\": 10, \"confidence\": \"high\"}, {\"number\": 66, \"box\": 13, \"confidence\": \"high\"}], \"none_printed\": false}"
+    },
+    {
+     "effort": "minimal",
+     "api": "chat",
+     "model": "muse-spark-1.3",
+     "in": 3196,
+     "out": 336,
+     "cost_usd": 0.005423,
+     "seconds": 3.39,
+     "text": "{\"bar_numbers\": [{\"number\": 38, \"box\": 1, \"confidence\": \"high\"}, {\"number\": 42, \"box\": 5, \"confidence\": \"high\"}, {\"number\": 45, \"box\": 8, \"confidence\": \"high\"}, {\"number\": 48, \"box\": 11, \"confidence\": \"high\"}, {\"number\": 51, \"box\": 14, \"confidence\": \"high\"}], \"none_printed\": false}"
+    }
+   ],
+   "book": {
+    "status": "doubted",
+    "offset": 0,
+    "offset_confirmed": true,
+    "restarts": [],
+    "used": 19,
+    "read": 19,
+    "cost_usd": 0.02061675
+   },
+   "doubts": [
+    {
+     "page": 2,
+     "system": 5,
+     "why": "printed bar 35 (page 2, box 16) to bar 38 (page 3, box 1) is 3 bars; the count found 4",
+     "boxes": [
+      16,
+      17,
+      18,
+      19
+     ]
+    },
+    {
+     "page": 3,
+     "system": 5,
+     "why": "printed bar 51 (page 3, box 14) to bar 54 (page 4, box 1) is 3 bars; the count found 1",
+     "boxes": [
+      14
+     ]
+    }
+   ],
+   "ignored": [],
+   "true_doubts": [
+    [
+     2,
+     5
+    ],
+    [
+     3,
+     5
+    ]
+   ],
+   "false_doubts": [],
+   "missed_errors": []
+  },
+  "goldberg-peters": {
+   "pages": [
+    {
+     "page": 1,
+     "bars_counted": 16,
+     "systems": 4,
+     "effort": "minimal",
+     "fallback": null,
+     "readings": [
+      {
+       "number": 5,
+       "box": 5,
+       "confidence": "high"
+      },
+      {
+       "number": 9,
+       "box": 9,
+       "confidence": "high"
+      },
+      {
+       "number": 13,
+       "box": 13,
+       "confidence": "high"
+      }
+     ],
+     "first_readings": null,
+     "dropped": [],
+     "error": null,
+     "truth": 3,
+     "right": 3,
+     "wrong_box": 0,
+     "invented": 0,
+     "missed": 0,
+     "low": 0,
+     "cost_usd": 0.0047645,
+     "seconds": 4.17
+    },
+    {
+     "page": 2,
+     "bars_counted": 1,
+     "systems": 1,
+     "effort": "low",
+     "fallback": [
+      "system 1: box 1 carries printed bars 17, 20, 23, 27, 30: it holds more than one bar"
+     ],
+     "readings": [
+      {
+       "number": 17,
+       "box": 1,
+       "confidence": "high"
+      },
+      {
+       "number": 20,
+       "box": 1,
+       "confidence": "high"
+      },
+      {
+       "number": 23,
+       "box": 1,
+       "confidence": "high"
+      },
+      {
+       "number": 27,
+       "box": 1,
+       "confidence": "high"
+      },
+      {
+       "number": 30,
+       "box": 1,
+       "confidence": "high"
+      }
+     ],
+     "first_readings": [
+      {
+       "number": 17,
+       "box": 1,
+       "confidence": "high"
+      },
+      {
+       "number": 20,
+       "box": 1,
+       "confidence": "high"
+      },
+      {
+       "number": 23,
+       "box": 1,
+       "confidence": "high"
+      },
+      {
+       "number": 27,
+       "box": 1,
+       "confidence": "high"
+      },
+      {
+       "number": 30,
+       "box": 1,
+       "confidence": "high"
+      }
+     ],
+     "dropped": [],
+     "error": null,
+     "truth": 5,
+     "right": 5,
+     "wrong_box": 0,
+     "invented": 0,
+     "missed": 0,
+     "low": 0,
+     "cost_usd": 0.0117645,
+     "seconds": 10.620000000000001
+    },
+    {
+     "page": 3,
+     "bars_counted": 29,
+     "systems": 5,
+     "effort": "low",
+     "fallback": [
+      "system 4: printed bar 10 (page 3, box 10) to bar 18 (box 13) is 8 bars; the count found 3"
+     ],
+     "readings": [
+      {
+       "number": 4,
+       "box": 4,
+       "confidence": "high"
+      },
+      {
+       "number": 7,
+       "box": 7,
+       "confidence": "high"
+      },
+      {
+       "number": 10,
+       "box": 10,
+       "confidence": "high"
+      },
+      {
+       "number": 13,
+       "box": 13,
+       "confidence": "medium"
+      }
+     ],
+     "first_readings": [
+      {
+       "number": 4,
+       "box": 4,
+       "confidence": "high"
+      },
+      {
+       "number": 7,
+       "box": 7,
+       "confidence": "high"
+      },
+      {
+       "number": 10,
+       "box": 10,
+       "confidence": "high"
+      },
+      {
+       "number": 18,
+       "box": 13,
+       "confidence": "high"
+      }
+     ],
+     "dropped": [],
+     "error": null,
+     "truth": 4,
+     "right": 4,
+     "wrong_box": 0,
+     "invented": 0,
+     "missed": 0,
+     "low": 0,
+     "cost_usd": 0.0133455,
+     "seconds": 10.78
+    },
+    {
+     "page": 4,
+     "bars_counted": 145,
+     "systems": 11,
+     "effort": "low",
+     "fallback": [
+      "system 1: printed bar 17 (page 4, box 1) to bar 20 (box 29) is 3 bars; the count found 28",
+      "system 2: printed bar 17 (page 4, box 1) to bar 20 (box 29) is 3 bars; the count found 28",
+      "system 3: printed bar 20 (page 4, box 29) to bar 23 (box 52) is 3 bars; the count found 23",
+      "system 4: printed bar 20 (page 4, box 29) to bar 23 (box 52) is 3 bars; the count found 23",
+      "system 5: printed bar 23 (page 4, box 52) to bar 26 (box 85) is 3 bars; the count found 33",
+      "system 6: printed bar 23 (page 4, box 52) to bar 26 (box 85) is 3 bars; the count found 33",
+      "system 7: printed bar 26 (page 4, box 85) to bar 29 (box 116) is 3 bars; the count found 31",
+      "system 8: printed bar 26 (page 4, box 85) to bar 29 (box 116) is 3 bars; the count found 31",
+      "system 9: printed bar 29 (page 4, box 116) to bar 435 (box 143) is 406 bars; the count found 27",
+      "system 10: printed bar 29 (page 4, box 116) to bar 435 (box 143) is 406 bars; the count found 27",
+      "system 11: printed bar 29 (page 4, box 116) to bar 435 (box 143) is 406 bars; the count found 27"
+     ],
+     "readings": [
+      {
+       "number": 17,
+       "box": 1,
+       "confidence": "high"
+      },
+      {
+       "number": 20,
+       "box": 29,
+       "confidence": "high"
+      },
+      {
+       "number": 23,
+       "box": 52,
+       "confidence": "high"
+      },
+      {
+       "number": 26,
+       "box": 85,
+       "confidence": "high"
+      },
+      {
+       "number": 29,
+       "box": 116,
+       "confidence": "high"
+      }
+     ],
+     "first_readings": [
+      {
+       "number": 17,
+       "box": 1,
+       "confidence": "high"
+      },
+      {
+       "number": 20,
+       "box": 29,
+       "confidence": "high"
+      },
+      {
+       "number": 23,
+       "box": 52,
+       "confidence": "high"
+      },
+      {
+       "number": 26,
+       "box": 85,
+       "confidence": "high"
+      },
+      {
+       "number": 29,
+       "box": 116,
+       "confidence": "high"
+      },
+      {
+       "number": 435,
+       "box": 143,
+       "confidence": "high"
+      }
+     ],
+     "dropped": [],
+     "error": null,
+     "truth": 5,
+     "right": 5,
+     "wrong_box": 0,
+     "invented": 0,
+     "missed": 0,
+     "low": 0,
+     "cost_usd": 0.015164500000000001,
+     "seconds": 10.32
+    }
+   ],
+   "wall_s": 13.0,
+   "calls": [
+    {
+     "effort": "minimal",
+     "api": "chat",
+     "model": "muse-spark-1.3",
+     "in": 3016,
+     "out": 234,
+     "cost_usd": 0.0047645,
+     "seconds": 4.17,
+     "text": "{\"bar_numbers\": [{\"number\": 5, \"box\": 5, \"confidence\": \"high\"}, {\"number\": 9, \"box\": 9, \"confidence\": \"high\"}, {\"number\": 13, \"box\": 13, \"confidence\": \"high\"}], \"none_printed\": false}"
+    },
+    {
+     "effort": "minimal",
+     "api": "chat",
+     "model": "muse-spark-1.3",
+     "in": 3016,
+     "out": 500,
+     "cost_usd": 0.005895,
+     "seconds": 2.88,
+     "text": "{\"bar_numbers\": [{\"number\": 17, \"box\": 1, \"confidence\": \"high\"}, {\"number\": 20, \"box\": 29, \"confidence\": \"high\"}, {\"number\": 23, \"box\": 52, \"confidence\": \"high\"}, {\"number\": 26, \"box\": 85, \"confidence\": \"high\"}, {\"number\": 29, \"box\": 116, \"confidence\": \"high\"}, {\"number\": 435, \"box\": 143, \"confidence\": \"high\"}], \"none_printed\": false}"
+    },
+    {
+     "effort": "minimal",
+     "api": "chat",
+     "model": "muse-spark-1.3",
+     "in": 3016,
+     "out": 313,
+     "cost_usd": 0.00510025,
+     "seconds": 3.93,
+     "text": "{\"bar_numbers\": [{\"number\": 4, \"box\": 4, \"confidence\": \"high\"}, {\"number\": 7, \"box\": 7, \"confidence\": \"high\"}, {\"number\": 10, \"box\": 10, \"confidence\": \"high\"}, {\"number\": 18, \"box\": 13, \"confidence\": \"high\"}], \"none_printed\": false}"
+    },
+    {
+     "effort": "minimal",
+     "api": "chat",
+     "model": "muse-spark-1.3",
+     "in": 3016,
+     "out": 373,
+     "cost_usd": 0.00535525,
+     "seconds": 5.84,
+     "text": "{\"bar_numbers\": [{\"number\": 17, \"box\": 1, \"confidence\": \"high\"}, {\"number\": 20, \"box\": 1, \"confidence\": \"high\"}, {\"number\": 23, \"box\": 1, \"confidence\": \"high\"}, {\"number\": 27, \"box\": 1, \"confidence\": \"high\"}, {\"number\": 30, \"box\": 1, \"confidence\": \"high\"}], \"none_printed\": false}"
+    },
+    {
+     "effort": "low",
+     "api": "messages",
+     "model": "muse-spark-1.3",
+     "in": 3016,
+     "out": 621,
+     "cost_usd": 0.00640925,
+     "seconds": 4.78,
+     "text": "{\"bar_numbers\": [{\"number\": 17, \"box\": 1, \"confidence\": \"high\"}, {\"number\": 20, \"box\": 1, \"confidence\": \"high\"}, {\"number\": 23, \"box\": 1, \"confidence\": \"high\"}, {\"number\": 27, \"box\": 1, \"confidence\": \"high\"}, {\"number\": 30, \"box\": 1, \"confidence\": \"high\"}], \"none_printed\": false}"
+    },
+    {
+     "effort": "low",
+     "api": "messages",
+     "model": "muse-spark-1.3",
+     "in": 3016,
+     "out": 1053,
+     "cost_usd": 0.00824525,
+     "seconds": 6.84,
+     "text": "{\"bar_numbers\": [{\"number\": 4, \"box\": 4, \"confidence\": \"high\"}, {\"number\": 7, \"box\": 7, \"confidence\": \"high\"}, {\"number\": 10, \"box\": 10, \"confidence\": \"high\"}, {\"number\": 13, \"box\": 13, \"confidence\": \"medium\"}], \"none_printed\": false}"
+    },
+    {
+     "effort": "low",
+     "api": "messages",
+     "model": "muse-spark-1.3",
+     "in": 3016,
+     "out": 1294,
+     "cost_usd": 0.0092695,
+     "seconds": 7.44,
+     "text": "{\"bar_numbers\": [{\"number\": 17, \"box\": 1, \"confidence\": \"high\"}, {\"number\": 20, \"box\": 29, \"confidence\": \"high\"}, {\"number\": 23, \"box\": 52, \"confidence\": \"high\"}, {\"number\": 26, \"box\": 85, \"confidence\": \"high\"}, {\"number\": 29, \"box\": 116, \"confidence\": \"high\"}], \"none_printed\": false}"
+    }
+   ],
+   "book": {
+    "status": "doubted",
+    "offset": 0,
+    "offset_confirmed": true,
+    "restarts": [
+     {
+      "page": 3,
+      "box": 4,
+      "printed": 4
+     }
+    ],
+    "used": 13,
+    "read": 17,
+    "cost_usd": 0.045039
+   },
+   "doubts": [
+    {
+     "page": 2,
+     "system": 1,
+     "why": "box 1 carries printed bars 17, 20, 23, 27, 30: it holds more than one bar",
+     "boxes": [
+      1
+     ]
+    },
+    {
+     "page": 3,
+     "system": 5,
+     "why": "printed bar 13 (page 3, box 13) to bar 17 (page 4, box 1) is 4 bars; the count found 17",
+     "boxes": [
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29
+     ]
+    },
+    {
+     "page": 4,
+     "system": 1,
+     "why": "printed bar 17 (page 4, box 1) to bar 20 (box 29) is 3 bars; the count found 28",
+     "boxes": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14
+     ]
+    },
+    {
+     "page": 4,
+     "system": 2,
+     "why": "printed bar 17 (page 4, box 1) to bar 20 (box 29) is 3 bars; the count found 28",
+     "boxes": [
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28
+     ]
+    },
+    {
+     "page": 4,
+     "system": 3,
+     "why": "printed bar 20 (page 4, box 29) to bar 23 (box 52) is 3 bars; the count found 23",
+     "boxes": [
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40
+     ]
+    },
+    {
+     "page": 4,
+     "system": 4,
+     "why": "printed bar 20 (page 4, box 29) to bar 23 (box 52) is 3 bars; the count found 23",
+     "boxes": [
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51
+     ]
+    },
+    {
+     "page": 4,
+     "system": 5,
+     "why": "printed bar 23 (page 4, box 52) to bar 26 (box 85) is 3 bars; the count found 33",
+     "boxes": [
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61,
+      62,
+      63,
+      64,
+      65,
+      66,
+      67,
+      68,
+      69,
+      70,
+      71
+     ]
+    },
+    {
+     "page": 4,
+     "system": 6,
+     "why": "printed bar 23 (page 4, box 52) to bar 26 (box 85) is 3 bars; the count found 33",
+     "boxes": [
+      72,
+      73,
+      74,
+      75,
+      76,
+      77,
+      78,
+      79,
+      80,
+      81,
+      82,
+      83,
+      84
+     ]
+    },
+    {
+     "page": 4,
+     "system": 7,
+     "why": "printed bar 26 (page 4, box 85) to bar 29 (box 116) is 3 bars; the count found 31",
+     "boxes": [
+      85,
+      86,
+      87,
+      88,
+      89,
+      90,
+      91,
+      92,
+      93,
+      94,
+      95,
+      96,
+      97,
+      98,
+      99,
+      100
+     ]
+    },
+    {
+     "page": 4,
+     "system": 8,
+     "why": "printed bar 26 (page 4, box 85) to bar 29 (box 116) is 3 bars; the count found 31",
+     "boxes": [
+      101,
+      102,
+      103,
+      104,
+      105,
+      106,
+      107,
+      108,
+      109,
+      110,
+      111,
+      112,
+      113,
+      114,
+      115
+     ]
+    }
+   ],
+   "ignored": [],
+   "true_doubts": [
+    [
+     2,
+     1
+    ],
+    [
+     3,
+     5
+    ],
+    [
+     4,
+     1
+    ],
+    [
+     4,
+     2
+    ],
+    [
+     4,
+     3
+    ],
+    [
+     4,
+     4
+    ],
+    [
+     4,
+     5
+    ],
+    [
+     4,
+     6
+    ],
+    [
+     4,
+     7
+    ],
+    [
+     4,
+     8
+    ]
+   ],
+   "false_doubts": [],
+   "missed_errors": [
+    [
+     4,
+     9
+    ],
+    [
+     4,
+     10
+    ],
+    [
+     4,
+     11
+    ]
+   ]
+  }
+ }
+}
