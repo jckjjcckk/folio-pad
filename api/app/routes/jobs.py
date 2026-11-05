@@ -7,7 +7,12 @@ resumed `process_pages` picks it up by that status).
 A run paused at its turn or cost allowance (`result.state = "paused"`, 2026-11-02) is continued the same way without an
 answer: `POST /jobs/{id}/resume` queues the follow-up with `resume_from` and no `answer`; the agent loop gives the run a
 fresh allowance from where it stopped (006). Both routes pin the follow-up to the tier the chain started on
-(`payload.model_tier`), so a profile changed meanwhile never moves a parked transcript to another model."""
+(`payload.model_tier`), so a profile changed meanwhile never moves a parked transcript to another model.
+
+demo-video branch only (never main): a question parked by `scripts/seed_demo.py` carries `result.demo_resume`, the
+finished run's rows prepared from a real one. Its answer writes those rows and a follow-up job already `done`, so the
+book finishes at once with no worker and no Meta call (the "fake resume" for the video)."""
+from datetime import datetime, timezone
 from typing import Any
 
 from fastapi import APIRouter, HTTPException
@@ -40,6 +45,8 @@ def answer_job(job_id: str, body: dict[str, Any], user: BudgetedUser) -> dict:
     already = db().table("jobs").select("id").eq("payload->>resume_from", job_id).limit(1).execute().data
     if already:
         raise HTTPException(409, "This question was already answered")
+    if isinstance(result.get("demo_resume"), dict):
+        return _demo_resume(job, result["demo_resume"], body, user.id)
     payload = {k: v for k, v in (job.get("payload") or {}).items() if k not in ("answer", "resume_from")}
     q = result.get("question_payload") or {}
     if q.get("interpretation_id") and not payload.get("interpretation_id"):
@@ -51,6 +58,35 @@ def answer_job(job_id: str, body: dict[str, Any], user: BudgetedUser) -> dict:
         # resumed run wrote it again at its very end, minutes later, and the book showed a question nobody could answer.
         db().table("interpretations").update({"status": "running"}).eq("id", q["interpretation_id"]).eq("status", "needs_review").execute()
     return row
+
+
+DEMO_TABLES = ("sources", "parts", "scores", "interpretations")
+
+
+def _demo_resume(job: dict, demo: dict, body: dict, user_id: str) -> dict:
+    """The seeded question's answer (demo-video branch): the spec for this answer (`demo.answers[answer]`, else `demo`
+    itself) inserts its rows and applies its updates on this book only, then the follow-up job lands `done` with the
+    prepared `result`. Only the service role writes jobs, so a spec is never a user's."""
+    answer = body["answer"] if set(body) == {"answer"} else body
+    spec = (demo.get("answers") or {}).get(answer if isinstance(answer, str) else "") or demo
+    sid = job["score_id"]
+    for table, rows in (spec.get("insert") or {}).items():
+        if table not in DEMO_TABLES or any(r.get("score_id") != sid for r in rows):
+            raise HTTPException(400, "This demo answer writes outside its book")
+        if rows:
+            db().table(table).insert(rows).execute()
+    for u in spec.get("update") or []:
+        if u.get("table") not in DEMO_TABLES:
+            raise HTTPException(400, "This demo answer writes outside its book")
+        q = db().table(u["table"]).update(u["set"]).eq("id" if u["table"] == "scores" else "score_id", sid)
+        for k, v in (u.get("match") or {}).items():
+            q = q.eq(k, v)
+        q.execute()
+    now = datetime.now(timezone.utc).isoformat()
+    payload = {k: v for k, v in (job.get("payload") or {}).items() if k not in ("answer", "resume_from")}
+    payload.update({"answer": answer, "resume_from": job["id"]})
+    return db().table("jobs").insert({"kind": job["kind"], "status": "done", "progress": 1, "score_id": sid, "created_by": user_id,
+                                      "payload": payload, "result": spec.get("result") or {}, "started_at": now, "finished_at": now}).execute().data[0]
 
 
 def _follow_up(job: dict, payload: dict, user_id: str) -> dict:
