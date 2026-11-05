@@ -157,9 +157,7 @@ command -v supabase >/dev/null 2>&1 && green "  ok   supabase cli" || dim "  -- 
 echo "web/.env"
 env_filled "$ROOT/web/.env" VITE_SUPABASE_URL VITE_SUPABASE_PUBLISHABLE_KEY VITE_API_URL
 echo "api/.env"
-env_filled "$ROOT/api/.env" SUPABASE_URL SUPABASE_SECRET_KEY LLM_PROVIDER META_API_KEY
-provider="$(grep -E '^LLM_PROVIDER=' "$ROOT/api/.env" 2>/dev/null | cut -d= -f2 || true)"
-if [ "$provider" = "anthropic" ]; then env_filled "$ROOT/api/.env" ANTHROPIC_API_KEY; fi
+env_filled "$ROOT/api/.env" SUPABASE_URL SUPABASE_SECRET_KEY META_API_KEY
 
 if [ "$fail" -ne 0 ]; then red "Fix the items above, then rerun."; exit 1; fi
 [ "$MODE" = "--check" ] && { green "All checks passed."; exit 0; }

@@ -234,7 +234,7 @@ end-to-end runs; the other scans are kept out of the repo.
 
 ## Team and links
 
-- CK Jiang: product, design direction, musical judgement.
+- CK Jiang, solo: code, product, design direction, musical judgement. Coding tool: Claude Code. Claude Haiku and Sonnet were run only as benchmark comparators in `api/experiments/benchmark/`, never at runtime.
 - Repo: https://github.com/jckjjcckk/folio-pad
 - Product site: https://folio.jckjjcckk.com
 - Web app: https://folio-app.jckjjcckk.com
