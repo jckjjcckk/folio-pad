@@ -160,10 +160,10 @@ whole run directory is `api/experiments/omr/out/chopin-op40-1-p25/` (gitignored,
 
 ## Paths (absolute)
 
-- `/Users/ckjiang/Documents/muse/.claude/worktrees/agent-a6373b95fb192e74a/api/experiments/engrave/chopin-op40-1/A-musescore-layout.pdf`
-- `/Users/ckjiang/Documents/muse/.claude/worktrees/agent-a6373b95fb192e74a/api/experiments/engrave/chopin-op40-1/B-musescore-reflow.pdf`
-- `/Users/ckjiang/Documents/muse/.claude/worktrees/agent-a6373b95fb192e74a/api/experiments/engrave/chopin-op40-1/C-osmd.pdf`
-- `/Users/ckjiang/Documents/muse/.claude/worktrees/agent-a6373b95fb192e74a/api/experiments/engrave/chopin-op40-1/D-musescore-layout-pagesize.pdf`
-- `/Users/ckjiang/Documents/muse/.claude/worktrees/agent-a6373b95fb192e74a/api/experiments/engrave/chopin-op40-1/A2-musescore-layout-bar16fixed.pdf` (hand patch: voices renumbered per staff)
-- `/Users/ckjiang/Documents/muse/.claude/worktrees/agent-a6373b95fb192e74a/api/experiments/engrave/chopin-op40-1/scan-p25.png`
-- `/Users/ckjiang/Documents/muse/.claude/worktrees/agent-a6373b95fb192e74a/api/fixtures/pdf/chopin-op40-1-p25.pdf`
+- `api/experiments/engrave/chopin-op40-1/A-musescore-layout.pdf`
+- `api/experiments/engrave/chopin-op40-1/B-musescore-reflow.pdf`
+- `api/experiments/engrave/chopin-op40-1/C-osmd.pdf`
+- `api/experiments/engrave/chopin-op40-1/D-musescore-layout-pagesize.pdf`
+- `api/experiments/engrave/chopin-op40-1/A2-musescore-layout-bar16fixed.pdf` (hand patch: voices renumbered per staff)
+- `api/experiments/engrave/chopin-op40-1/scan-p25.png`
+- `api/fixtures/pdf/chopin-op40-1-p25.pdf`

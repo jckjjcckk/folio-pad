@@ -250,7 +250,7 @@ action asks once in one message box. In landscape the shelf has four columns and
 
 ## Join limit and deleting a group with its files (2026-11-02)
 
-Both were in `docs/backlog.md`. Code: `api/app/routes/ensembles.py`; tests `api/tests/test_ensembles.py` (fakes) and
+Both were known limits until 2026-11-02. Code: `api/app/routes/ensembles.py`; tests `api/tests/test_ensembles.py` (fakes) and
 `api/tests/test_groups_local.py` (local stack); web `joinGroup` / `deleteGroup` in `web/src/app/data.tsx`.
 
 - **Join through the API.** `POST /ensembles/join {code}` joins as a player with the service role, step for step as

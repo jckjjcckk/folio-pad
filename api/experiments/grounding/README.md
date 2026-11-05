@@ -87,9 +87,9 @@ not join a system.
 
 ## Screenshots (overlay page, tapped in the browser)
 
-![Goldberg, measure 23 tapped](out/screenshots/goldberg-tap-23.jpg)
+![Goldberg, measure 23 tapped](figures/goldberg-tap-23.jpg)
 
-![Rachmaninoff, measure 9 tapped](out/screenshots/rach1-tap-9.jpg)
+![Rachmaninoff, measure 9 tapped](figures/rach1-tap-9.jpg)
 
 Open the pages yourself with any static server from this folder, e.g. `python3 -m http.server 8765` then
 `http://localhost:8765/out/final-goldberg-bga-p01.html`. Other overlays: `out/spark-*.html` (Spark whole page,

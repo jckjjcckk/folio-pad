@@ -3,7 +3,11 @@
 Recordings of rehearsal instructions, each labelled with what the librarian should make of it. The audio goes
 through Muse Voice Transcribe, then one Spark call decides **position** (which bar or bars, a rehearsal mark, or
 global), **audience** (everyone, one part, or one person) and **content** (kind and text). The labels in
-`script.csv` are the answer key; `scripts/voice_eval.py` (to come) scores a run against them.
+`script.csv` (set 1) and `script2.csv` (set 2, the harder lines) are the answer key;
+`api/experiments/voice/voice_eval.py` and `set2.py` score a run against them.
+
+The recordings themselves are not in the repository: they are one person's voice, kept local. Record your own
+as below to rerun the eval.
 
 ## Recording
 

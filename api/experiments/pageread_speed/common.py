@@ -23,7 +23,7 @@ MODEL = "muse-spark-1.3"
 
 FIX = API / "fixtures" / "pdf"
 B9_PNG = API / "experiments" / "grounding" / "out" / "piano-cut" / "beethoven-sym9-fullscore-imslp46254" / "pages"
-RACH_PDF = Path("/Users/ckjiang/Downloads/stave-extractor/api/fixtures/pdf/rach1-fullscore-gutheil-1919.pdf")
+RACH_PDF = FIX / "rach1-fullscore-gutheil-1919.pdf"
 
 # book -> (kind, title, seeded known parts, [(page id, source, page)]). The 016 corpus (all 10 pages) plus the two Chopin
 # pages of today's landmarks eval that are not in it (Chopin p. 14 too: 3 of the 5); Goldberg p2-3 serve both sets.

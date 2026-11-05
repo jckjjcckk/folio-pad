@@ -23,8 +23,9 @@ from app.librarian import bar_numbers as bn
 from app.librarian.cut import page_measures
 from app.librarian.import_pdf import render_page
 
-FIX = Path("/Users/ckjiang/Documents/muse/api/fixtures")
-PREP = Path("/Users/ckjiang/Documents/muse/api/experiments/pageread_speed/results/prep")
+API = Path(__file__).resolve().parents[2]
+FIX = API / "fixtures"
+PREP = API / "experiments" / "pageread_speed" / "results" / "prep"
 OUT = Path(__file__).parent / "results"
 
 # (pdf or png glob, pages, expected staves, truth per page: {box: printed number}; "multi" boxes carry several numbers)

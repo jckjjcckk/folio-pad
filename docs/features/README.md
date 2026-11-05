@@ -2,8 +2,7 @@
 
 One file per feature. Each starts with a status (idea | designed | prototype | working | shipped) and the Meta
 model it uses, then: purpose, what exists (files, scripts, tests, output dirs), results and numbers, rules
-and decisions, open issues, next steps. The session handoff (`docs_offline/progress.md`, gitignored) holds
-only the roadmap, status per feature, the decisions log, CK's to-do and the setup state, and points here.
+and decisions, open issues, next steps.
 
 | # | File | Status | Meta model |
 |---|---|---|---|
@@ -28,5 +27,4 @@ only the roadmap, status per feature, the decisions log, CK's to-do and the setu
 | 014 | [Rehearsal tools: play the parts](014-rehearsal-tools.md) | working (local stack, digital books) | none (music21 MIDI, Tone.js) |
 | 015 | [iOS wrapper](015-ios-wrapper.md) | idea | none |
 | 016 | [Benchmark tool](016-benchmark-tool.md) | to design | Spark, SAM optional |
-| 017 | [Demo and submission](017-demo-and-submission.md) | designed | all three |
 | 018 | [E2E night: every book through the real chain](018-e2e-night.md) | run 2026-10-31, six fixes on main, yoga at b56597f since 2026-10-31 | Spark, Voice Transcribe |

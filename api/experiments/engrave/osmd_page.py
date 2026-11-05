@@ -12,7 +12,8 @@ import argparse
 import json
 from pathlib import Path
 
-DEFAULT_OSMD = "/Users/ckjiang/Documents/muse/web/node_modules/opensheetmusicdisplay/build/opensheetmusicdisplay.min.js"
+DEFAULT_OSMD = str(Path(__file__).resolve().parents[3] / "web" / "node_modules" / "opensheetmusicdisplay" / "build"
+                   / "opensheetmusicdisplay.min.js")
 
 p = argparse.ArgumentParser()
 p.add_argument("src")

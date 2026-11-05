@@ -31,7 +31,7 @@ The side-by-side to open: `musescore-opengoldberg.pdf` | `musescore-ours-layout.
   converted it to `inputs/ref-full.musicxml` (990 measures, 4.9 s); `cut_measures.py` kept the first 32 measures.
 - **Ours.** No Convert output exists on the box for p1-5 (`~/omr/folio005/p1-5` holds only the Audiveris
   movements). The final MusicXML of the p1-5 experiment run (`score.py` after A + B, `--gate-tag tuplet=0.9`) is on
-  the Mac: `/Users/ckjiang/Documents/muse/.claude/worktrees/agent-a320325d43e43534d/api/experiments/omr/out/goldberg-p1-5-gate-tuplet09/final.musicxml`,
+  the Mac: `api/experiments/omr/out/goldberg-p1-5-gate-tuplet09/final.musicxml`,
   copied as `inputs/ours-p1-5.musicxml` (119 bars) and cut to bars 1 to 32 as `inputs/ours-aria-layout.musicxml`
   (everything kept) and `inputs/ours-aria.musicxml` (stripped, the reflow input). The in-app
   `omr_convert` writes the same shape of file (ported code); its copy lives in local Supabase storage and was not used.
@@ -183,24 +183,24 @@ bar 15 below the bass staff instead of between the staves.
 ## Paths (absolute)
 
 Committed:
-- `/Users/ckjiang/Documents/muse/.claude/worktrees/agent-a6373b95fb192e74a/api/experiments/engrave/goldberg/musescore-opengoldberg.pdf`
-- `/Users/ckjiang/Documents/muse/.claude/worktrees/agent-a6373b95fb192e74a/api/experiments/engrave/goldberg/musescore-ours-layout.pdf`
-- `/Users/ckjiang/Documents/muse/.claude/worktrees/agent-a6373b95fb192e74a/api/experiments/engrave/goldberg/musescore-ours-reflow.pdf`
-- `/Users/ckjiang/Documents/muse/.claude/worktrees/agent-a6373b95fb192e74a/api/experiments/engrave/goldberg/musescore-audiveris-raw.pdf`
-- `/Users/ckjiang/Documents/muse/.claude/worktrees/agent-a6373b95fb192e74a/api/experiments/engrave/goldberg/musescore-ours-p1-5.pdf`
-- `/Users/ckjiang/Documents/muse/.claude/worktrees/agent-a6373b95fb192e74a/api/experiments/engrave/goldberg/musescore-ours-layout.mpos`, `musescore-ours-reflow.mpos`
-- `/Users/ckjiang/Documents/muse/.claude/worktrees/agent-a6373b95fb192e74a/api/experiments/engrave/goldberg/osmd-ours.pdf`
-- `/Users/ckjiang/Documents/muse/.claude/worktrees/agent-a6373b95fb192e74a/api/experiments/engrave/goldberg/osmd-ours-layout.pdf`
-- `/Users/ckjiang/Documents/muse/.claude/worktrees/agent-a6373b95fb192e74a/api/experiments/engrave/goldberg/osmd-opengoldberg.pdf`
-- `/Users/ckjiang/Documents/muse/.claude/worktrees/agent-a6373b95fb192e74a/api/experiments/engrave/goldberg/osmd-audiveris-raw.pdf`
-- `/Users/ckjiang/Documents/muse/.claude/worktrees/agent-a6373b95fb192e74a/api/experiments/engrave/goldberg/osmd-ours-p1-5.pdf`
+- `api/experiments/engrave/goldberg/musescore-opengoldberg.pdf`
+- `api/experiments/engrave/goldberg/musescore-ours-layout.pdf`
+- `api/experiments/engrave/goldberg/musescore-ours-reflow.pdf`
+- `api/experiments/engrave/goldberg/musescore-audiveris-raw.pdf`
+- `api/experiments/engrave/goldberg/musescore-ours-p1-5.pdf`
+- `api/experiments/engrave/goldberg/musescore-ours-layout.mpos`, `musescore-ours-reflow.mpos`
+- `api/experiments/engrave/goldberg/osmd-ours.pdf`
+- `api/experiments/engrave/goldberg/osmd-ours-layout.pdf`
+- `api/experiments/engrave/goldberg/osmd-opengoldberg.pdf`
+- `api/experiments/engrave/goldberg/osmd-audiveris-raw.pdf`
+- `api/experiments/engrave/goldberg/osmd-ours-p1-5.pdf`
 - `inputs/ref-aria.musicxml`, `inputs/ours-aria.musicxml`, `inputs/ours-aria-layout.musicxml`, `inputs/audiveris-raw-p1.musicxml`, `inputs/goldberg-bga.mxl`
 
 On disk only (ignored by `goldberg/.gitignore`: large, or copies of files that live elsewhere):
-- `/Users/ckjiang/Documents/muse/.claude/worktrees/agent-a6373b95fb192e74a/api/experiments/engrave/goldberg/scan-p1.png` .. `scan-p5.png`
-- `/Users/ckjiang/Documents/muse/.claude/worktrees/agent-a6373b95fb192e74a/api/experiments/engrave/goldberg/musescore-opengoldberg.mp3`
-- `/Users/ckjiang/Documents/muse/.claude/worktrees/agent-a6373b95fb192e74a/api/experiments/engrave/goldberg/inputs/ref-full.musicxml`
-- `/Users/ckjiang/Documents/muse/.claude/worktrees/agent-a6373b95fb192e74a/api/experiments/engrave/goldberg/inputs/ours-p1-5.musicxml`
+- `api/experiments/engrave/goldberg/scan-p1.png` .. `scan-p5.png`
+- `api/experiments/engrave/goldberg/musescore-opengoldberg.mp3`
+- `api/experiments/engrave/goldberg/inputs/ref-full.musicxml`
+- `api/experiments/engrave/goldberg/inputs/ours-p1-5.musicxml`
 
 On the box: MuseScore stays installed at `~/omr/musescore/` (AppImage + `squashfs-root/`), renders and PNGs in
 `~/omr/musescore/goldberg/`, the demo score in `~/omr/musescore/ref/goldberg.mscz`.
@@ -258,7 +258,7 @@ re-write, then the pass): the same.
 
 ## Why the Aria's text layer underperforms (from the run's own files)
 
-Run: `/Users/ckjiang/Documents/muse/.claude/worktrees/agent-a320325d43e43534d/api/experiments/omr/out/goldberg-p1-5-gate-tuplet09/`
+Run: `api/experiments/omr/out/goldberg-p1-5-gate-tuplet09/`
 (`audiveris/goldberg-bga.mvt1.mxl`, `model.json`, `reread.json`, `edits.json`, `base.musicxml`, `final.musicxml`).
 Probe: `text-layer/spark_probe.py`, 2 Spark calls, $0.031 (`text-layer/spend.json`).
 

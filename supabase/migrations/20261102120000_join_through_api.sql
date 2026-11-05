@@ -1,4 +1,4 @@
--- Join codes get a guess limit (001, docs/backlog.md, 2026-11-02).
+-- Join codes get a guess limit (feature 001, 2026-11-02).
 --
 -- An 8-digit code is all it takes to join a group, and `join_ensemble` could be called from the browser as often as
 -- Supabase's own rate limits allow. Joining now goes through the API (`POST /ensembles/join`, api/app/routes/

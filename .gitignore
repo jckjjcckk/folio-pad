@@ -48,3 +48,27 @@ api/fixtures/pdf
 api/fixtures/voice/audio/
 api/experiments/voice/out/
 api/experiments/spark12/runs/**/*.png
+
+# Vite cache (a stray copy once landed under api/)
+.vite/
+
+# Spend ledgers: every experiment's own usage log stays local
+api/experiments/**/spend*.jsonl
+api/experiments/**/spend*.json
+
+# Raw run records stay local; each experiment's summary (.md) is committed
+api/experiments/**/results/*
+!api/experiments/**/results/*.md
+api/experiments/**/runs/**
+!api/experiments/**/runs/**/
+!api/experiments/**/runs/**/*.md
+api/experiments/**/out/
+api/experiments/engrave/v2/
+api/experiments/engrave/goldberg/text-layer/
+
+# Recordings of a real voice, and their recording briefs
+api/fixtures/voice/audio2/
+api/fixtures/voice/script2.md
+
+# e2e harness scratch (session tokens, page crops)
+api/experiments/e2e_night/scratch/

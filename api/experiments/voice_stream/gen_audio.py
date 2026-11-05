@@ -38,7 +38,7 @@ NEG = [  # (id, voice, text, note)
     ("n14", "Tessa", "Again from bar twelve, please.", "start point with a bar number"),
     ("n15", "Rishi", "Three, four.", "counting in"),
 ]
-GOLDBERG = API.parent / ".claude/worktrees/agent-a6373b95fb192e74a/api/experiments/engrave/goldberg/musescore-opengoldberg.mp3"
+GOLDBERG = API / "experiments/engrave/goldberg/musescore-opengoldberg.mp3"   # rendered by engrave/goldberg (gitignored)
 INSTRUMENT = API / ".venv/lib/python3.12/site-packages/music21/audioSearch/test_audio.wav"
 
 

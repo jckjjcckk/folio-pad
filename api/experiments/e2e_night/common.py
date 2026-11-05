@@ -30,7 +30,7 @@ RESULTS = HERE / "results"
 LEDGER = HERE / "spend.jsonl"
 CAP_USD = 30.0  # raised from 12 (CK, 2026-11-04: not a hard constraint)
 API = os.environ.get("E2E_API", "https://folio-api-dev.jckjjcckk.com").rstrip("/")
-TOKENS = Path(os.environ.get("E2E_TOKENS", "/private/tmp/claude-501/-Users-ckjiang-Documents-muse/c322debc-0f64-428b-a5ee-2e7fbc0c306c/scratchpad/tokens.json"))
+TOKENS = Path(os.environ.get("E2E_TOKENS", Path(__file__).resolve().parent / "scratch" / "tokens.json"))  # local, gitignored
 GROUP = "Hart House Quartet"
 ADMIN = "admin1@muse.test"
 

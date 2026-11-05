@@ -151,8 +151,7 @@ About three minutes. The on-camera convert of the Minuet is a live run with real
 calls. The two questions in the video are staged on a demo-only branch, from the product's real question templates:
 the split question on Beethoven's Piano Concerto No. 3, and a convert parked on "Does bar 13 match the page?" on
 Chopin's Polonaise in C♯ minor, Op. 26 No. 1. The second is a staged state only: the product does not ask about a
-doubtful bar during a convert, it flags the bar on the Check screen. Devices, books and fallbacks are in
-`docs/demo-shot-list.md`.
+doubtful bar during a convert, it flags the bar on the Check screen.
 
 ## Team and links
 

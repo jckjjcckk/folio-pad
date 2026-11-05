@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import io
 import json
+import os
 import subprocess
 import sys
 import time
@@ -25,7 +26,7 @@ from app.db import db
 
 from .common import As, RESULTS, cost_of, group_id, guard, load, now, save, spent, sync_ledger, utcnow
 
-SCRATCH = Path("/private/tmp/claude-501/-Users-ckjiang-Documents-muse/c322debc-0f64-428b-a5ee-2e7fbc0c306c/scratchpad")
+SCRATCH = Path(os.environ.get("E2E_SCRATCH", Path(__file__).resolve().parent / "scratch"))  # local, gitignored
 POLL = 2.0
 
 
