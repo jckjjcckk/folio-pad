@@ -1,7 +1,7 @@
 # IMSLP sonatas: Beethoven Op. 27 No. 2 in two editions
 
 Two whole books for the E2E night (2026-10-31, `docs/features/018-e2e-night.md`), run whole with CK's approval.
-The PDFs are public-domain IMSLP scans and are not committed (13 MB); this file is the truth table.
+The PDFs are public-domain IMSLP scans, committed here (13 MB); this file is the truth table.
 
 | file | pages | edition |
 |---|---|---|

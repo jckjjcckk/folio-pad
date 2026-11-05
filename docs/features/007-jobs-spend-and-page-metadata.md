@@ -23,7 +23,7 @@ and a record of what each page cost and what the models said about it.
   `jobs.result.question`, job `done`). The return value is stored in `jobs.result`.
 - Job kinds (`docs/librarian-contract.md`): `import_musicxml` (app, 002), `process_pages` (intelligence, 004),
   `part_cut` (008), `transcribe_voice` (013, planned), `brief` (planned: `scores.brief`, `parts.difficulty`,
-  Spark). Each handler's docstring names its Meta model; the README's model table is generated from that.
+  Spark). Each handler's docstring names its Meta model; the model table in `docs/submission.md` is generated from that.
 - Ownership: the app thread owns `supabase/` migrations, `auth, spend, db, llm, worker, settings`, `routes/`,
   `web/`, deployment, the `jobs` table and the worker; the intelligence thread owns `api/app/librarian/`,
   `api/experiments/`, `api/fixtures/` additions and the acceptance file. A handler that needs a column asks

@@ -54,7 +54,7 @@ that `charge_usage` enforces at the next check.
 | `transcribe_voice` | intelligence | `{score_id, ensemble_id, session_id, utterance_id, audio_path}` (job `created_by` = the author; no job `score_id`) | `annotations` with `status = 'proposed'`, one row per audience sharing `payload.mark_id`, `measure_from/to` by stable id, `body` = the stand text, `payload` = ids, position and bars only (never the transcript or a quote); `result.transcript`, `result.quotes`, `result.unplaced` on the job (creator-only); the take's audio deleted once transcribed | Voice Transcribe, then Spark |
 | `brief` | intelligence | `{score_id}` | `scores.brief`, `parts.difficulty` | Spark |
 
-Each handler's docstring names the Meta model it uses; the README's model table is generated from that.
+Each handler's docstring names the Meta model it uses; the model table in `docs/submission.md` is generated from that.
 
 ## Records a page handler writes
 

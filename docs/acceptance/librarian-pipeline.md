@@ -1,6 +1,6 @@
 # Acceptance: the librarian pipeline (scan to parts)
 
-Build-queue item 6's engine: `process_pages` in `api/app/librarian/`. Run against the local Docker stack only
+The engine is `process_pages` in `api/app/librarian/`. Run against the local Docker stack only
 (`supabase start`, then `uv run scripts/smoke_local.py` once so admin@muse.test exists). Meta models: Muse Spark 1.3
 labels each page; the geometry is OpenCV. Everything below runs from `api/`.
 
