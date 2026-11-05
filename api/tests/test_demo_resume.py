@@ -1,4 +1,4 @@
-"""demo-video branch: a question parked by `scripts/seed_demo.py` (`result.demo_resume`) is answered by writing the
+"""A question parked by `scripts/seed_demo.py` (`result.demo_resume`) is answered by writing the
 prepared rows and a follow-up job already `done`, never a queued job (no worker, no Meta call)."""
 from __future__ import annotations
 

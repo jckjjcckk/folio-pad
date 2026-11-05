@@ -8,7 +8,7 @@
  *    rest dimmed, the librarian's guess already chosen; tap the staves that are the part (tap again to let go), or say it
  *    is not on this line. A musician's words only (CK, 2026-10-31): no staff numbers, no blocks, no model; what refused
  *    the cut stays behind a small "Why am I asked?" for the admin who wants it.
- *  - Does bar N match the page (demo-video branch only, `omr_convert` `match_bar`): the scan's crop of the bar beside the
+ *  - Does bar N match the page (`omr_convert` `match_bar`, asked by the demo seed's staged convert): the scan's crop of the bar beside the
  *    reading's engraved crop of the same bar, and two answers: the reading is right, or keep the bar on the list to check.
  *    The convert never rewrites the bar either way.
  *  - Either says "remembered from page N" where the book's memory supplied a value (an earlier answer, or a read):
@@ -30,7 +30,7 @@ const isBar = (q: unknown): q is MatchBar => !!q && typeof q === 'object' && (q 
 
 /** A box as fractions of its page. */
 interface Frac { x0: number; y0: number; x1: number; y1: number }
-/** The convert's question on one bar (demo-video branch): the scan and the reading, each a page and the bar's box on it. */
+/** The convert's question on one bar: the scan and the reading, each a page and the bar's box on it. */
 interface MatchBar {
   kind: 'match_bar'; bar: number; page: number
   scan: { key: string; px: [number, number]; box: Frac }

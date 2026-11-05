@@ -9,9 +9,9 @@ answer: `POST /jobs/{id}/resume` queues the follow-up with `resume_from` and no 
 fresh allowance from where it stopped (006). Both routes pin the follow-up to the tier the chain started on
 (`payload.model_tier`), so a profile changed meanwhile never moves a parked transcript to another model.
 
-demo-video branch only (never main): a question parked by `scripts/seed_demo.py` carries `result.demo_resume`, the
+A question parked by `scripts/seed_demo.py` (a staged state for the demo video) carries `result.demo_resume`, the
 finished run's rows prepared from a real one. Its answer writes those rows and a follow-up job already `done`, so the
-book finishes at once with no worker and no Meta call (the "fake resume" for the video)."""
+book finishes at once with no worker and no Meta call. Only the service role writes jobs, so no user can set it."""
 from datetime import datetime, timezone
 from typing import Any
 
@@ -64,7 +64,7 @@ DEMO_TABLES = ("sources", "parts", "scores", "interpretations")
 
 
 def _demo_resume(job: dict, demo: dict, body: dict, user_id: str) -> dict:
-    """The seeded question's answer (demo-video branch): the spec for this answer (`demo.answers[answer]`, else `demo`
+    """The seeded question's answer: the spec for this answer (`demo.answers[answer]`, else `demo`
     itself) inserts its rows and applies its updates on this book only, then the follow-up job lands `done` with the
     prepared `result`. Only the service role writes jobs, so a spec is never a user's."""
     answer = body["answer"] if set(body) == {"answer"} else body

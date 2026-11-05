@@ -615,7 +615,7 @@
 .fo .ask-foot .r3-btn.is-line.is-big { padding: 0 16px; font-size: 15px; font-weight: 500; }
 .fo .ask-page { width: 100%; padding: 0 12px 26px 76px; }
 .fo .ask-page-in { position: relative; margin: 0 auto; }
-/* demo-video branch: the convert's bar question, the scan and the reading side by side */
+/* the convert's bar question, the scan and the reading side by side */
 .fo .ask-body.is-bar { align-items: flex-start; }
 .fo .ask-body.is-bar-note { flex: none; flex-direction: column; gap: 6px; padding-top: 10px; }
 .fo .ask-bar { min-width: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }

@@ -1,4 +1,4 @@
-"""Reset demo@folio.com to the demo video's shelf (demo-video branch only, never main). Idempotent.
+"""Reset demo@folio.com to the demo video's shelf. Idempotent.
 
     cd api && uv run scripts/seed_demo.py --dry-run      # what it would wipe and make
     cd api && uv run scripts/seed_demo.py                # wipe demo@folio.com's books, jobs and files, then seed
@@ -15,9 +15,9 @@ Then copies three finished books from the hosted project through the service rol
    `match_bar` question (bar 13: the scan prints "sotto voce", the reading has none). Its answer writes demo1's
    finished conversion; "The reading is right" also takes bar 13 off the bars to check.
 
-Both answers go through `POST /jobs/{id}/answer` on this branch's API (`routes/jobs.py` `_demo_resume`): the rows in
-the parked job's `result.demo_resume` are written and the follow-up job lands `done`. On main's API the same answer
-would queue a real resume on the worker: run this branch's API for the take. The Minuet is not seeded: CK uploads it
+Both parked questions are staged states for the demo video. Their answers go through `POST /jobs/{id}/answer`
+(`routes/jobs.py` `_demo_resume`): the rows in the parked job's `result.demo_resume` are written and the follow-up job
+lands `done`, with no worker and no Meta call. The Minuet is not seeded: CK uploads it
 live from the iPad. Every id copied is new; the source books are only read.
 """
 from __future__ import annotations

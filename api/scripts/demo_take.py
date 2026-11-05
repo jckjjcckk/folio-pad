@@ -1,4 +1,4 @@
-"""Record the on-camera Minuet (demo-video branch): watch demo@folio.com's new book while CK uploads and converts it on
+"""Record the on-camera Minuet for the demo video: watch demo@folio.com's new book while CK uploads and converts it on
 the iPad, then write one record the video build reads, in the shape of `experiments/e2e_night/imslp_1104/<cut>.json`.
 
     cd api && uv run scripts/demo_take.py            # start it before the upload; it ends when the convert ends
