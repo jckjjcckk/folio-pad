@@ -23,8 +23,8 @@ import sys
 import time
 from datetime import datetime, timezone
 
-# As yoga runs it: Spark. The Mac's api/.env says LLM_PROVIDER=anthropic (the dev API's own default), and the first
-# three local runs of the night went to Claude by it ($4.00, two Goldberg cuts and the Moscheles convert).
+# Spark only, as yoga runs it. The app has no provider switch any more (Meta is its only provider); the line below
+# is kept from the E2E night and has no effect on app/.
 os.environ["LLM_PROVIDER"] = "meta"
 
 from app.db import db

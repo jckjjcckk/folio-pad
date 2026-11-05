@@ -23,17 +23,21 @@ as making one. The same cellist asked to slow a passage, loop it and hear the ot
 ## What it does, in the demo's order
 
 1. **Import.** A scanned PDF reads itself: OpenCV finds every staff, system and barline; Muse Spark reads what is
-   printed (first bar, parts per system, rehearsal marks, title, composer, key, meter).
+   printed (first bar, parts per system, rehearsal marks, title, composer, key, meter) and the printed bar
+   numbers, which check the geometry's bar count. The demo piece is Bach's Minuet in G, BWV Anh. 114, a one-page
+   scan.
 2. **The librarian asks.** Splitting out a part, the agent meets a staff it cannot place, parks, and asks one
-   typed question in musicians' words ("Which staves are the Piano's on page 2, line 2?"). The admin taps the
-   staves; the run resumes where it stopped. The answer is kept for the rest of the book.
+   typed question in musicians' words. On Beethoven's Piano Concerto No. 3, where the margin prints "Klav."
+   (Klavier), it asks "Which staves are the Piano's on page 2, line 1?". The admin taps the staves; the run
+   resumes where it stopped. The answer is kept for the rest of the book.
 3. **Parts on every stand.** Each player opens their part, cut from the same pages: bar 112 is bar 112 for all.
 4. **Convert to Digital.** Audiveris recognises the notes, Spark adds text only where a glyph confirms it,
-   MuseScore engraves the result for the iPad's page.
+   MuseScore engraves the result for the iPad's page. The Minuet goes from upload to digital in about 70 s, of
+   which the convert is about 35 s: 32 bars, 0 to check, about $0.05 a book.
 5. **Marks, live.** A highlight or a cut made on one stand lands on every stand.
-6. **The conductor speaks.** The admin holds the voice button: "Second violins, from forty-two to forty-eight
-   we're cutting that." Muse Voice Transcribe writes it down, Spark proposes a cut on bars 42 to 48 for
-   Violin II, a card and a blue ghost appear; the admin taps Accept and the cut is on the Violin II stand.
+6. **The conductor speaks.** The admin holds the voice button: "Violins, from bar twelve, skip twenty to
+   twenty-four." Muse Voice Transcribe writes it down, Spark proposes the marks for the violins, a card and a
+   blue ghost appear; the admin taps Accept and the marks land only on the violin stands.
 7. **Play the parts.** Choose the parts that sound, leave yours out, set the pace, loop.
 
 ## Meta models: what each proposes, what decides
@@ -47,6 +51,7 @@ questions; Spark never places a staff or a bar and never judges or re-transcribe
 |---|---|---|---|
 | Page reading on import | Muse Spark, effort minimal, low on a doubted page | Per page: the first bar number, the parts on each system, rehearsal marks, title, composer, a brief | OpenCV geometry finds every staff, system and barline and counts the bars. Spark's labels attach to boxes it never moves; a label pointing at no box is dropped |
 | Key and meter | Muse Spark, one closed question, low | Sharps or flats, the mode, the time signature, each with a confidence | Only a high-confidence read whose key name agrees with its own count fills the book; anything less is shown as a guess for the owner to confirm |
+| Printed bar numbers on import | Muse Spark, effort minimal, one call per page (low on a page that disagrees) | Every printed bar number on the page, the box of the bar it numbers, a confidence | The geometric count decides. Agreement confirms it; an offset re-bases the book only when the opening readings agree over two systems and the admin has not set the first bar; a disagreement flags the bars between two readings and never rewrites the count. The book sheet shows "Bars counted from the page" and what the printed numbers said |
 | Score header | Muse Spark, low | The instruments in score order and the staff boxes each occupies | Reconciled against the geometry's staff boxes: only an answer that uses every box once, in order, sets the staff count for later pages |
 | Split by instrument, scanned book | Muse Spark as an agent: labels minimal (fallback low), recheck and agent turns low | Which staves on each system are the wanted part's; then a yes-or-no recheck of each cut | A commit tool: the staves exist, the count matches the header, the crop verifies, the recheck says yes. Three refusals park the run with a typed question. The book's label memory keeps every answer; a human answer outranks a model read |
 | Convert to Digital | Muse Spark, minimal | Text, dynamics and tempo words per system; then a yes-or-no render check | Audiveris reads the notes. Spark's text is written only where an Audiveris glyph or a fixed vocabulary confirms it, never a pitch, duration or barline. On a "no" from the render check, Audiveris's reading comes back and the bar is flagged |
@@ -105,7 +110,7 @@ parallel. Five-page import 35.3 s to 23.4 s; part cut 93.8 s to 39.5 s with the 
 
 ## What we measured
 
-From `docs/features/*`. Small samples: most rows are one run.
+From `docs/features/*`; the Minuet row from the demo-piece runs. Small samples: most rows are one run.
 
 | What | Result | n, date |
 |---|---|---|
@@ -113,6 +118,8 @@ From `docs/features/*`. Small samples: most rows are one run.
 | Page reading on import | labels 42/42 across 13 pages, $0.0127 a page; 5-page import 23.4 s | 2026-10-30 |
 | Part cut, Rachmaninoff Concerto 1 p1-5 | 9/9 right, 0 questions; 39.5 s | 4 runs 2026-10-28; 2026-10-30 |
 | Label memory, Cappi Op. 27 No. 2 p8-12 | 1 question and 24/26, then 0 questions and 26/26 on a second run | n=1 each, 2026-11-02 |
+| Convert, Bach Minuet in G (demo piece, one page) | 32 bars, 0 to check, convert ~35 s, ~70 s upload to digital, ~$0.05 a book | 3 runs, 2026-11-04 |
+| Printed bar numbers, 17 pages in 5 books | 36/36 numbers read, 0 false disagreements, ~$0.005 a page | 2 runs, 2026-11-02 |
 | Convert, Goldberg p1-5 | text F1 0.963, $0.22, 114.7 s | n=1, 2026-10-30 |
 | Audiveris notes, Goldberg Aria b1-28 | pitch F1 0.972 | n=1, 2026-10-27 |
 | Voice, CK's recorded lines | 21/26 all fields right, 7/9 retakes, 23/23 non-instructions silent | one voice, n=1, 2026-10-30 |
@@ -140,8 +147,12 @@ From `docs/features/*`. Small samples: most rows are one run.
 
 ## Video
 
-Three minutes, not yet recorded. The script is in `docs/features/017-demo-and-submission.md`; devices, books and
-fallbacks in `docs/demo-shot-list.md`.
+About three minutes. The on-camera convert of the Minuet is a live run with real Meta
+calls. The two questions in the video are staged on a demo-only branch, from the product's real question templates:
+the split question on Beethoven's Piano Concerto No. 3, and a convert parked on "Does bar 13 match the page?" on
+Chopin's Polonaise in C♯ minor, Op. 26 No. 1. The second is a staged state only: the product does not ask about a
+doubtful bar during a convert, it flags the bar on the Check screen. Devices, books and fallbacks are in
+`docs/demo-shot-list.md`.
 
 ## Team and links
 

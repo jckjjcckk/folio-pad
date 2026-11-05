@@ -2,8 +2,8 @@
 
 An AI librarian for ensembles, on iPads. Scan or import a score and the librarian reads it: it finds every
 system and bar, names the parts, cuts a part out for each player, and can convert a scanned book into digital
-notation. Marks made on one stand appear on every stand live. A conductor's spoken note ("second violins, from
-forty-two to forty-eight we're cutting that") becomes a proposed mark on the right stands, and the parts play back
+notation. Marks made on one stand appear on every stand live. A conductor's spoken note ("violins, from bar
+twelve, skip twenty to twenty-four") becomes a proposed mark on the violin stands only, and the parts play back
 at any pace for practice.
 
 Built for the Meta Global AI Developer Hackathon (Oct 27 to Nov 4, 2026). The eight commits dated 2026-10-26
@@ -38,6 +38,7 @@ judges or re-transcribes a note.
 | Feature | Model | What it proposes | What decides |
 |---|---|---|---|
 | Page reading on import (004) | Muse Spark, effort minimal, low on a doubted page | Per page: the first bar number, the parts on each system, rehearsal marks and printed landmarks, title, composer, difficulty, a brief | OpenCV geometry finds every staff, system and barline and counts the bars. Spark's labels attach to boxes it never moves; a label pointing at no box is dropped |
+| Printed bar numbers on import (004) | Muse Spark, effort minimal, one call per page beside the label call; low on a page that disagrees | Every printed bar number on the page, the box of the bar it numbers, and a confidence; never a count | `bar_numbers.compare`: the geometric count decides. Agreement confirms it; a consistent offset re-bases the book only when the opening readings agree over two systems and the admin has not set the first bar; a disagreement flags the bars between two readings as doubtful and keeps the count. The book sheet says "Bars counted from the page" and what the printed numbers said (`process_pages.READ_PRINTED`) |
 | Key and meter (004) | Muse Spark, one closed question, low | Sharps or flats counted, the mode, the time signature, each with a confidence | Only a high-confidence read whose key name agrees with its own count fills the book's key and meter; anything less is shown as a best guess for the owner to confirm |
 | Score header (003, 008) | Muse Spark, low | The instruments in score order and the staff boxes each occupies | The answer is reconciled against the geometry's staff boxes: only when it uses every box once, in order, does its box count become the staff count, which then drives the staff recovery on every later page |
 | Split by instrument, scanned book (008) | Muse Spark as an agent (006): labels minimal (fallback low), recheck and agent turns low | Which staves on each system are the wanted part's; then a yes-or-no recheck of each cut block | A commit tool: the staves exist in the system, the count matches the header, the crop verifies, the recheck says yes. Three refusals park the run with a typed question for the admin. The book's label memory keeps every answer; a human answer outranks a model read and is not asked again |
@@ -186,6 +187,7 @@ Folio runs alongside these tools, each under its own licence:
 
 Test material is public domain or openly licensed: the MusicXML fixtures in `web/public/fixtures/` come from the
 music21 corpus; the OMR ground truth is Open Goldberg (CC0); the scanned scores are public-domain editions from
-[IMSLP](https://imslp.org), kept out of the repo.
+[IMSLP](https://imslp.org). Two are committed, both editions of Beethoven's Op. 27 No. 2 (Cappi 1802 and
+Moscheles) in `api/fixtures/imslp/` for the end-to-end runs; the other scans are kept out of the repo.
 
 Built by CK Jiang.
