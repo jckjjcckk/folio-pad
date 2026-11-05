@@ -20,6 +20,16 @@ and the ensemble's stay separate: a fingering never appears on another stand, th
 And repeats, bar numbering and handwriting are what AI gets wrong, so fixing a machine's mark must be as cheap
 as making one. The same cellist asked to slow a passage, loop it and hear the other parts: "play the parts".
 
+Two kinds of user:
+
+- **A chamber group or small ensemble.** The admin (in the demo, the quartet's violist) imports the score, splits
+  parts, makes cuts and speaks instructions; each player reads their own part on an iPad and receives the
+  group's marks.
+- **A solo player with a personal library.** A pianist imports a scanned book, converts it to digital, and
+  practises with the other parts playing.
+
+Roles live on the membership: an account can be admin of one group and a player in another.
+
 ## What it does, in the demo's order
 
 1. **Import.** A scanned PDF reads itself: OpenCV finds every staff, system and barline; Muse Spark reads what is
@@ -49,17 +59,19 @@ questions; Spark never places a staff or a bar and never judges or re-transcribe
 
 | Feature | Model | What it proposes | What decides |
 |---|---|---|---|
-| Page reading on import | Muse Spark, effort minimal, low on a doubted page | Per page: the first bar number, the parts on each system, rehearsal marks, title, composer, a brief | OpenCV geometry finds every staff, system and barline and counts the bars. Spark's labels attach to boxes it never moves; a label pointing at no box is dropped |
-| Key and meter | Muse Spark, one closed question, low | Sharps or flats, the mode, the time signature, each with a confidence | Only a high-confidence read whose key name agrees with its own count fills the book; anything less is shown as a guess for the owner to confirm |
-| Printed bar numbers on import | Muse Spark, effort minimal, one call per page (low on a page that disagrees) | Every printed bar number on the page, the box of the bar it numbers, a confidence | The geometric count decides. Agreement confirms it; an offset re-bases the book only when the opening readings agree over two systems and the admin has not set the first bar; a disagreement flags the bars between two readings and never rewrites the count. The book sheet shows "Bars counted from the page" and what the printed numbers said |
-| Score header | Muse Spark, low | The instruments in score order and the staff boxes each occupies | Reconciled against the geometry's staff boxes: only an answer that uses every box once, in order, sets the staff count for later pages |
-| Split by instrument, scanned book | Muse Spark as an agent: labels minimal (fallback low), recheck and agent turns low | Which staves on each system are the wanted part's; then a yes-or-no recheck of each cut | A commit tool: the staves exist, the count matches the header, the crop verifies, the recheck says yes. Three refusals park the run with a typed question. The book's label memory keeps every answer; a human answer outranks a model read |
-| Convert to Digital | Muse Spark, minimal | Text, dynamics and tempo words per system; then a yes-or-no render check | Audiveris reads the notes. Spark's text is written only where an Audiveris glyph or a fixed vocabulary confirms it, never a pitch, duration or barline. On a "no" from the render check, Audiveris's reading comes back and the bar is flagged |
-| Voice notes | Muse Voice Transcribe (DIARIZATION, keywords from the book), then one Muse Spark call, minimal | The transcript; then marks: kind, bars, audience, stand text, and the quote they come from | The quote must be a verbatim span of the transcript, the bars inside the score, the audience a known part or member. A mark that passes is a proposal; it reaches a stand only when the admin taps Accept |
-| Split a Digital book, Play the parts, landmarks | None | n/a | music21 splits the parts and writes each part's MIDI, the bar map and the printed landmarks |
+| Page reading on import (004) | Muse Spark, effort minimal, low on a doubted page | Per page: the first bar number, the parts on each system, rehearsal marks and printed landmarks, title, composer, difficulty, a brief | OpenCV geometry finds every staff, system and barline and counts the bars. Spark's labels attach to boxes it never moves; a label pointing at no box is dropped |
+| Printed bar numbers on import (004) | Muse Spark, effort minimal, one call per page beside the label call; low on a page that disagrees | Every printed bar number on the page, the box of the bar it numbers, and a confidence; never a count | `bar_numbers.compare`: the geometric count decides. Agreement confirms it; a consistent offset re-bases the book only when the opening readings agree over two systems and the admin has not set the first bar; a disagreement flags the bars between two readings as doubtful and keeps the count. The book sheet says "Bars counted from the page" and what the printed numbers said (`process_pages.READ_PRINTED`) |
+| Key and meter (004) | Muse Spark, one closed question, low | Sharps or flats counted, the mode, the time signature, each with a confidence | Only a high-confidence read whose key name agrees with its own count fills the book's key and meter; anything less is shown as a best guess for the owner to confirm |
+| Score header (003, 008) | Muse Spark, low | The instruments in score order and the staff boxes each occupies | The answer is reconciled against the geometry's staff boxes: only when it uses every box once, in order, does its box count become the staff count, which then drives the staff recovery on every later page |
+| Split by instrument, scanned book (008) | Muse Spark as an agent (006): labels minimal (fallback low), recheck and agent turns low | Which staves on each system are the wanted part's; then a yes-or-no recheck of each cut block | A commit tool: the staves exist in the system, the count matches the header, the crop verifies, the recheck says yes. Three refusals park the run with a typed question for the admin. The book's label memory keeps every answer; a human answer outranks a model read and is not asked again |
+| Convert to Digital (005) | Muse Spark, minimal | Text, dynamics and tempo words per system; then a yes-or-no render check | Audiveris reads the notes. Spark's text is written only where an Audiveris glyph or a fixed vocabulary confirms it, never a pitch, duration or barline. MuseScore engraves the touched bars; on a "no" from the render check, Audiveris's reading comes back and the bar is flagged |
+| Voice notes (013) | Muse Voice Transcribe (DIARIZATION, keywords from the book), then one Muse Spark call, minimal | The transcript; then marks: kind, bars, audience, stand text, and the quote they come from | `checked_marks`: the quote must be a verbatim span of the transcript, the bars inside the score, the audience a known part or member; a place named by a landmark resolves through the book's landmark list. A mark that passes is a proposal, and it reaches a stand only when the admin taps Accept |
+| Split a Digital book, Play the parts, landmarks (008, 014, 013) | None | n/a | music21 splits the parts and writes each part's MIDI, the bar map and the printed landmarks at import and convert |
 
 Transcripts of the same take differ between runs (other entrants report about 11 % word drift between identical
-runs). That is why no spoken mark lands on a stand on the model's word alone.
+runs). That is why no spoken mark lands on a stand on the model's word alone. Spark's confidence on voice was measured (at 0.95 or above,
+every proposal was right, 013) and is held for always-on listening; it is not used in push-to-talk. Numbers in
+parentheses are feature files in `docs/features/`.
 
 **SAM 3.1** was tried first for page layout. It found systems but never a barline: SAM boxes plus Spark scored 10/28
 on the tap test (2026-10-27), OpenCV geometry plus Spark labels 28/28. SAM is not in the product.
@@ -70,8 +82,9 @@ Each account chooses its tier in the app's account settings. The choice applies 
 
 - **Standard** (the default): `muse-spark-1.3`. Meta does not train on the content.
 - **Contributor**: `muse-spark-1.3-contributor`, about a twelfth of the input price and a twentieth of the output
-  price, and Meta may use the content to train future models. Voice Transcribe has no contributor mode, so the tier
-  changes only the Spark calls.
+  price ($0.10 and $0.20 per million tokens against $1.25 and $4.25), and Meta may use the content to train future
+  models. It was about 3.5 times slower on the voice call when measured (013-always-on). Voice Transcribe has no
+  contributor mode, so the tier changes only the Spark calls.
 
 Checked on the hosted project on 2026-11-02 with two test accounts: switched to contributor, the next Spark call's
 ledger row says `muse-spark-1.3-contributor`; switched back, it says `muse-spark-1.3`. A user can change only their
@@ -108,39 +121,73 @@ a doubtful page; the part cut reads ahead and skips rechecks the memory settled;
 parallel. Five-page import 35.3 s to 23.4 s; part cut 93.8 s to 39.5 s with the same 9 decisions; Convert 187.8 s to
 114.7 s; voice call median 1.83 s to 1.08 s with the same marks.
 
+## Architecture
+
+```
+iPad (React PWA inside a Capacitor shell; also the web app in Safari)
+  |  sign-in, reads and writes rows under RLS, uploads to Storage, hears changes over Realtime
+  v
+Supabase: Auth, Postgres (RLS on every table), Storage, Realtime
+  ^
+  |  service key; claims durable jobs from the jobs table
+FastAPI (api/): verifies the user's token, enforces budgets, runs the librarian's handlers
+  |-- Meta Model API: Muse Spark 1.3, Muse Voice Transcribe 1.0
+  |-- OpenCV page geometry, music21 (part split, MIDI, landmarks)
+  '-- OMR box over ssh: Audiveris 5.11 (recognition), MuseScore 4.7.5 headless (engraving, render check)
+Cloudflare: the web app as a Worker with static assets; the API behind a Cloudflare Tunnel
+```
+
+The iPad calls the API only to start work. Results arrive as row changes. The database is the truth and Realtime
+is the notification: clients refetch on reconnect. Three data layers: source (PDF, images, MusicXML),
+interpretation (bars, staves, parts, versioned), collaboration (marks, cuts, scribbles, presence). Marks point at
+stable measure ids, so re-reading a page keeps everyone's marks.
+
 ## What we measured
 
-From `docs/features/*`; the Minuet row from the demo-piece runs. Small samples: most rows are one run.
+From `docs/features/*` (the source column names the file); the Minuet row from the demo-piece runs. Small
+samples: most rows are one run on a few pages.
 
-| What | Result | n, date |
-|---|---|---|
-| Place every bar (tap test) | geometry + Spark 28/28 and 13/13; Spark alone 9/28; SAM 3.1 + Spark 10/28 | 2 pages, n=1, 2026-10-27 |
-| Page reading on import | labels 42/42 across 13 pages, $0.0127 a page; 5-page import 23.4 s | 2026-10-30 |
-| Part cut, Rachmaninoff Concerto 1 p1-5 | 9/9 right, 0 questions; 39.5 s | 4 runs 2026-10-28; 2026-10-30 |
-| Label memory, Cappi Op. 27 No. 2 p8-12 | 1 question and 24/26, then 0 questions and 26/26 on a second run | n=1 each, 2026-11-02 |
-| Convert, Bach Minuet in G (demo piece, one page) | 32 bars, 0 to check, convert ~35 s, ~70 s upload to digital, ~$0.05 a book | 3 runs, 2026-11-04 |
-| Printed bar numbers, 17 pages in 5 books | 36/36 numbers read, 0 false disagreements, ~$0.005 a page | 2 runs, 2026-11-02 |
-| Convert, Goldberg p1-5 | text F1 0.963, $0.22, 114.7 s | n=1, 2026-10-30 |
-| Audiveris notes, Goldberg Aria b1-28 | pitch F1 0.972 | n=1, 2026-10-27 |
-| Voice, CK's recorded lines | 21/26 all fields right, 7/9 retakes, 23/23 non-instructions silent | one voice, n=1, 2026-10-30 |
-| Voice, 100 messy typed lines | 99/100 with score context, 74/100 without | n=2, 2026-10-30 |
-| Live marks, four stands | p50 0.47 s, 0 of 20 cuts lost | local stack, 2026-10-28 |
+| What | Result | n, date | Source |
+|---|---|---|---|
+| Who places bars: tap every bar on a page | OpenCV geometry + Spark labels 28/28 and 13/13; Spark alone at high effort 9/28; SAM 3.1 + Spark 10/28 | 2 pages, n=1, 2026-10-27 | 003 |
+| Page reading on import, effort minimal with a guard | 5-page import 35.3 s to 23.4 s; labels 42/42 across a 13-page corpus, $0.0127 a page | import n=1 before, n=2 after; corpus one run; 2026-10-30 | 004 |
+| Printed bar numbers, 17 pages in 5 books | 36/36 numbers read, 0 false disagreements, ~$0.005 a page | 2 runs, 2026-11-02 | 004 |
+| Part cut, Rachmaninoff Concerto 1, pages 1 to 5 | 9/9 decisions right, 0 questions; 93.8 s to 39.5 s after the speed pass | 4 runs 2026-10-28; speed pass 2026-10-30 | 008 |
+| Label memory, Beethoven Concerto 3, piano part | questions on two pages to 0; 7/7 systems cut | n=1 each, 2026-10-30 | 008, 006 |
+| Label memory, Cappi Op. 27 No. 2 p8-12 | 1 question and 24/26, then 0 questions and 26/26 on a second run | n=1 each, 2026-11-02 | 008 |
+| Convert, Bach Minuet in G (demo piece, one page) | 32 bars, 0 to check, convert ~35 s, ~70 s upload to digital, ~$0.05 a book | 3 runs, 2026-11-04 | `docs/fixtures/` |
+| Convert, Goldberg BGA pages 1 to 5 | text F1 0.963, notes kept by MuseScore 1731/1731 (v2 run); 187.8 s to 114.7 s, $0.22 | n=1, 2026-10-28 and 2026-10-30 | 005 |
+| Audiveris pitch accuracy, Goldberg Aria bars 1 to 28 | pitch F1 0.972 against the Open Goldberg ground truth | n=1, 2026-10-27 | 005 |
+| Voice: CK's recorded lines | all fields right on 21/26, retakes 7/9, no mark on 23/23 non-instructions; Spark median 1.08 s, $0.0035 a line | one voice, n=1, 2026-10-30 | 013 |
+| Voice: 100 messy typed instructions | 99/100 with score context (prompt v4e), 74/100 without; 0/6 false positives | n=2, 2026-10-30 | 013-v4e-eval |
+| Live marks to four stands | p50 0.47 s, 0 of 20 cuts lost, missed cut recovered after a reconnect | local stack, 2026-10-28 | 012 |
 
 ## Limits
 
 - **Scanned books.** Bar numbering and part cutting work on the tested pages; recognising the notes does not always.
-  Audiveris drops notes on dense piano and orchestral pages; the librarian flags doubtful bars but does not fix them.
-- **One voice.** The voice prompt was tuned on one speaker's recordings. Every voice proposal waits for the admin's
-  tap; nothing is applied automatically.
-- **Small samples.** Most numbers are single runs on 1 to 13 pages. Realtime latency was measured on the local stack.
-- **Not built:** always-on listening, MIDI listening to the player's instrument, piano reduction, notation editing.
+  Audiveris drops notes on dense piano and orchestral pages; the librarian flags doubtful bars but does not fix
+  them, and a bar can be wrong without a flag (the demo Minuet's bar 21). Convert to Digital is scoped to piano and
+  chamber music, and no chamber-music PDF has been tested.
+- **One voice.** The voice prompt was tuned and scored on one speaker's recordings (CK's). A second voice is the
+  overfitting check and has not been recorded. A transcript sometimes drops a leading addressee ("Cello, ..."), and
+  the mark then goes to the whole group. Every voice proposal waits for the admin's tap; nothing is applied
+  automatically.
+- **iPad only.** The native app is iPad only; the web app runs in Safari and on a Mac browser. The iPad microphone
+  path has not been measured.
+- **Small samples.** Most numbers are single runs on 1 to 13 pages. Realtime latency was measured on the local stack,
+  not the hosted project.
+- **Not built:** always-on listening (researched in 013-always-on), MIDI listening to the player's instrument, piano
+  reduction, notation editing.
 
 ## What's next
 
 - **Always-on voice.** Researched, not built: the iPad streams audio through the API to Meta's realtime
   recogniser, one Spark call per spoken turn; estimated about 2.1 s median from end of speech to card, against about
   4.2 s today.
-- **The IMSLP dataset run.** Dozens of public-domain PDFs to test import, part cut, Convert and metadata.
+- **More scanned editions.** The IMSLP run happened on 2026-11-04: 30 imports and converts of 1 to 3 pages from 12
+  public-domain piano PDFs, with no question and no server error. Plain editions converted cleanly (the demo Minuet,
+  0 bars to check in 3 of 3 runs); dense or decorated pages left 10 to 40 bars to check, and 2 of the 30 converts
+  failed. Next: a flag for a book whose time signature was not read, since its rhythm then goes unchecked.
 - **Metadata normalisation.** Canonical composer, work, catalogue number and movement from the header read, as an
   editable suggestion.
 - **MIDI listening.** Follow the player's own instrument over MIDI while the other parts play.
@@ -152,6 +199,36 @@ calls. The two questions in the video are staged on a demo-only branch, from the
 the split question on Beethoven's Piano Concerto No. 3, and a convert parked on "Does bar 13 match the page?" on
 Chopin's Polonaise in C♯ minor, Op. 26 No. 1. The second is a staged state only: the product does not ask about a
 doubtful bar during a convert, it flags the bar on the Check screen.
+
+## For the judges
+
+- **What existed before.** Nothing: the repo started on 2026-10-26. The eight commits of that day are setup (repo
+  layout, scaffold, install script, design-exploration scaffold and mock data); everything after is hackathon work.
+- **The commit history is the build log.** Most commits name the feature they belong to (`013`, `014`, ...), and
+  each feature's file in `docs/features/` holds its numbers and decisions.
+- **Run it with your own Meta key.** `docs/setup.md`: put the key in `api/.env` as `META_API_KEY`. Every call is
+  charged to the local spend ledger, capped per user by `PER_USER_BUDGET_USD`.
+
+## Licence and credits
+
+Copyright 2026 CK Jiang. Folio is free software under the GNU Affero General Public License, version 3 or later
+(`LICENSE`): use it, read it, change it, and share your changes under the same terms, including when you run it as a
+service.
+
+Folio runs alongside these tools, each under its own licence:
+
+- [Audiveris](https://github.com/Audiveris/audiveris) (AGPL-3.0), optical music recognition, run on the OMR box.
+- [MuseScore Studio](https://musescore.org) (GPL-3.0), headless engraving and the render check, run on the OMR box.
+- [music21](https://web.mit.edu/music21/), [OpenSheetMusicDisplay](https://opensheetmusicdisplay.org),
+  [Tone.js](https://tonejs.github.io) with samples from nbrosowsky/tonejs-instruments (MIT),
+  [OpenCV](https://opencv.org), [PyMuPDF](https://pymupdf.readthedocs.io) (AGPL-3.0), [Supabase](https://supabase.com),
+  [Capacitor](https://capacitorjs.com).
+
+Test material is public domain or openly licensed: the MusicXML fixtures in `web/public/fixtures/` come from the
+music21 corpus; the OMR ground truth is Open Goldberg (CC0); the scanned scores are public-domain editions from
+[IMSLP](https://imslp.org). Five are committed: three in `docs/fixtures/` (with their editions, licences and
+results) and two editions of Beethoven's Op. 27 No. 2 (Cappi 1802 and Moscheles) in `api/fixtures/imslp/` for the
+end-to-end runs; the other scans are kept out of the repo.
 
 ## Team and links
 
