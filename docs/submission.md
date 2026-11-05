@@ -202,6 +202,8 @@ doubtful bar during a convert, it flags the bar on the Check screen.
 
 ## For the judges
 
+- **Try it on the hosted app.** The shared judge account and its shelf are in the README's [Try it](../README.md#try-it)
+  section.
 - **What existed before.** Nothing: the repo started on 2026-10-26. The eight commits of that day are setup (repo
   layout, scaffold, install script, design-exploration scaffold and mock data); everything after is hackathon work.
 - **The commit history is the build log.** Most commits name the feature they belong to (`013`, `014`, ...), and

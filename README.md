@@ -12,5 +12,12 @@ Meta models: Muse Spark 1.3 and Muse Voice Transcribe 1.0.
 - Setup manual: [docs/setup.md](docs/setup.md)
 - Submission write-up, models and measurements: [docs/submission.md](docs/submission.md)
 
+## Try it
+
+App: https://folio-app.jckjjcckk.com (best in Safari on an iPad; the native build is on TestFlight). Shared judge
+account: `judges@folio.jckjjcckk.com` / `testpassword`. Its shelf holds a string quartet in practice mode and a Bach
+minuet converted from a scan. One librarian at a time. The account has a small Meta spend cap; if it runs
+out, email folio@jckjjcckk.com.
+
 Copyright 2026 CK Jiang. Free software under the GNU Affero General Public License, version 3 or later
 ([LICENSE](LICENSE)).
